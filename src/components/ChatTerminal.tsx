@@ -9,10 +9,8 @@ import ReactMarkdown from 'react-markdown'
 function SmoothStream({ text, isStreaming }: { text: string, isStreaming: boolean }) {
   const [displayedText, setDisplayedText] = useState('')
   const timerRef = useRef<NodeJS.Timeout | null>(null)
-  const lastTextRef = useRef(text)
 
   useEffect(() => {
-    // If we have new text and we're not already trickling
     if (text.length > displayedText.length) {
       if (timerRef.current) return;
 
@@ -24,11 +22,8 @@ function SmoothStream({ text, isStreaming }: { text: string, isStreaming: boolea
             return prev;
           }
 
-          // Find the next word or punctuation
           const match = nextPart.match(/^(\s*\S+)/);
           const chunk = match ? match[0] : nextPart.slice(0, 1);
-          
-          // SPEED CONTROL: 70ms per word creates that "deliberate" feel
           timerRef.current = setTimeout(trickle, 70); 
           return prev + chunk;
         });
@@ -55,29 +50,28 @@ function SmoothStream({ text, isStreaming }: { text: string, isStreaming: boolea
 export default function ChatTerminal() {
   const { messages, sendMessage, error, status } = useChat()
   const [text, setText] = useState('')
-  const scrollRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const isLoading = status === 'submitted' || status === 'streaming'
 
-  // SMOOTH SCROLLING: Instead of snapping, we gently scroll as content grows
   useEffect(() => {
     if (status === 'streaming' || status === 'submitted') {
       const scrollContainer = containerRef.current;
       if (scrollContainer) {
-        // We scroll a tiny bit on every render to ensure it feels like a "descent"
         const targetScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
         const currentScroll = scrollContainer.scrollTop;
-        
         if (targetScroll > currentScroll) {
-          scrollContainer.scrollTo({
-            top: targetScroll,
-            behavior: 'smooth'
-          });
+          scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
         }
       }
     }
   }, [messages, status]);
+
+  const quickPrompts = [
+    { label: "Who is Uday?", prompt: "Give me a professional summary of Uday Raj and his background." },
+    { label: "Tell me about your projects", prompt: "What are your most significant engineering projects?" },
+    { label: "Why hire him?", prompt: "What makes Uday a strong candidate for an AI or Software Engineering role?" },
+  ]
 
   const handleSend = (content: string) => {
     if (!content.trim() || isLoading) return
@@ -142,16 +136,40 @@ export default function ChatTerminal() {
               <Cpu size={32} color="#00f0ff" />
             </div>
             <h3 style={{ color: '#fff', fontSize: '1.5rem', marginBottom: '0.5rem' }}>Hi! I'm Uday's AI companion.</h3>
-            <p style={{ color: 'rgba(255, 255, 255, 0.6)', maxWidth: '450px', margin: '0 auto 2.5rem', lineHeight: 1.6 }}>
+            <p style={{ color: 'rgba(255, 255, 255, 0.6)', maxWidth: '450px', margin: '0 auto 1rem', lineHeight: 1.6 }}>
               I'm here to help you explore Uday's professional journey, technical expertise, and core engineering projects.
             </p>
+            
+            {/* --- RE-ADDING QUICK PROMPTS --- */}
+            <div style={{ display: 'flex', gap: '0.8rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '2rem' }}>
+              {quickPrompts.map((q, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleSend(q.prompt)}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#fff',
+                    padding: '0.8rem 1.5rem',
+                    borderRadius: '16px',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    transition: 'all 0.3s ease',
+                    pointerEvents: 'auto'
+                  }}
+                  onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(0, 240, 255, 0.1)'; e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.5)'; }}
+                  onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; }}
+                >
+                  {q.label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
         {messages.map((m, index) => {
           const content = getMessageText(m);
           const isLatestLoading = index === messages.length - 1 && status === 'streaming';
-          
           return (
             <div key={index} style={{
               display: 'flex',
@@ -187,12 +205,9 @@ export default function ChatTerminal() {
             <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'rgba(0, 240, 255, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
               <Loader2 size={18} className="animate-spin" color="#00f0ff" />
             </div>
-            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', fontStyle: 'italic' }}>
-              Thinking...
-            </div>
+            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', fontStyle: 'italic' }}>Thinking...</div>
           </div>
         )}
-        <div ref={scrollRef} />
       </div>
 
       {/* Input Area */}
@@ -208,31 +223,12 @@ export default function ChatTerminal() {
             onChange={(e) => setText(e.target.value)}
             placeholder="Ask me anything..."
             disabled={isLoading}
-            style={{
-              flex: 1,
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              padding: '1.2rem 4rem 1.2rem 1.5rem',
-              borderRadius: '18px',
-              color: '#fff',
-              outline: 'none'
-            }}
+            style={{ flex: 1, background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '1.2rem 4rem 1.2rem 1.5rem', borderRadius: '18px', color: '#fff', outline: 'none' }}
           />
           <button
             type="submit"
             disabled={!text.trim() || isLoading}
-            style={{
-              position: 'absolute',
-              right: '0.8rem',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: text.trim() && !isLoading ? '#00f0ff' : 'transparent',
-              border: 'none',
-              color: text.trim() && !isLoading ? '#000' : 'rgba(255,255,255,0.2)',
-              padding: '0.7rem',
-              borderRadius: '12px',
-              display: 'flex'
-            }}
+            style={{ position: 'absolute', right: '0.8rem', top: '50%', transform: 'translateY(-50%)', background: text.trim() && !isLoading ? '#00f0ff' : 'transparent', border: 'none', color: text.trim() && !isLoading ? '#000' : 'rgba(255,255,255,0.2)', padding: '0.7rem', borderRadius: '12px', display: 'flex' }}
           >
             {isLoading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
           </button>
