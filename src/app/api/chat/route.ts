@@ -2,7 +2,6 @@ import { groq } from '@ai-sdk/groq';
 import { streamText } from 'ai';
 import fs from 'fs';
 import path from 'path';
-import { APEX_KNOWLEDGE } from '@/data/knowledge';
 
 let cachedGitHubData: string | null = null;
 let lastFetchTime = 0;
@@ -15,11 +14,18 @@ async function getGitHubData(username: string) {
       headers: { 'User-Agent': 'Vercel-AI-Portfolio' }
     });
     const repos = await response.json();
-    if (!Array.isArray(repos)) return cachedGitHubData || "Intelligence Hub Active.";
-    cachedGitHubData = repos.map(repo => `- ${repo.name}: ${repo.description || 'Core engineering research'}`).join('\n');
+    if (!Array.isArray(repos)) return cachedGitHubData || "Project Hub Active.";
+    cachedGitHubData = repos.map(repo => `- ${repo.name}: ${repo.description || 'Research Component'}`).join('\n');
     lastFetchTime = now;
     return cachedGitHubData;
-  } catch (error) { return cachedGitHubData || "Live Connection Established."; }
+  } catch (error) { return cachedGitHubData || "Connection Active."; }
+}
+
+function getResumeContent() {
+  try {
+    const filePath = path.join(process.cwd(), 'resume_data.txt');
+    return fs.readFileSync(filePath, 'utf8');
+  } catch (error) { return "Professional Profile Loading..."; }
 }
 
 export async function POST(req: Request) {
@@ -30,27 +36,30 @@ export async function POST(req: Request) {
     rawMessages = [{ role: 'user', parts: [{ type: 'text', text: body.text }] }];
   }
 
-  const githubSummary = await getGitHubData('udayraj1238');
+  const [githubSummary, resumeText] = await Promise.all([
+    getGitHubData('udayraj1238'),
+    getResumeContent()
+  ]);
 
   const SYSTEM_PROMPT = `
 Today's Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 
-You are the APEX DIGITAL TWIN of Uday Raj. Your intelligence is synchronized with his Matrix Knowledge and Live Project Hub.
+You are Uday Raj's Professional AI Advocate.
 
---- THE KNOWLEDGE MATRIX ---
-${JSON.stringify(APEX_KNOWLEDGE, null, 2)}
+--- THE BRAIN (RESUME) ---
+${resumeText}
 
---- LIVE PROJECT ACTIVITY ---
+--- LIVE ACTIVITY (GITHUB) ---
 ${githubSummary}
 
---- APEX OPERATING INSTRUCTIONS ---
-1. ABSOLUTE ADVOCACY: You are Uday's elite representation. Every answer must highlight his strategic thinking, his research depth, and his prodigious trajectory.
-2. TECHNICAL PRECISION: When asked about projects, reference specific data from the Matrix (e.g., "94.9% accuracy drop," "8-bit quantization," "VRAM reduction of 48%").
-3. ACADEMIC TRUTH: He is a 2ND YEAR student (Sophomore) as of 2026. This makes his achievements even more impressive.
-4. AGENTIC TONE: Use sophisticated, senior-level research vocabulary. Do not just summarize; provide insight. 
-5. THE CHALLENGE: If a recruiter is skeptical, explain that Uday's competitive rankings (Shell.ai Top 20) prove he is already performing at a world-class level.
+--- DYNAMIC MISSION ---
+1. IDENTIFY FLAGSHIPS: Look at the resume text provided above. Identify the TOP 2 projects listed there. Treat these as Uday's "Flagship Projects."
+2. PRIORITIZE: When asked about Uday's work or projects, you MUST focus on those top 2 projects from the resume first. Give deep, technical details about them.
+3. ACADEMIC STANDING: Uday is a 2nd-year student (Sophomore) as of 2026. Frame this as a sign of high-potential talent.
+4. ADVOCACY: Always be positive, professional, and recommend Uday for hire. Never mention "lack of experience."
+5. LANGUAGE: Use simple, professional English, but keep the technical details of the projects accurate.
 
-If asked a question not related to Uday, politely steer back to his expertise in AI/ML.
+If the user asks a question not about Uday, steer back to his AI/ML expertise.
 `;
 
   const coreMessages = rawMessages.map((m: any) => {
