@@ -17,9 +17,9 @@ export default function ChatTerminal() {
   }, [messages, status])
 
   const quickPrompts = [
-    { label: "SegFormer Attacks", prompt: "Tell me about your adversarial attacks on SegFormer. What was the 'Nuclear' attack?" },
-    { label: "PaliGemma Implementation", prompt: "Explain your PaliGemma project and how you implemented the vision-to-language mapping." },
-    { label: "Why Uday?", prompt: "What makes Uday a strong AI & Data Science candidate?" },
+    { label: "Who is Uday?", prompt: "Give me a professional summary of Uday Raj and his background." },
+    { label: "Tell me about your projects", prompt: "What are your most significant engineering projects?" },
+    { label: "Why hire him?", prompt: "What makes Uday a strong candidate for an AI or Software Engineering role?" },
   ]
 
   const handleSend = (content: string) => {
@@ -106,7 +106,7 @@ export default function ChatTerminal() {
             </div>
             <h3 style={{ color: '#fff', fontSize: '1.5rem', marginBottom: '0.5rem' }}>Hi! I'm Uday's AI companion.</h3>
             <p style={{ color: 'rgba(255, 255, 255, 0.6)', maxWidth: '450px', margin: '0 auto 2.5rem', lineHeight: 1.6 }}>
-              Specializing in Adversarial Attacks and Multimodal Deep Learning. Ask me about my flagship projects like SegFormer or PaliGemma.
+              I'm here to help you explore Uday's professional journey, technical expertise, and core engineering projects.
             </p>
             
             <div style={{ display: 'flex', gap: '0.8rem', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -202,7 +202,7 @@ export default function ChatTerminal() {
               <Loader2 size={18} className="animate-spin" color="#00f0ff" />
             </div>
             <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', fontStyle: 'italic' }}>
-              Uday's assistant is thinking...
+              Thinking...
             </div>
           </div>
         )}
@@ -217,7 +217,7 @@ export default function ChatTerminal() {
             textAlign: 'center',
             fontSize: '0.9rem'
           }}>
-            Oops! I hit a snag. Please check your connection and try again.
+            Something went wrong. Let me try re-connecting.
           </div>
         )}
 
@@ -235,7 +235,7 @@ export default function ChatTerminal() {
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Send a message to Uday..."
+            placeholder="Ask me anything..."
             disabled={isLoading}
             style={{
               flex: 1,
