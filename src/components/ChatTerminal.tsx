@@ -1,9 +1,66 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import { Sparkles, Send, Code, Zap, User, Loader2, Cpu } from 'lucide-react'
+import { Sparkles, Send, Code, User, Loader2, Cpu } from 'lucide-react'
 import { useRef, useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
+
+// --- SMOOTH TYPEWRITER COMPONENT ---
+// This component trickles the text out at a controlled pace even if the stream is fast.
+function SmoothStream({ text, isStreaming }: { text: string, isStreaming: boolean }) {
+  const [displayedText, setDisplayedText] = useState('')
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+
+  useEffect(() => {
+    // If the incoming text is ahead of what we're showing, start trickling
+    if (text.length > displayedText.length) {
+      if (timerRef.current) return; // Already trickling
+
+      const trickle = () => {
+        setDisplayedText(prev => {
+          const nextChar = text[prev.length];
+          if (nextChar === undefined) {
+            timerRef.current = null;
+            return prev;
+          }
+          
+          // Speed control: adjust this for "elegance"
+          // We take more than one char if we are far behind to keep it "smooth" but not too slow
+          const gap = text.length - prev.length;
+          const charsToAdd = gap > 20 ? 3 : 1; 
+          
+          const nextChunk = text.slice(prev.length, prev.length + charsToAdd);
+          
+          timerRef.current = setTimeout(trickle, 25); // 25ms per step
+          return prev + nextChunk;
+        });
+      };
+
+      trickle();
+    } else if (!isStreaming && text.length === displayedText.length) {
+      // Stream finished and we've caught up
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+    
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = null;
+    };
+  }, [text, displayedText, isStreaming]);
+
+  // If it's not a stream (e.g. an old message), just show it immediately
+  const finalContent = isStreaming ? displayedText : text;
+
+  return (
+    <div className="markdown-content">
+      <ReactMarkdown>{finalContent}</ReactMarkdown>
+    </div>
+  );
+}
 
 export default function ChatTerminal() {
   const { messages, sendMessage, error, status } = useChat()
@@ -145,6 +202,9 @@ export default function ChatTerminal() {
 
         {messages.map((m, index) => {
           const content = getMessageText(m);
+          // Only use typewriter for the very last message while it's loading
+          const isLatestLoading = index === messages.length - 1 && status === 'streaming';
+          
           return (
             <div key={index} style={{
               display: 'flex',
@@ -178,16 +238,14 @@ export default function ChatTerminal() {
                 {m.role === 'user' ? (
                   content
                 ) : (
-                  <div className="markdown-content">
-                    <ReactMarkdown>{content}</ReactMarkdown>
-                  </div>
+                  <SmoothStream text={content} isStreaming={isLatestLoading} />
                 )}
               </div>
             </div>
           );
         })}
         
-        {isLoading && (
+        {status === 'submitted' && (
           <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
             <div style={{
               width: '36px',
