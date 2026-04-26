@@ -1,0 +1,31 @@
+
+Education:
+- B.Tech in AI & Data Science at Indian Institute Of Information Technology, Design and Manufacturing Kurnool (2024 - 2028), Grade: 8.38
+- High School at Delhi Public School Sushant Lok Gurugram (PCM), 95% (2022 - 2024)
+
+Relevant Coursework: Data Structures, Algorithms Analysis, AI, ML, Python, Statistical Analysis, Discrete Math.
+
+Key Projects:
+1. Person-ReID-Attack-Implementation (Flagship):
+- Architected a physics-aware adversarial pipeline on Market-1501.
+- "Nuclear" attacks on SegFormer Stage 4 attention blocks, forcing a 94.9% accuracy drop.
+- Spearheaded a ViT-B/16 Re-ID system reaching 91.8% Rank-1 accuracy.
+
+2. Pytorch_PaliGemma (Flagship):
+- Engineered a linear projection bottleneck to map SigLIP features to a Gemma-2B hidden layer.
+- Implemented 8-bit quantization for a 2.1B parameter language decoder, reducing VRAM by 48%.
+- Improved BLEU-4 by 22%.
+
+Skills:
+- Languages: Python, C, C++, HTML
+- ML Stack: Pytorch, Tensorflow, Torchvision, OpenCV, Scikit-learn, NumPy, Pandas
+- Tools: Git, GitHub, VS Code, Jupyter, LaTeX
+
+Achievements:
+- Global top 20th Place in Shell.ai ML contest (1000+ submissions).
+- Ranked 176th out of 7000+ in AWS x Zelestra ML Ascend Hackathon.
+- Codeforces rating 1208, Codechef 2 Star (1512).
+
+Positions:
+- GDG Machine Learning Coordinator (Aug 2025 - Present).
+- DataWorks Club Computer Vision Coordinator (Aug 2025 - Present).
