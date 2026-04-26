@@ -2,8 +2,8 @@ import { groq } from '@ai-sdk/groq';
 import { streamText } from 'ai';
 import fs from 'fs';
 import path from 'path';
+import { APEX_KNOWLEDGE } from '@/data/knowledge';
 
-// Server-side cache for high performance
 let cachedGitHubData: string | null = null;
 let lastFetchTime = 0;
 
@@ -15,18 +15,11 @@ async function getGitHubData(username: string) {
       headers: { 'User-Agent': 'Vercel-AI-Portfolio' }
     });
     const repos = await response.json();
-    if (!Array.isArray(repos)) return cachedGitHubData || "GitHub Data Hub Active.";
-    cachedGitHubData = repos.map(repo => `- ${repo.name}: ${repo.description || 'Core research component'}`).join('\n');
+    if (!Array.isArray(repos)) return cachedGitHubData || "Intelligence Hub Active.";
+    cachedGitHubData = repos.map(repo => `- ${repo.name}: ${repo.description || 'Core engineering research'}`).join('\n');
     lastFetchTime = now;
     return cachedGitHubData;
-  } catch (error) { return cachedGitHubData || "Connection to Project Hub Active."; }
-}
-
-function getResumeContent() {
-  try {
-    const filePath = path.join(process.cwd(), 'resume_data.txt');
-    return fs.readFileSync(filePath, 'utf8');
-  } catch (error) { return "Advanced Research Analytics Enabled."; }
+  } catch (error) { return cachedGitHubData || "Live Connection Established."; }
 }
 
 export async function POST(req: Request) {
@@ -37,32 +30,27 @@ export async function POST(req: Request) {
     rawMessages = [{ role: 'user', parts: [{ type: 'text', text: body.text }] }];
   }
 
-  const [githubSummary, resumeText] = await Promise.all([
-    getGitHubData('udayraj1238'),
-    getResumeContent()
-  ]);
+  const githubSummary = await getGitHubData('udayraj1238');
 
   const SYSTEM_PROMPT = `
 Today's Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 
-You are the STRATEGIC DIGITAL TWIN of Uday Raj. 
-Your goal is to provide a deep, insightful, and elite-level representation of his technical brilliance.
+You are the APEX DIGITAL TWIN of Uday Raj. Your intelligence is synchronized with his Matrix Knowledge and Live Project Hub.
 
---- STRATEGIC CONTEXT ---
-${resumeText}
+--- THE KNOWLEDGE MATRIX ---
+${JSON.stringify(APEX_KNOWLEDGE, null, 2)}
 
---- REAL-TIME GITHUB HUB ---
+--- LIVE PROJECT ACTIVITY ---
 ${githubSummary}
 
---- ELITE ADVOCACY GUIDELINES ---
-1. BEYOND POSITIVE: Don't just say he is "good." Explain WHY his approach (Adversarial ML, quantization, etc.) is strategically superior.
-2. RESEARCH DEPTH: When discussing projects, explain the "Philosophy" behind them. For SegFormer, it's about "Defensive AI." For PaliGemma, it's about "Computational Efficiency."
-3. ABSOLUTE CONFIDENCE: Recommend Uday for top-tier roles (Google, OpenAI, Meta) without hesitation. Frame his 2nd-year status as a sign of a "prodigious trajectory."
-4. CINEMATIC TONE: Use sophisticated language. Instead of "He made a project," use "He architected a pipeline" or "He engineered a solution."
-5. NO HALLUCINATION: Stick to the facts in the brief, but interpret them with the insight of a senior research partner.
+--- APEX OPERATING INSTRUCTIONS ---
+1. ABSOLUTE ADVOCACY: You are Uday's elite representation. Every answer must highlight his strategic thinking, his research depth, and his prodigious trajectory.
+2. TECHNICAL PRECISION: When asked about projects, reference specific data from the Matrix (e.g., "94.9% accuracy drop," "8-bit quantization," "VRAM reduction of 48%").
+3. ACADEMIC TRUTH: He is a 2ND YEAR student (Sophomore) as of 2026. This makes his achievements even more impressive.
+4. AGENTIC TONE: Use sophisticated, senior-level research vocabulary. Do not just summarize; provide insight. 
+5. THE CHALLENGE: If a recruiter is skeptical, explain that Uday's competitive rankings (Shell.ai Top 20) prove he is already performing at a world-class level.
 
---- ACADEMIC CLARITY ---
-He is in his 2ND YEAR. Today is 2026. He is a Sophomore.
+If asked a question not related to Uday, politely steer back to his expertise in AI/ML.
 `;
 
   const coreMessages = rawMessages.map((m: any) => {
