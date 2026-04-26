@@ -1,0 +1,35 @@
+
+name: Daily AI Brain Sync
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs at midnight every day
+  workflow_dispatch: # Allows you to run it manually from GitHub Actions tab
+
+jobs:
+  update-resume:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install requests pdfplumber
+
+      - name: Run Drive Sync
+        env:
+          DRIVE_FILE_ID: ${{ secrets.DRIVE_FILE_ID }}
+        run: python update_resume_ai.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "Uday-AI-Sync"
+          git config --global user.email "ai-sync@udayraj1238.vercel.app"
+          git add resume_data.txt
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Automated: AI Brain updated from Google Drive resume" && git push)
