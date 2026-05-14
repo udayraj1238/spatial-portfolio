@@ -28,7 +28,7 @@ PORTFOLIO_DIR  = os.path.dirname(os.path.abspath(__file__))
 RESUME_PDF     = os.path.join(PORTFOLIO_DIR, "resume_updated.pdf")
 OUTPUT_TXT     = os.path.join(PORTFOLIO_DIR, "public", "resume_data.txt")
 GITHUB_USER    = "udayraj1238"
-LINKEDIN_URL   = "https://www.linkedin.com/in/uday-raj-0b3014295/"  # Your LinkedIn public URL
+LINKEDIN_URL   = "https://www.linkedin.com/in/uday6002/"
 
 
 # ── PDF Extraction ────────────────────────────────────────────────────────────
