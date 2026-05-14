@@ -1,195 +1,532 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import { Sparkles, Send, Code, User, Loader2, Info, Activity, Database } from 'lucide-react'
-import { useRef, useEffect, useState } from 'react'
+import { Sparkles, Send, Loader2, ChevronRight, Cpu, Zap, Brain, User } from 'lucide-react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
 
-// --- ELEGANT TYPEWRITER ---
-function SmoothStream({ text, isStreaming }: { text: string, isStreaming: boolean }) {
-  const [displayedText, setDisplayedText] = useState('')
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
+// ─── Typewriter Stream Component ─────────────────────────────────────────────
+function StreamText({ text, isStreaming }: { text: string; isStreaming: boolean }) {
+  const [displayed, setDisplayed] = useState('')
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const idxRef = useRef(0)
 
   useEffect(() => {
-    if (text.length > displayedText.length) {
-      if (timerRef.current) return;
-      const trickle = () => {
-        setDisplayedText(prev => {
-          const nextPart = text.slice(prev.length);
-          if (!nextPart) { timerRef.current = null; return prev; }
-          const match = nextPart.match(/^(\s*\S+)/);
-          const chunk = match ? match[0] : nextPart.slice(0, 1);
-          timerRef.current = setTimeout(trickle, 60); 
-          return prev + chunk;
-        });
-      };
-      trickle();
+    if (!isStreaming) { setDisplayed(text); idxRef.current = text.length; return }
+    if (text.length <= idxRef.current) return
+    const tick = () => {
+      idxRef.current = Math.min(idxRef.current + 3, text.length)
+      setDisplayed(text.slice(0, idxRef.current))
+      if (idxRef.current < text.length) timerRef.current = setTimeout(tick, 12)
     }
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); timerRef.current = null; };
-  }, [text, displayedText.length]);
+    tick()
+    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
+  }, [text, isStreaming])
 
-  const finalContent = isStreaming ? displayedText : text;
   return (
-    <div className="markdown-content prose prose-invert max-w-none">
-      <ReactMarkdown>{finalContent}</ReactMarkdown>
-      <style jsx global>{`
-        .markdown-content p { margin-bottom: 1rem; line-height: 1.7; }
-        .markdown-content strong { color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }
-      `}</style>
+    <div className="md-body">
+      <ReactMarkdown>{isStreaming ? displayed : text}</ReactMarkdown>
     </div>
-  );
+  )
 }
 
+// ─── Quick Prompt Chips ──────────────────────────────────────────────────────
+const QUICK_PROMPTS = [
+  { icon: '⚔️', label: 'Flagship Research', prompt: 'Tell me about his adversarial attack research on SegFormer. What were the exact results?' },
+  { icon: '🧠', label: 'PaliGemma VLM', prompt: 'Explain his PaliGemma multimodal implementation. What technical breakthroughs did he achieve?' },
+  { icon: '🏆', label: 'Competitions', prompt: 'What are his competition rankings and global standings?' },
+  { icon: '💼', label: 'Why Hire Him?', prompt: 'Give me a strong case for why Uday Raj is exceptional for an AI research or engineering role.' },
+  { icon: '📚', label: 'All Projects', prompt: 'List all his GitHub projects with technical details.' },
+  { icon: '🎯', label: 'Skills & Stack', prompt: 'What is his complete technical skill set and ML stack?' },
+]
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 export default function ChatTerminal() {
-  const { messages, sendMessage, error, status } = useChat()
-  const [text, setText] = useState('')
-  const containerRef = useRef<HTMLDivElement>(null)
+  const { messages, sendMessage, status } = useChat()
+  const [input, setInput] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const isLoading = status === 'submitted' || status === 'streaming'
+  const hasMessages = messages.length > 0
 
+  // Auto-scroll on new messages
   useEffect(() => {
-    if (status === 'streaming' || status === 'submitted') {
-      const scrollContainer = containerRef.current;
-      if (scrollContainer) {
-        scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' });
-      }
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  }, [messages, status]);
+  }, [messages, status])
 
-  const quickPrompts = [
-    { label: "Tell me about Uday", prompt: "Give me a summary of Uday Raj and his background." },
-    { label: "Check his best work", prompt: "Show me Uday's most significant technical projects." },
-    { label: "Why hire him?", prompt: "What makes Uday a strong candidate for an AI or Engineering role?" },
-  ]
-
-  const handleSend = (content: string) => {
+  const handleSend = useCallback((content: string) => {
     if (!content.trim() || isLoading) return
     sendMessage({ text: content })
-  }
+    setInput('')
+  }, [isLoading, sendMessage])
 
-  const getMessageText = (message: any) => {
-    return message.parts?.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('\n') || '';
-  }
+  const getText = (m: any) =>
+    m.parts?.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('\n') || m.content || ''
 
   return (
-    <div style={{
-      width: '100%', maxWidth: '900px', height: '85vh',
-      background: 'linear-gradient(145deg, rgba(5, 10, 20, 0.9), rgba(2, 5, 12, 0.95))',
-      backdropFilter: 'blur(30px)', border: '1px solid rgba(0, 240, 255, 0.15)',
-      borderRadius: '32px', display: 'flex', boxShadow: '0 40px 100px rgba(0, 0, 0, 0.8), inset 0 0 50px rgba(0, 240, 255, 0.02)',
-      overflow: 'hidden', pointerEvents: 'auto', flexDirection: 'column', position: 'relative'
-    }}>
-      {/* --- LAVISH TECHNICAL DECORATIONS --- */}
-      <div style={{ position: 'absolute', top: '15px', left: '15px', width: '20px', height: '20px', borderLeft: '2px solid #00f0ff', borderTop: '2px solid #00f0ff', opacity: 0.5 }} />
-      <div style={{ position: 'absolute', top: '15px', right: '15px', width: '20px', height: '20px', borderRight: '2px solid #00f0ff', borderTop: '2px solid #00f0ff', opacity: 0.5 }} />
-      <div style={{ position: 'absolute', bottom: '15px', left: '15px', width: '20px', height: '20px', borderLeft: '2px solid #00f0ff', borderBottom: '2px solid #00f0ff', opacity: 0.5 }} />
-      <div style={{ position: 'absolute', bottom: '15px', right: '15px', width: '20px', height: '20px', borderRight: '2px solid #00f0ff', borderBottom: '2px solid #00f0ff', opacity: 0.5 }} />
+    <>
+      <style>{`
+        .apex-terminal {
+          width: min(900px, 96vw);
+          height: min(88vh, 860px);
+          display: flex;
+          flex-direction: column;
+          border-radius: 28px;
+          overflow: hidden;
+          position: relative;
+          background: linear-gradient(160deg, rgba(4,8,20,0.97) 0%, rgba(2,4,14,0.99) 100%);
+          border: 1px solid rgba(0,240,255,0.12);
+          box-shadow:
+            0 0 0 1px rgba(0,0,0,0.5),
+            0 40px 120px rgba(0,0,0,0.9),
+            0 0 80px rgba(0,240,255,0.04),
+            inset 0 1px 0 rgba(0,240,255,0.08);
+          pointer-events: auto;
+        }
 
-      {/* Subtle Scanline Overlay */}
-      <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, rgba(0, 240, 255, 0.03) 0px, transparent 1px, transparent 2px)', pointerEvents: 'none', zIndex: 1 }} />
+        /* Corner Brackets */
+        .apex-terminal::before, .apex-terminal::after,
+        .corner-br, .corner-bl {
+          content: '';
+          position: absolute;
+          width: 22px;
+          height: 22px;
+          z-index: 10;
+          pointer-events: none;
+        }
+        .apex-terminal::before { top: 14px; left: 14px; border-top: 1.5px solid rgba(0,240,255,0.5); border-left: 1.5px solid rgba(0,240,255,0.5); border-radius: 4px 0 0 0; }
+        .apex-terminal::after  { top: 14px; right: 14px; border-top: 1.5px solid rgba(0,240,255,0.5); border-right: 1.5px solid rgba(0,240,255,0.5); border-radius: 0 4px 0 0; }
+        .corner-br { bottom: 14px; right: 14px; border-bottom: 1.5px solid rgba(0,240,255,0.5); border-right: 1.5px solid rgba(0,240,255,0.5); border-radius: 0 0 4px 0; }
+        .corner-bl { bottom: 14px; left: 14px; border-bottom: 1.5px solid rgba(0,240,255,0.5); border-left: 1.5px solid rgba(0,240,255,0.5); border-radius: 0 0 0 4px; }
 
-      {/* Simple Tech Header */}
-      <div style={{ padding: '0.8rem 2.5rem', background: 'rgba(0, 240, 255, 0.05)', borderBottom: '1px solid rgba(0, 240, 255, 0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 2 }}>
-        <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.75rem', color: 'rgba(0, 240, 255, 0.6)', letterSpacing: '1px' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Activity size={12} /> SYSTEM: ACTIVE</span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Database size={12} /> HUB: CONNECTED</span>
+        /* Scanline */
+        .apex-scan {
+          position: absolute;
+          inset: 0;
+          background: repeating-linear-gradient(0deg, rgba(0,240,255,0.015) 0px, transparent 1px, transparent 3px);
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        /* Header */
+        .apex-header {
+          padding: 10px 24px;
+          background: rgba(0,240,255,0.04);
+          border-bottom: 1px solid rgba(0,240,255,0.08);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          z-index: 3;
+          flex-shrink: 0;
+        }
+        .apex-header-left {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          font-size: 0.65rem;
+          letter-spacing: 2px;
+          color: rgba(0,240,255,0.45);
+          font-family: 'Courier New', monospace;
+        }
+        .apex-status-dot {
+          width: 6px; height: 6px;
+          border-radius: 50%;
+          background: #00f0ff;
+          box-shadow: 0 0 8px #00f0ff;
+          animation: blink 2.4s ease-in-out infinite;
+        }
+        @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+        /* Title bar */
+        .apex-title-bar {
+          padding: 16px 28px 14px;
+          border-bottom: 1px solid rgba(255,255,255,0.04);
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          z-index: 3;
+          flex-shrink: 0;
+        }
+        .apex-avatar {
+          width: 44px; height: 44px;
+          border-radius: 14px;
+          background: linear-gradient(135deg, rgba(0,240,255,0.2), rgba(0,80,255,0.15));
+          border: 1px solid rgba(0,240,255,0.25);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 0 20px rgba(0,240,255,0.1);
+          flex-shrink: 0;
+        }
+        .apex-title { font-size: 1.05rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+        .apex-subtitle { font-size: 0.7rem; color: rgba(0,240,255,0.5); letter-spacing: 1.5px; margin-top: 2px; }
+
+        /* Messages area */
+        .apex-messages {
+          flex: 1;
+          overflow-y: auto;
+          padding: 28px 28px 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+          z-index: 2;
+          scroll-behavior: smooth;
+        }
+        .apex-messages::-webkit-scrollbar { width: 4px; }
+        .apex-messages::-webkit-scrollbar-track { background: transparent; }
+        .apex-messages::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.2); border-radius: 2px; }
+        .apex-messages::-webkit-scrollbar-thumb:hover { background: rgba(0,240,255,0.4); }
+
+        /* Message bubbles */
+        .msg-row { display: flex; gap: 12px; align-items: flex-start; animation: msgIn 0.3s ease; }
+        .msg-row.user { flex-direction: row-reverse; }
+        @keyframes msgIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+        .msg-icon {
+          width: 36px; height: 36px;
+          border-radius: 12px;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0;
+          border: 1px solid rgba(255,255,255,0.08);
+        }
+        .msg-icon.ai { background: rgba(0,240,255,0.12); }
+        .msg-icon.user-ic { background: rgba(255,255,255,0.06); }
+
+        .msg-bubble {
+          max-width: 78%;
+          padding: 14px 18px;
+          border-radius: 20px;
+          font-size: 0.95rem;
+          line-height: 1.65;
+        }
+        .msg-bubble.ai {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.06);
+          color: rgba(255,255,255,0.9);
+          border-radius: 4px 20px 20px 20px;
+        }
+        .msg-bubble.user {
+          background: linear-gradient(135deg, #00d4ff, #0066ff);
+          color: #000;
+          font-weight: 500;
+          border-radius: 20px 20px 4px 20px;
+          box-shadow: 0 8px 24px rgba(0,102,255,0.3);
+        }
+
+        /* Markdown in AI messages */
+        .md-body p { margin: 0 0 10px; }
+        .md-body p:last-child { margin-bottom: 0; }
+        .md-body strong { color: #00f0ff; font-weight: 600; }
+        .md-body em { color: rgba(0,240,255,0.7); font-style: italic; }
+        .md-body ul, .md-body ol { margin: 8px 0; padding-left: 20px; }
+        .md-body li { margin-bottom: 4px; }
+        .md-body code {
+          background: rgba(0,240,255,0.1);
+          color: #00f0ff;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-family: 'Courier New', monospace;
+          font-size: 0.85em;
+        }
+        .md-body pre {
+          background: rgba(0,0,0,0.5);
+          border: 1px solid rgba(0,240,255,0.15);
+          border-radius: 8px;
+          padding: 12px;
+          overflow-x: auto;
+          margin: 10px 0;
+        }
+        .md-body h1, .md-body h2, .md-body h3 {
+          color: #00f0ff;
+          margin: 14px 0 8px;
+          letter-spacing: 0.5px;
+        }
+        .md-body blockquote {
+          border-left: 3px solid rgba(0,240,255,0.4);
+          padding-left: 12px;
+          color: rgba(255,255,255,0.6);
+          margin: 8px 0;
+        }
+
+        /* Thinking indicator */
+        .apex-thinking {
+          display: flex; align-items: center; gap: 10px;
+          padding: 0 4px;
+          color: rgba(0,240,255,0.45);
+          font-size: 0.78rem;
+          letter-spacing: 2px;
+        }
+        .think-dots { display:flex; gap: 5px; }
+        .think-dot {
+          width: 5px; height: 5px;
+          border-radius: 50%;
+          background: rgba(0,240,255,0.5);
+          animation: dotPulse 1.4s ease-in-out infinite;
+        }
+        .think-dot:nth-child(2) { animation-delay: 0.2s; }
+        .think-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dotPulse { 0%,100% { opacity:0.3; transform:scale(1); } 50% { opacity:1; transform:scale(1.3); } }
+
+        /* Welcome screen */
+        .apex-welcome {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          flex: 1;
+          text-align: center;
+          padding: 20px 24px 0;
+          z-index: 2;
+        }
+        .apex-welcome-icon {
+          width: 72px; height: 72px;
+          border-radius: 22px;
+          background: linear-gradient(135deg, rgba(0,240,255,0.12), rgba(0,60,255,0.08));
+          border: 1px solid rgba(0,240,255,0.2);
+          display: flex; align-items: center; justify-content: center;
+          margin-bottom: 20px;
+          box-shadow: 0 0 40px rgba(0,240,255,0.08), inset 0 1px 0 rgba(0,240,255,0.1);
+        }
+        .apex-welcome h1 {
+          font-size: 2rem;
+          font-weight: 800;
+          color: #fff;
+          margin: 0 0 10px;
+          letter-spacing: -0.5px;
+        }
+        .apex-welcome p {
+          color: rgba(255,255,255,0.45);
+          font-size: 0.95rem;
+          max-width: 480px;
+          line-height: 1.7;
+          margin: 0 0 28px;
+        }
+        .apex-welcome span { color: rgba(0,240,255,0.7); }
+
+        /* Quick prompt chips */
+        .apex-chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          justify-content: center;
+          max-width: 700px;
+        }
+        .apex-chip {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.08);
+          color: rgba(255,255,255,0.75);
+          padding: 9px 16px;
+          border-radius: 20px;
+          font-size: 0.82rem;
+          cursor: pointer;
+          transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          letter-spacing: 0.3px;
+          pointer-events: auto;
+        }
+        .apex-chip:hover {
+          background: rgba(0,240,255,0.08);
+          border-color: rgba(0,240,255,0.35);
+          color: #fff;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Input area */
+        .apex-input-area {
+          padding: 16px 22px 22px;
+          background: rgba(0,0,0,0.25);
+          border-top: 1px solid rgba(255,255,255,0.04);
+          z-index: 3;
+          flex-shrink: 0;
+        }
+        .apex-input-wrap {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: rgba(255,255,255,0.035);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 18px;
+          padding: 6px 6px 6px 18px;
+          transition: all 0.25s ease;
+        }
+        .apex-input-wrap.focused {
+          border-color: rgba(0,240,255,0.35);
+          background: rgba(0,240,255,0.04);
+          box-shadow: 0 0 0 3px rgba(0,240,255,0.06);
+        }
+        .apex-input {
+          flex: 1;
+          background: transparent;
+          border: none;
+          outline: none;
+          color: #fff;
+          font-size: 0.95rem;
+          font-family: inherit;
+          padding: 8px 0;
+          caret-color: #00f0ff;
+        }
+        .apex-input::placeholder { color: rgba(255,255,255,0.22); }
+        .apex-send {
+          width: 42px; height: 42px;
+          border-radius: 14px;
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+          flex-shrink: 0;
+        }
+        .apex-send.active {
+          background: linear-gradient(135deg, #00d4ff, #0066ff);
+          box-shadow: 0 4px 16px rgba(0,102,255,0.4);
+        }
+        .apex-send.active:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(0,102,255,0.5); }
+        .apex-send.inactive { background: rgba(255,255,255,0.05); cursor: not-allowed; }
+        .apex-hint {
+          text-align: center;
+          font-size: 0.68rem;
+          color: rgba(255,255,255,0.18);
+          margin-top: 10px;
+          letter-spacing: 0.5px;
+        }
+        .apex-hint span { color: rgba(0,240,255,0.3); }
+      `}</style>
+
+      <div className="apex-terminal">
+        <div className="corner-br" />
+        <div className="corner-bl" />
+        <div className="apex-scan" />
+
+        {/* Status Header */}
+        <div className="apex-header">
+          <div className="apex-header-left">
+            <div className="apex-status-dot" />
+            <span>APEX AI · ACTIVE</span>
+            <span style={{ opacity: 0.4 }}>|</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <Cpu size={10} /> GROQ · LLAMA-3.3-70B
+            </span>
+            <span style={{ opacity: 0.4 }}>|</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <Zap size={10} /> LIVE GITHUB SYNC
+            </span>
+          </div>
+          <Sparkles size={14} color="rgba(0,240,255,0.5)" />
         </div>
-        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00f0ff', boxShadow: '0 0 10px #00f0ff', animation: 'pulse 2s infinite' }} />
-      </div>
 
-      <div style={{ padding: '1.5rem 2.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 2 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <h2 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 600, color: '#fff', letterSpacing: '1px' }}>
-            UDAY RAJ <span style={{ color: 'rgba(0, 240, 255, 0.5)', fontWeight: 300, marginLeft: '8px', fontSize: '0.9rem' }}>| DIGITAL ASSISTANT</span>
-          </h2>
+        {/* Title */}
+        <div className="apex-title-bar">
+          <div className="apex-avatar">
+            <Brain size={22} color="#00f0ff" />
+          </div>
+          <div>
+            <div className="apex-title">UDAY RAJ <span style={{ color: 'rgba(0,240,255,0.4)', fontWeight: 300 }}>/ AI PORTFOLIO</span></div>
+            <div className="apex-subtitle">TRAINED ON RESUME · GITHUB · RESEARCH</div>
+          </div>
         </div>
-        <Sparkles size={20} color="#00f0ff" opacity={0.8} />
-      </div>
 
-      {/* Messages */}
-      <div ref={containerRef} style={{ flex: 1, overflowY: 'auto', padding: '3rem', display: 'flex', flexDirection: 'column', gap: '3rem', scrollBehavior: 'smooth', zIndex: 2 }}>
-        {messages.length === 0 && (
-          <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-            <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: 'rgba(0, 240, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', border: '1px solid rgba(0, 240, 255, 0.25)', boxShadow: '0 0 30px rgba(0, 240, 255, 0.1)' }}>
-              <Info size={40} color="#00f0ff" />
+        {/* Content: Welcome or Messages */}
+        {!hasMessages ? (
+          <div className="apex-welcome">
+            <div className="apex-welcome-icon">
+              <Brain size={36} color="#00f0ff" />
             </div>
-            <h1 style={{ color: '#fff', fontSize: '2.4rem', fontWeight: 700, marginBottom: '1rem', letterSpacing: '-0.5px' }}>Hi, I'm Uday's AI.</h1>
-            <p style={{ color: 'rgba(255, 255, 255, 0.5)', maxWidth: '550px', margin: '0 auto 3.5rem', lineHeight: 1.8, fontSize: '1.1rem' }}>
-              I am here to help you explore Uday's professional world. Ask me about his projects, skills, or why he would be a great fit for your team.
+            <h1>Hi, I'm <span style={{ color: '#00f0ff' }}>APEX</span></h1>
+            <p>
+              Uday's AI — trained exhaustively on his <span>resume</span>, <span>GitHub repos</span>, and <span>research papers</span>.
+              Ask me literally anything about his projects, skills, or background.
             </p>
-            
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              {quickPrompts.map((q, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleSend(q.prompt)}
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#fff', padding: '1rem 2.2rem', borderRadius: '20px',
-                    cursor: 'pointer', fontSize: '1rem', transition: 'all 0.4s ease', pointerEvents: 'auto'
-                  }}
-                  onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(0, 240, 255, 0.1)'; e.currentTarget.style.borderColor = '#00f0ff'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
-                  onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                >
-                  {q.label}
+            <div className="apex-chips">
+              {QUICK_PROMPTS.map((q, i) => (
+                <button key={i} className="apex-chip" onClick={() => handleSend(q.prompt)}>
+                  <span>{q.icon}</span> {q.label}
                 </button>
               ))}
             </div>
           </div>
+        ) : (
+          <div className="apex-messages" ref={scrollRef}>
+            {messages.map((m, i) => {
+              const text = getText(m)
+              const isLatestStreaming = i === messages.length - 1 && status === 'streaming'
+              return (
+                <div key={i} className={`msg-row ${m.role === 'user' ? 'user' : ''}`}>
+                  <div className={`msg-icon ${m.role === 'user' ? 'user-ic' : 'ai'}`}>
+                    {m.role === 'user'
+                      ? <User size={18} color="rgba(255,255,255,0.6)" />
+                      : <Brain size={18} color="#00f0ff" />
+                    }
+                  </div>
+                  <div className={`msg-bubble ${m.role === 'user' ? 'user' : 'ai'}`}>
+                    {m.role === 'user'
+                      ? text
+                      : <StreamText text={text} isStreaming={isLatestStreaming} />
+                    }
+                  </div>
+                </div>
+              )
+            })}
+            {status === 'submitted' && (
+              <div className="msg-row">
+                <div className="msg-icon ai"><Brain size={18} color="#00f0ff" /></div>
+                <div className="apex-thinking">
+                  <div className="think-dots">
+                    <div className="think-dot" />
+                    <div className="think-dot" />
+                    <div className="think-dot" />
+                  </div>
+                  THINKING
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
-        {messages.map((m, index) => {
-          const content = getMessageText(m);
-          const isLatestLoading = index === messages.length - 1 && status === 'streaming';
-          return (
-            <div key={index} style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', flexDirection: m.role === 'user' ? 'row-reverse' : 'row' }}>
-              <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: m.role === 'user' ? 'rgba(255,255,255,0.08)' : 'rgba(0, 240, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255, 255, 255, 0.1)', flexShrink: 0 }}>
-                {m.role === 'user' ? <User size={20} color="#fff" /> : <Code size={20} color="#00f0ff" />}
-              </div>
-              <div style={{
-                maxWidth: '78%',
-                background: m.role === 'user' ? 'linear-gradient(135deg, #00f0ff, #0072ff)' : 'rgba(255, 255, 255, 0.04)',
-                color: m.role === 'user' ? '#000' : '#fff',
-                padding: '1.2rem 1.6rem',
-                borderRadius: m.role === 'user' ? '24px 24px 4px 24px' : '4px 24px 24px 24px',
-                fontSize: '1.1rem',
-                boxShadow: m.role === 'user' ? '0 10px 30px rgba(0, 114, 255, 0.3)' : 'none',
-                border: '1px solid rgba(255, 255, 255, 0.05)'
-              }}>
-                {m.role === 'user' ? content : <SmoothStream text={content} isStreaming={isLatestLoading} />}
-              </div>
-            </div>
-          );
-        })}
-        {status === 'submitted' && <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}><Loader2 size={20} className="animate-spin" color="#00f0ff" /><div style={{ color: 'rgba(0, 240, 255, 0.4)', fontSize: '0.9rem', letterSpacing: '2px' }}>THINKING...</div></div>}
-      </div>
-
-      {/* Input */}
-      <div style={{ padding: '2.5rem 3.5rem 3.5rem', background: 'rgba(0,0,0,0.3)', zIndex: 2 }}>
-        <form onSubmit={(e) => { e.preventDefault(); if (!text.trim() || isLoading) return; handleSend(text); setText(''); }} style={{ display: 'flex', gap: '1.2rem', position: 'relative' }}>
-          <input
-            value={text} onChange={(e) => setText(e.target.value)}
-            placeholder="Type your question here..." disabled={isLoading}
-            style={{ 
-              flex: 1, background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', 
-              padding: '1.4rem 4.5rem 1.4rem 1.8rem', borderRadius: '22px', color: '#fff', outline: 'none', fontSize: '1.1rem'
-            }}
-          />
-          <button
-            type="submit" disabled={!text.trim() || isLoading}
-            style={{ 
-              position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', 
-              background: text.trim() && !isLoading ? '#00f0ff' : 'transparent', border: 'none', 
-              color: text.trim() && !isLoading ? '#000' : 'rgba(255,255,255,0.15)', padding: '0.8rem', borderRadius: '16px', display: 'flex' 
-            }}
+        {/* Input */}
+        <div className="apex-input-area">
+          <form
+            onSubmit={(e) => { e.preventDefault(); handleSend(input) }}
           >
-            {isLoading ? <Loader2 size={24} className="animate-spin" /> : <Send size={24} />}
-          </button>
-        </form>
+            <div className={`apex-input-wrap ${isFocused ? 'focused' : ''}`}>
+              <ChevronRight size={16} color="rgba(0,240,255,0.4)" style={{ flexShrink: 0 }} />
+              <input
+                ref={inputRef}
+                className="apex-input"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                placeholder="Ask anything about Uday..."
+                disabled={isLoading}
+              />
+              <button
+                type="submit"
+                className={`apex-send ${input.trim() && !isLoading ? 'active' : 'inactive'}`}
+                disabled={!input.trim() || isLoading}
+              >
+                {isLoading
+                  ? <Loader2 size={18} color="rgba(255,255,255,0.4)" style={{ animation: 'spin 1s linear infinite' }} />
+                  : <Send size={18} color={input.trim() ? '#000' : 'rgba(255,255,255,0.3)'} />
+                }
+              </button>
+            </div>
+          </form>
+          <p className="apex-hint">
+            Powered by <span>Groq · LLaMA 3.3 70B</span> · Trained on Uday's complete profile
+          </p>
+        </div>
       </div>
 
-      <style jsx global>{`
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
-    </div>
+    </>
   )
 }
