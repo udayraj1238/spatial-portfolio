@@ -1,10 +1,10 @@
 ========================================================
-  UDAY RAJ — APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-05-14 23:50
-  Source: resume_updated.pdf + GitHub API
+  UDAY RAJ -- APEX AI KNOWLEDGE BASE
+  Last Updated: 2026-05-15 00:03
+  Sources: resume_updated.pdf + GitHub API + LinkedIn
 ========================================================
 
-== EXTRACTED RESUME TEXT ==
+== SECTION 1: RESUME (PRIMARY SOURCE OF TRUTH) ==
 Uday Raj
 (cid:131) +91 8527655484 # rajuday6002@gmail.com (cid:239) LinkedIn § Github
 Education
@@ -56,18 +56,42 @@ achieved 30+ FPS on edge devices using YOLOv8 and TensorRT optimization.
 • Managed the curation and annotation of 5,000+ custom images for club-wide hackathons, implementing automated data
 augmentation strategies that improved baseline model mAP by 12%.
 
-== GITHUB REPOSITORIES (LIVE) ==
-* [spatial-portfolio] (TypeScript) -- AI & Data Science Engineering Portfolio | Featuring Adversarial Machine Learning & Multimodal Deep Learning. | Stars: 0 | https://github.com/udayraj1238/spatial-portfolio
-* [grid07-cognitive-engine] (Python) -- AI Cognitive Engine for Grid07 - Vector Routing, LangGraph Orchestration, and RAG Combat Engine with Multi-Layered Prompt Injection Defense | Stars: 0 | https://github.com/udayraj1238/grid07-cognitive-engine
-* [Person-ReID-Attack-Implementation] (Jupyter Notebook) -- None | Stars: 0 | https://github.com/udayraj1238/Person-ReID-Attack-Implementation
-* [CourtSense-AI] (Python) -- None | Stars: 0 | https://github.com/udayraj1238/CourtSense-AI
-* [Pytorch_PaliGemma] (Python) -- None | Stars: 0 | https://github.com/udayraj1238/Pytorch_PaliGemma
-* [Transformer_from_scratch_using_pytorch] (Jupyter Notebook) -- None | Stars: 0 | https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch
+== SECTION 2: LINKEDIN PROFILE ==
+
+LinkedIn Profile: Uday Raj
+URL: https://www.linkedin.com/in/uday-raj-0b3014295/
+Headline: AI & Data Science Engineer | Adversarial ML Researcher | B.Tech at IIITDM Kurnool
+Location: Kurnool, Andhra Pradesh, India
+
+Summary:
+2nd-year B.Tech student in AI & Data Science at IIITDM Kurnool (2024-2028). 
+Research focus: Adversarial Machine Learning and Multimodal Vision-Language Models.
+Global Top 20 in Shell.ai ML Contest. 176th in AWS x Zelestra ML Hackathon.
+ML Coordinator at GDG On Campus, CV Coordinator at DataWorks Club.
+
+Education:
+- IIITDM Kurnool | B.Tech AI & Data Science | 8.38 CGPA | 2024-2028
+- Delhi Public School Sushant Lok, Gurugram | 95% | 2022-2024
+
+Skills: PyTorch, TensorFlow, Adversarial ML, SegFormer, Vision-Language Models, 
+Python, C++, OpenCV, LangGraph, RAG, Docker, TensorRT, YOLOv8
+
+Certifications and Achievements:
+- Shell.ai Global ML Contest: Top 20 / 1000+
+- AWS x Zelestra ML Ascend: 176th / 7000+
+- Codeforces: 1208 | CodeChef: 1512 | LeetCode: 200+
+
+
+== SECTION 3: GITHUB REPOSITORIES ==
+Repo: spatial-portfolio | Language: TypeScript | Description: AI & Data Science Engineering Portfolio | Featuring Adversarial Machine Learning & Multimodal Deep Learning. | URL: https://github.com/udayraj1238/spatial-portfolio
+Repo: grid07-cognitive-engine | Language: Python | Description: AI Cognitive Engine for Grid07 - Vector Routing, LangGraph Orchestration, and RAG Combat Engine with Multi-Layered Prompt Injection Defense | URL: https://github.com/udayraj1238/grid07-cognitive-engine
+Repo: Person-ReID-Attack-Implementation | Language: Jupyter Notebook | Description: None | URL: https://github.com/udayraj1238/Person-ReID-Attack-Implementation
+Repo: CourtSense-AI | Language: Python | Description: None | URL: https://github.com/udayraj1238/CourtSense-AI
+Repo: Pytorch_PaliGemma | Language: Python | Description: None | URL: https://github.com/udayraj1238/Pytorch_PaliGemma
+Repo: Transformer_from_scratch_using_pytorch | Language: Jupyter Notebook | Description: None | URL: https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch
 
 ========================================================
-  HOW THIS FILE IS USED:
-  → The APEX AI (Groq LLaMA-3.3-70B) fetches this file
-    on every chat session to answer questions about Uday.
-  → Update resume_updated.pdf and re-run this script to
-    keep the AI brain fresh.
+  NOTE: This file is fetched live by APEX AI (Groq LLaMA-3.3-70B)
+  on every chat session. Update resume_updated.pdf and re-run
+  this script to refresh the AI's knowledge.
 ========================================================

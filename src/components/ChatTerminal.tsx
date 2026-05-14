@@ -5,27 +5,11 @@ import { Sparkles, Send, Loader2, ChevronRight, Cpu, Zap, Brain, User } from 'lu
 import { useRef, useEffect, useState, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
 
-// ─── Typewriter Stream Component ─────────────────────────────────────────────
-function StreamText({ text, isStreaming }: { text: string; isStreaming: boolean }) {
-  const [displayed, setDisplayed] = useState('')
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const idxRef = useRef(0)
-
-  useEffect(() => {
-    if (!isStreaming) { setDisplayed(text); idxRef.current = text.length; return }
-    if (text.length <= idxRef.current) return
-    const tick = () => {
-      idxRef.current = Math.min(idxRef.current + 3, text.length)
-      setDisplayed(text.slice(0, idxRef.current))
-      if (idxRef.current < text.length) timerRef.current = setTimeout(tick, 12)
-    }
-    tick()
-    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
-  }, [text, isStreaming])
-
+// ─── Direct Text Renderer (streaming handles its own typewriter effect) ────────
+function StreamText({ text }: { text: string }) {
   return (
     <div className="md-body">
-      <ReactMarkdown>{isStreaming ? displayed : text}</ReactMarkdown>
+      <ReactMarkdown>{text}</ReactMarkdown>
     </div>
   )
 }
@@ -467,7 +451,7 @@ export default function ChatTerminal() {
                   <div className={`msg-bubble ${m.role === 'user' ? 'user' : 'ai'}`}>
                     {m.role === 'user'
                       ? text
-                      : <StreamText text={text} isStreaming={isLatestStreaming} />
+                      : <StreamText text={text} />
                     }
                   </div>
                 </div>
