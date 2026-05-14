@@ -1,34 +1,73 @@
+========================================================
+  UDAY RAJ — APEX AI KNOWLEDGE BASE
+  Last Updated: 2026-05-14 23:45
+  Source: resume_updated.pdf + GitHub API
+========================================================
 
---- STRATEGIC BIOGRAPHY: UDAY RAJ ---
+== EXTRACTED RESUME TEXT ==
+Uday Raj
+(cid:131) +91 8527655484 # rajuday6002@gmail.com (cid:239) LinkedIn § Github
+Education
+Indian Institute Of Information Technology, Design and Manufacturing Kurnool
+Bachelor of Technology in Artificial Intelligence and Data Science - Grade : 8.38 2024 - 2028
+Delhi Public School Sushant Lok Gurugram
+High School - (Physics, Chemistry, Mathematics) - Grade : 95% 2022 - 2024
+Relevant Coursework
+• Data Structures • Data Science • Machine Learning • Statistical Analysis
+• Algorithms Analysis • Artificial Intelligence • Python Programming • Discrete Mathematics
+Projects
+Adversarial Pattern Generation Using Segformer [Github]
+• Architected a physics-aware adversarial pipeline on Market-1501, achieving a 75.0% reduction in ResNet-50 Rank-1
+accuracy by optimizing 224x224 resolution images across 6 camera views.
+• Spearheaded a ViT-B/16 Re-ID system (196 patches, 12 layers) reaching 91.8% Rank-1 accuracy, while pioneering
+multi-layer attention-hijacking attacks on layers 9-11 to induce a 79.5% accuracy collapse.
+• Constructed a hierarchical SegFormer (MiT-B0) from scratch using Overlap Patch Merging, delivering 97.0% Rank-1
+accuracy on 12,936 images across 4 multiscale transformer stages
+• Orchestrated ”Nuclear” attacks on SegFormer Stage 4 attention blocks, forcing a 94.9% accuracy drop and 0.044
+similarity score, demonstrating total evasion of hierarchical transformer systems.
+Multimodal Deep Learning & Vision-Language Architecture [Github]
+• Engineered a linear projection bottleneck that reduced the dimensionality of the SigLIP features from 1152 to 2048 to
+match the Gemma-2B hidden layer, maintaining a 98.2% information retention rate during the cross-modal mapping.
+• Implemented 8-bit quantization (bitsandbytes) for the 2.1-billion parameter language decoder, reducing the VRAM
+footprint by 48% and allowing for a batch size of 16 on consumer-grade hardware during the inference phase.
+• Monitored training using WandB, achieving loss convergence within 3.5 epochs on a custom dataset of 50,000
+image-caption pairs by employing a Cosine Annealing learning rate scheduler starting at 2e-5.
+• Refined the Top-P (Nucleus) sampling threshold to 0.9 and temperature to 0.7, which resulted in a 15% reduction in
+linguistic hallucinations and a 22% improvement in BLEU-4 scores for descriptive image tasks.
+Technical Skills
+Languages: Python, C, C++, HTML
+Machine Learning Stack: Pytorch, Tensorflow, Torchvision, OpenCV, Scikit-learn, NumPy, Pandas, Matplotlib
+Developer Tools: Git, GitHub, VS Code, Jupyter, LaTeX
+Achievements
+• Global top 20th Place in the [Shell.ai] , which is an annual, global ML contest hosted by Shell.ai which is a British
+Multinational, optimized model parameters across 1000+ submissions.
+• Ranked 176th out of 7000+ registrants in [AWS x Zelestra ML Ascend Hackathon].
+• Earned a rating of 1208 on [Codeforces], 2 Star rating of 1512 on [Codechef] and solved over 200 problems on
+[Leetcode] and [Codeforces].
+Positions of Responsibility
+Google Developer Groups
+Machine Learning Coordinator Aug, 2025 - Present
+• Led a 12-week ML bootcamp for 200+ students, covering SGD and CNNs, resulting in 15+ end-to-end student projects.
+• Managed Kaggle resources for workshops, reducing environment latency by 40% via standardized Docker containers.
+DataWorks Club
+Computer Vision Coordinator Aug, 2025 - Present
+• Led workshops on OpenCV and PyTorch, mentoring 100+ members on building real-time detection pipelines that
+achieved 30+ FPS on edge devices using YOLOv8 and TensorRT optimization.
+• Managed the curation and annotation of 5,000+ custom images for club-wide hackathons, implementing automated data
+augmentation strategies that improved baseline model mAP by 12%.
 
-[CORE PHILOSOPHY]
-"Intelligence is only as strong as its vulnerabilities." 
-Uday Raj is a researcher focused on the intersection of Adversarial Machine Learning and Multimodal Architecture. His work is driven by the mission to build robust AI systems that are both computationally efficient and resilient to sophisticated attacks.
+== GITHUB REPOSITORIES (LIVE) ==
+* [grid07-cognitive-engine] (Python) -- AI Cognitive Engine for Grid07 - Vector Routing, LangGraph Orchestration, and RAG Combat Engine with Multi-Layered Prompt Injection Defense | Stars: 0 | https://github.com/udayraj1238/grid07-cognitive-engine
+* [spatial-portfolio] (TypeScript) -- AI & Data Science Engineering Portfolio | Featuring Adversarial Machine Learning & Multimodal Deep Learning. | Stars: 0 | https://github.com/udayraj1238/spatial-portfolio
+* [Person-ReID-Attack-Implementation] (Jupyter Notebook) -- None | Stars: 0 | https://github.com/udayraj1238/Person-ReID-Attack-Implementation
+* [CourtSense-AI] (Python) -- None | Stars: 0 | https://github.com/udayraj1238/CourtSense-AI
+* [Pytorch_PaliGemma] (Python) -- None | Stars: 0 | https://github.com/udayraj1238/Pytorch_PaliGemma
+* [Transformer_from_scratch_using_pytorch] (Jupyter Notebook) -- None | Stars: 0 | https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch
 
-[ACADEMIC STANDING]
-- B.Tech in AI & Data Science at IIITDM Kurnool (2024 - 2028).
-- Current Standing: 2nd Year (Sophomore) - April 2026.
-- Academic Excellence: 8.38 GPA with a focus on Deep Learning and Discrete Mathematics.
-
-[FLAGSHIP RESEARCH: ADVERSARIAL ML]
-- Project: SegFormer Attack on Person Re-ID.
-- The Narrative: While the world focused on improving accuracy, Uday focused on the "Blind Spots." He architected a physics-aware adversarial pipeline that targets Stage 4 attention blocks in hierarchical SegFormers.
-- Impact: Proved that a 94.9% accuracy drop can be forced with optimized adversarial patterns, a critical discovery for the future of secure autonomous surveillance.
-
-[FLAGSHIP RESEARCH: MULTIMODAL SYSTEMS]
-- Project: PaliGemma PyTorch Implementation.
-- The Narrative: Focused on democratization. Uday engineered 8-bit quantization techniques to allow a 2.1B parameter Vision-Language model to run on edge hardware with a 48% VRAM reduction.
-- Technical Edge: Implemented linear projection bottlenecks to synchronize SigLIP vision features with Gemma's hidden layers.
-
-[GLOBAL COMPETITIVE EDGE]
-- Shell.ai ML Contest: Global Top 20 (out of 1000+ experts).
-- AWS x Zelestra ML Ascend: 176th Place (out of 7000+ candidates).
-- Codeforces/CodeChef: Rated competitive programmer (1208 / 1512), demonstrating deep algorithmic intuition.
-
-[LEADERSHIP & MENTORSHIP]
-- GDG ML Coordinator: Architected a 12-week bootcamp for 200+ students.
-- DataWorks CV Coordinator: Leading workshops on TensorRT and YOLOv8 edge pipelines for 100+ members.
-- Goal: Bridging the gap between academic theory and production-grade AI.
-
-[FUTURE VISION]
-Uday is heading toward a career in AI Safety and Robust Multimodal Research, aiming to lead teams at organizations like Google DeepMind or OpenAI to ensure the next generation of LLMs are secure by design.
+========================================================
+  HOW THIS FILE IS USED:
+  → The APEX AI (Groq LLaMA-3.3-70B) fetches this file
+    on every chat session to answer questions about Uday.
+  → Update resume_updated.pdf and re-run this script to
+    keep the AI brain fresh.
+========================================================
