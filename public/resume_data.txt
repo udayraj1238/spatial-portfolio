@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ — APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-05-14 23:45
+  Last Updated: 2026-05-14 23:50
   Source: resume_updated.pdf + GitHub API
 ========================================================
 
@@ -57,8 +57,8 @@ achieved 30+ FPS on edge devices using YOLOv8 and TensorRT optimization.
 augmentation strategies that improved baseline model mAP by 12%.
 
 == GITHUB REPOSITORIES (LIVE) ==
-* [grid07-cognitive-engine] (Python) -- AI Cognitive Engine for Grid07 - Vector Routing, LangGraph Orchestration, and RAG Combat Engine with Multi-Layered Prompt Injection Defense | Stars: 0 | https://github.com/udayraj1238/grid07-cognitive-engine
 * [spatial-portfolio] (TypeScript) -- AI & Data Science Engineering Portfolio | Featuring Adversarial Machine Learning & Multimodal Deep Learning. | Stars: 0 | https://github.com/udayraj1238/spatial-portfolio
+* [grid07-cognitive-engine] (Python) -- AI Cognitive Engine for Grid07 - Vector Routing, LangGraph Orchestration, and RAG Combat Engine with Multi-Layered Prompt Injection Defense | Stars: 0 | https://github.com/udayraj1238/grid07-cognitive-engine
 * [Person-ReID-Attack-Implementation] (Jupyter Notebook) -- None | Stars: 0 | https://github.com/udayraj1238/Person-ReID-Attack-Implementation
 * [CourtSense-AI] (Python) -- None | Stars: 0 | https://github.com/udayraj1238/CourtSense-AI
 * [Pytorch_PaliGemma] (Python) -- None | Stars: 0 | https://github.com/udayraj1238/Pytorch_PaliGemma
