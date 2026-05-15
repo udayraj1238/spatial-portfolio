@@ -26,7 +26,9 @@ const QUICK_PROMPTS = [
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 export default function ChatTerminal() {
-  const { messages, sendMessage, status } = useChat()
+  const { messages, sendMessage, status, error } = useChat({
+    onError: (e) => console.error('[APEX]', e),
+  })
   const [input, setInput] = useState('')
   const [isFocused, setIsFocused] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -467,6 +469,14 @@ export default function ChatTerminal() {
                     <div className="think-dot" />
                   </div>
                   THINKING
+                </div>
+              </div>
+            )}
+            {error && (
+              <div className="msg-row">
+                <div className="msg-icon ai"><Brain size={18} color="#ff4444" /></div>
+                <div className="msg-bubble ai" style={{ borderColor: 'rgba(255,60,60,0.3)', color: '#ff8888' }}>
+                  ⚠ APEX encountered an error. Please try again in a moment.
                 </div>
               </div>
             )}
