@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-05-15 00:28
+  Last Updated: 2026-05-15 13:42
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -1772,3 +1772,40 @@ KEY CODE COMMENTS:
   # check that the batch size is 1
   # Print the source, target and model output
   # Evaluate the character error rate
+
+--- File: Transformer_from_scratch_using_pytorch/config.py ---
+IMPORTS (Libraries used):
+from pathlib import Path
+
+FUNCTIONS/METHODS:
+  def get_config()
+  def get_weights_file_path(config, epoch: str)
+  def latest_weights_file_path(config)
+
+KEY CODE COMMENTS:
+  # Find the latest weights file in the weights folder
+
+--- File: Transformer_from_scratch_using_pytorch/dataset.py ---
+IMPORTS (Libraries used):
+import torch
+import torch.nn as nn
+from torch.utils.data import Dataset
+
+CLASSES:
+  class BilingualDataset(Dataset):
+
+FUNCTIONS/METHODS:
+  def __init__(self, ds, tokenizer_src, tokenizer_tgt, src_lang, tgt_lang, seq_len)
+  def __len__(self)
+  def __getitem__(self, idx)
+  def causal_mask(size)
+
+KEY CODE COMMENTS:
+  # Transform the text into tokens
+  # Add sos, eos and padding to each sentence
+  # We will only add <s>, and </s> only on the label
+  # Make sure the number of padding tokens is not negative. If it is, the sentence is too long
+  # Add <s> and </s> token
+  # Add only <s> token
+  # Add only </s> token
+  # Double check the size of the tensors to make sure they are all seq_len long
