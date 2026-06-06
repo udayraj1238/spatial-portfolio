@@ -269,23 +269,28 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
       return { role: m.role as 'user' | 'assistant', content: text };
     });
 
-    // Use DeepSeek R1 distilled on LLaMA 70B — a reasoning model that thinks
-    // step-by-step before answering, giving far more accurate and contextual responses.
-    // It streams normally; the <think> tokens are filtered client-side.
-    const result = streamText({
-      model: groq('deepseek-r1-distill-llama-70b'),
-      system: SYSTEM_PROMPT,
-      messages: coreMessages,
-    });
-
-    return result.toUIMessageStreamResponse();
+    // Primary: DeepSeek R1 (reasoning model — thinks before answering)
+    // Fallback: LLaMA 3.3 70B (always reliable)
+    // DeepSeek R1 occasionally returns empty output (known issue with reasoning models)
+    // — the catch block automatically retries with LLaMA so the user always gets an answer.
+    try {
+      const result = streamText({
+        model: groq('deepseek-r1-distill-llama-70b'),
+        system: SYSTEM_PROMPT,
+        messages: coreMessages,
+      });
+      return result.toUIMessageStreamResponse();
+    } catch (modelErr) {
+      console.warn('[APEX] DeepSeek R1 failed, falling back to LLaMA 3.3 70B:', modelErr);
+      const result = streamText({
+        model: groq('llama-3.3-70b-versatile'),
+        system: SYSTEM_PROMPT,
+        messages: coreMessages,
+      });
+      return result.toUIMessageStreamResponse();
+    }
 
   } catch (err) {
-    // Fallback to llama if deepseek is unavailable
-    try {
-      const body = await (req as any).json?.() || {};
-      console.error('[APEX] DeepSeek failed, falling back to LLaMA:', err);
-    } catch { /* */ }
     console.error('[APEX] Route error:', err);
     return new Response(
       JSON.stringify({ error: 'APEX temporarily unavailable. Please try again in a moment.' }),
