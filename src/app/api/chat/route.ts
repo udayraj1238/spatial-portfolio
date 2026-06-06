@@ -297,7 +297,7 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
       }
     });
     
-    return result.toDataStreamResponse();
+    return result.toUIMessageStreamResponse();
 
   } catch (err) {
     console.error('[APEX] Route error:', err);
