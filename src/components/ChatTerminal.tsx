@@ -575,13 +575,18 @@ export default function ChatTerminal() {
                       ? text
                       : <StreamText text={text} />
                     }
-                    {/* Render tool invocations */}
-                    {(m as any).toolInvocations?.map((toolInvocation: any) => {
-                      if (toolInvocation.toolName === 'show_courtsense_demo' && 'result' in toolInvocation) {
+                    {/* Render tool invocations directly without waiting for a server result */}
+                    {((m as any).toolInvocations || []).map((toolInvocation: any) => {
+                      if (toolInvocation.toolName === 'show_courtsense_demo') {
                         return <CourtSenseDemo key={toolInvocation.toolCallId} />
                       }
-                      if (toolInvocation.toolName === 'show_courtsense_demo' && !('result' in toolInvocation)) {
-                        return <div key={toolInvocation.toolCallId} className="apex-thinking" style={{marginTop: 10}}><Loader2 size={14} className="animate-spin"/> Launching 3D Demo...</div>
+                      return null
+                    })}
+                    
+                    {/* Fallback check in case tool invocations are inside the parts array (AI SDK v3 changes) */}
+                    {((m as any).parts || []).map((part: any) => {
+                      if (part.type === 'tool-invocation' && part.toolInvocation?.toolName === 'show_courtsense_demo') {
+                        return <CourtSenseDemo key={part.toolInvocation.toolCallId} />
                       }
                       return null
                     })}
