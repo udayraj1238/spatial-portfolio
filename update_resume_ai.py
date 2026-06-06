@@ -420,41 +420,20 @@ def extract_pdf(path: str) -> str:
 
 # ── LinkedIn Fetch ────────────────────────────────────────────────────────────
 def fetch_linkedin(url: str) -> str:
-    if not url:
-        return ""
-    try:
-        headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/124.0.0.0 Safari/537.36"
-            ),
-            "Accept-Language": "en-US,en;q=0.9",
-        }
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            html = resp.read().decode("utf-8", errors="ignore")
-        text = re.sub(r"<style[^>]*>.*?</style>", " ", html, flags=re.DOTALL)
-        text = re.sub(r"<script[^>]*>.*?</script>", " ", text, flags=re.DOTALL)
-        text = re.sub(r"<[^>]+>", " ", text)
-        text = re.sub(r"\s+", " ", text).strip()
-        idx = max(text.find("Uday"), text.find("IIITDM"), 0)
-        snippet = text[max(0, idx - 100): idx + 2500]
-        if len(snippet) > 200:
-            print(f"   [OK] LinkedIn fetched ({len(snippet)} chars).")
-            return snippet
-    except Exception as e:
-        print(f"   [WARN] LinkedIn blocked ({e}). Using manual data.")
-
-    return """
-LinkedIn: Uday Raj | https://www.linkedin.com/in/uday6002/
-Headline: AI & Data Science Engineer | Adversarial ML Researcher | B.Tech IIITDM Kurnool
-Education: IIITDM Kurnool | B.Tech AI & Data Science | 8.38 CGPA | 2024-2028
-           DPS Sushant Lok Gurugram | 95% PCM | 2022-2024
-Skills: PyTorch, TensorFlow, SegFormer, Vision-Language Models, Adversarial ML,
-        LangGraph, RAG, OpenCV, TensorRT, YOLOv8, Docker, Python, C++
-Achievements: Shell.ai Top 20/1000+ | AWS Ascend 176th/7000+ | CF:1208 | CC:1512
-"""
+    # Instead of scraping (which LinkedIn blocks), we read from linkedin_data.txt
+    data_path = os.path.join(PORTFOLIO_DIR, "linkedin_data.txt")
+    if os.path.exists(data_path):
+        try:
+            with open(data_path, "r", encoding="utf-8") as f:
+                content = f.read().strip()
+                print(f"   [OK] LinkedIn data read from file ({len(content)} chars).")
+                return content
+        except Exception as e:
+            print(f"   [WARN] Could not read linkedin_data.txt: {e}")
+    else:
+        print(f"   [WARN] linkedin_data.txt not found at {data_path}.")
+    
+    return "LinkedIn data unavailable. Please populate linkedin_data.txt."
 
 
 # ── Knowledge File Builder ────────────────────────────────────────────────────

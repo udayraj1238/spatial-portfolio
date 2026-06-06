@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-06-06 16:29
+  Last Updated: 2026-06-06 16:56
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -136,15 +136,156 @@ Computer Vision Coordinator Aug 2025 - Present
 TensorRT targets of 30+ FPS.
 
 == SECTION 2: LINKEDIN ==
+================================================================
+  UDAY RAJ — LINKEDIN PROFILE DATA
+  URL: https://www.linkedin.com/in/uday6002/
+  Last Updated: June 2026
+  (Update this file whenever your LinkedIn changes, then push to git)
+================================================================
 
-LinkedIn: Uday Raj | https://www.linkedin.com/in/uday6002/
-Headline: AI & Data Science Engineer | Adversarial ML Researcher | B.Tech IIITDM Kurnool
-Education: IIITDM Kurnool | B.Tech AI & Data Science | 8.38 CGPA | 2024-2028
-           DPS Sushant Lok Gurugram | 95% PCM | 2022-2024
-Skills: PyTorch, TensorFlow, SegFormer, Vision-Language Models, Adversarial ML,
-        LangGraph, RAG, OpenCV, TensorRT, YOLOv8, Docker, Python, C++
-Achievements: Shell.ai Top 20/1000+ | AWS Ascend 176th/7000+ | CF:1208 | CC:1512
+HEADLINE:
+AI & Computer Vision Engineer | PyTorch · YOLOv8 · Transformers · SegFormer | Ex-Research Intern @ SVNIT | Open to ML/CV Roles | IIITDM Kurnool
 
+OPEN TO WORK:
+Currently open to: ML Engineer, Computer Vision Engineer, AI Research roles
+
+================================================================
+ABOUT / SUMMARY
+================================================================
+I build AI systems that work — from adversarial machine learning research to real-time computer vision pipelines deployed with FastAPI and Docker.
+
+Most recently, I completed a Research Internship at SVNIT Surat (Sardar Vallabhbhai National Institute of Technology), where I worked on adversarial robustness research in transformer-based computer vision systems under Dr. Praveen Kumar Chandaliya. I designed and evaluated adversarial attacks on deep learning models used in real-world vision tasks — exploring how these systems can be made more robust and secure. Paper currently under review.
+
+On the project side:
+- Built CourtSense AI — an end-to-end sports CV pipeline that converts tennis match videos into 150-frame interactive 3D replays using YOLOv8-Pose, SegFormer-B2, OpenCV homography, and Kalman filtering, served through a FastAPI backend and a React/Three.js frontend.
+- Implemented PaliGemma (Google's Vision-Language Model) entirely from scratch in PyTorch — 12-layer SigLIP vision transformer, Gemma decoder, multimodal projector, grouped KV attention, RoPE, KV-cache — the full architecture with 8192-token context support.
+- Built a Cognitive Engine for Grid07 using LangGraph orchestration, RAG combat pipelines, and multi-layered prompt injection defense.
+
+Stack: Python, PyTorch, TensorFlow, OpenCV, YOLOv8, SegFormer, SigLIP, Transformers, FastAPI, Docker, CUDA, React.
+
+Achievements:
+- Global Top 20 in the Shell.ai Hackathon (1000+ submissions)
+- Ranked 176th out of 7000+ in the AWS x Zelestra ML Ascend Hackathon
+- 3-star rating (1630) on CodeChef, 100+ DSA problems on LeetCode & Code360
+
+As ML Coordinator at Google Developer Groups, led a 12-week bootcamp training 200+ students on SGD, CNNs, and Kaggle workflows.
+
+================================================================
+EXPERIENCE
+================================================================
+
+RESEARCH INTERNSHIP — SVNIT Surat (Sardar Vallabhbhai National Institute of Technology)
+Under: Dr. Praveen Kumar Chandaliya
+Topic: Adversarial robustness of transformer-based computer vision systems
+- Designed and evaluated adversarial attack strategies on vision transformer architectures
+- Evaluated across standard benchmarks (Market-1501) using PyTorch and SegFormer
+- Paper currently under review — code and detailed results to be released upon publication
+Duration: Nov 2025 – Present
+
+MACHINE LEARNING COORDINATOR — Google Developer Groups (GDG) On Campus
+Part-time | Aug 2025 – Present | Kurnool, Andhra Pradesh
+- Designed and conducted a 12-week ML bootcamp for 200+ students covering SGD, CNNs, data preprocessing, and end-to-end Kaggle competition workflows
+- Mentored 15+ student project teams through the complete ML pipeline — from data collection and feature engineering to model training, evaluation, and deployment
+- Created hands-on workshop materials on PyTorch fundamentals, transfer learning, and model optimization techniques
+
+COMPUTER VISION COORDINATOR — DataWorks Club IIITDM Kurnool
+Part-time | Aug 2025 – Present | Kurnool, Andhra Pradesh
+- Mentored 100+ members through hands-on OpenCV and PyTorch workshops focused on building real-time computer vision pipelines
+- Led workshops on YOLOv8 object detection, achieving TensorRT inference optimization targets of 30+ FPS on real-time video streams
+- Built and delivered curriculum covering image processing, feature extraction, pose estimation, and model deployment with Docker
+
+================================================================
+EDUCATION
+================================================================
+
+IIITDM Kurnool — B.Tech, Artificial Intelligence and Data Science
+Jul 2024 – May 2028 | CGPA: 8.38/10
+Activities: ML Coordinator (GDG), CV Coordinator (DataWorks Club)
+Achievements: Global Top 20 Shell.ai Hackathon, 176th/7000+ AWS Hackathon
+Coursework: Machine Learning, Deep Learning, Computer Vision, AI, DSA, Statistical Analysis, Discrete Mathematics
+
+Delhi Public School, Sushant Lok (DPS Gurugram)
+High School | Physics, Chemistry, Mathematics | Grade: 95%
+Mar 2022 – Mar 2024
+Competitive Programming: CodeChef 3-star (1630 rating), 100+ LeetCode/Code360 problems
+
+================================================================
+PROJECTS
+================================================================
+
+ADVERSARIAL ROBUSTNESS RESEARCH — Transformer-based CV Systems
+Nov 2025 – Present | SVNIT Surat Internship
+Research on adversarial robustness conducted under Dr. Praveen Kumar Chandaliya.
+Designed adversarial attack strategies on SegFormer and ViT architectures on Market-1501.
+Paper under review — code to be released on publication.
+
+APEX AI — AI-Powered Portfolio with Custom Chatbot
+May 2026 | https://udayraj1238.vercel.app
+Interactive AI-powered portfolio with APEX chatbot trained on resume, GitHub repos, and research.
+Built with Next.js, TypeScript, powered by Groq LLaMA 3.3 70B / DeepSeek R1.
+Features sci-fi terminal UI, live GitHub sync, markdown rendering, semantic search.
+
+COURTSENSE AI — 3D Tennis Analytics Engine
+Mar 2026 – May 2026 | https://github.com/udayraj1238/CourtSense-AI
+End-to-end sports CV pipeline: raw tennis videos → interactive 150-frame 3D replays.
+- YOLOv8-Pose: 17-keypoint skeleton extraction per frame
+- SegFormer-B2: court surface segmentation
+- OpenCV homography: 2D video → 3D court coordinate mapping
+- HSV + YOLO dual-method ball tracking
+- Kalman filtering + EMA smoothing (alpha=0.3): reduced 3D keypoint jitter by ~70%
+- Magnus-effect correction: physics-accurate speed (km/h) and spin (rpm) estimation
+- FastAPI backend + React/Three.js 3D visualization frontend
+- 100% client-side video processing with MediaPipe PoseLandmarker
+Demo: https://lnkd.in/gWEWpEij
+
+PALIGEMMA — Vision-Language Model from Scratch in PyTorch
+Dec 2025 | https://github.com/udayraj1238/Pytorch_PaliGemma
+Complete from-scratch PyTorch implementation of Google's PaliGemma VLM:
+- 12-layer SigLIP vision transformer with 16×16 patch embeddings (196 visual tokens)
+- Gemma language decoder
+- 768-to-2048 multimodal projector
+- RMSNorm, Rotary Position Embeddings (RoPE)
+- Grouped KV attention, KV-cache for efficient autoregressive generation
+- Causal masking, 8192-token context windows
+- No HuggingFace, no pre-built modules — pure PyTorch
+
+================================================================
+SKILLS
+================================================================
+Python, PyTorch, TensorFlow, Machine Learning, Computer Vision, Adversarial ML,
+SegFormer, YOLOv8, OpenCV, SigLIP, Transformers, Deep Learning, NLP,
+FastAPI, Docker, CUDA, React, NumPy, Pandas, Scikit-Learn, Git, Linux,
+CNN, GANs, LangGraph, RAG, Data Structures, C++
+
+================================================================
+RECENT LINKEDIN POSTS (reflecting personality & learning style)
+================================================================
+
+POST 1 (1 day ago — EY Biodiversity Challenge):
+"I climbed to #2 on the public leaderboard... and then finished 26th. Here is what happened."
+Key takeaways shared:
+1. Public LB score ≠ Model quality — dangerous false sense of security
+2. Row probing is risky — boosts public rank but destroys private generalization
+3. Diversify final submissions — don't choose two nearly identical files
+4. Trust your CV — robust cross-validation matters infinitely more than leaderboard chasing
+"Never let the public leaderboard become your training set."
+[25 reactions, 849 impressions]
+
+POST 2 (6 days ago — CodeChef 3-star):
+"I just hit the 3-Star rating on CodeChef (Rating: 1630)!"
+"Building AI systems requires solid engineering fundamentals, and CP has been the perfect training ground."
+[42 reactions, 1,102 impressions]
+
+POST 3 (1 week ago — CourtSense AI):
+"I built a computer vision pipeline that turns tennis match videos into interactive 3D replays — and deployed it live."
+"Combining classical methods (Kalman filter, homography, EMA smoothing) with modern deep learning models gave dramatically better results than trying to solve everything with a single neural network. The Kalman + EMA combo alone reduced 3D keypoint jitter by ~70%."
+[50 reactions, 1,333 impressions]
+
+================================================================
+END OF LINKEDIN DATA
+Update this file and push to git whenever your LinkedIn changes.
+The GitHub Actions workflow will automatically rebuild the AI brain.
+================================================================
 
 == SECTION 3: GITHUB - DEEP CODE ANALYSIS ==
 (The following is extracted directly from actual source code in each repository.
