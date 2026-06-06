@@ -273,7 +273,7 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
 
     // --- LEVEL 4: RECRUITER ANALYTICS ---
     // Log the user's latest query to Supabase (non-blocking)
-    const latestUserMessage = coreMessages.filter(m => m.role === 'user').pop();
+    const latestUserMessage = coreMessages.filter((m: { role: string; content: string }) => m.role === 'user').pop();
     if (latestUserMessage && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
       const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
       // We don't await this so it doesn't block the chat response
