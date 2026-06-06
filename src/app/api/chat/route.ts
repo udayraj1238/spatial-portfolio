@@ -269,26 +269,15 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
       return { role: m.role as 'user' | 'assistant', content: text };
     });
 
-    // Primary: DeepSeek R1 (reasoning model — thinks before answering)
-    // Fallback: LLaMA 3.3 70B (always reliable)
-    // DeepSeek R1 occasionally returns empty output (known issue with reasoning models)
-    // — the catch block automatically retries with LLaMA so the user always gets an answer.
-    try {
-      const result = streamText({
-        model: groq('deepseek-r1-distill-llama-70b'),
-        system: SYSTEM_PROMPT,
-        messages: coreMessages,
-      });
-      return result.toUIMessageStreamResponse();
-    } catch (modelErr) {
-      console.warn('[APEX] DeepSeek R1 failed, falling back to LLaMA 3.3 70B:', modelErr);
-      const result = streamText({
-        model: groq('llama-3.3-70b-versatile'),
-        system: SYSTEM_PROMPT,
-        messages: coreMessages,
-      });
-      return result.toUIMessageStreamResponse();
-    }
+    // We are using LLaMA 3.3 70B as the primary model.
+    // It is highly stable, extremely fast, and handles the 67k character context window flawlessly.
+    const result = streamText({
+      model: groq('llama-3.3-70b-versatile'),
+      system: SYSTEM_PROMPT,
+      messages: coreMessages,
+    });
+    
+    return result.toUIMessageStreamResponse();
 
   } catch (err) {
     console.error('[APEX] Route error:', err);
