@@ -289,18 +289,14 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
       system: SYSTEM_PROMPT,
       messages: coreMessages,
       tools: {
-        show_courtsense_demo: tool({
+        show_courtsense_demo: {
           description: 'Show an interactive 3D demo or video component of CourtSense AI when the user explicitly asks to see, view, or watch a demo of it.',
-          parameters: z.object({}),
-          execute: async () => ({
-            success: true,
-            component: 'CourtSenseDemo'
-          })
-        })
+          parameters: z.object({ trigger: z.boolean().optional() }),
+        } as any
       }
     });
     
-    return result.toUIMessageStreamResponse();
+    return result.toDataStreamResponse();
 
   } catch (err) {
     console.error('[APEX] Route error:', err);
