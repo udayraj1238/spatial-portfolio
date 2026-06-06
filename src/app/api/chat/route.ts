@@ -289,10 +289,11 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
       system: SYSTEM_PROMPT,
       messages: coreMessages,
       tools: {
-        show_courtsense_demo: {
+        show_courtsense_demo: tool({
           description: 'Show an interactive 3D demo or video component of CourtSense AI when the user explicitly asks to see, view, or watch a demo of it.',
           parameters: z.object({ trigger: z.boolean().optional() }),
-        } as any
+          execute: async () => 'Rendering CourtSense 3D Demo component on client UI'
+        })
       }
     });
     
