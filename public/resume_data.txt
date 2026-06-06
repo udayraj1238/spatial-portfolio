@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-06-06 11:32
+  Last Updated: 2026-06-06 19:52
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -399,6 +399,30 @@ import type { NextConfig } from "next";
 FUNCTIONS/COMPONENTS:
 const nextConfig: NextConfig = {
 
+--- File: scripts/ingest.js ---
+FUNCTIONS/COMPONENTS:
+const fs = require('fs');
+const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+async function getEmbedding(text) {
+const { pipeline } = await import('@xenova/transformers');
+const result = await pipelineInstance(text, { pooling: 'mean', normalize: true });
+function chunkText(text, maxChars = 1000) {
+const paragraphs = text.split(/\r?\n\r?\n/);
+const chunks = [];
+async function main() {
+const dataPath = path.join(__dirname, '..', 'public', 'resume_data.txt');
+const text = fs.readFileSync(dataPath, 'utf-8');
+
+CODE COMMENTS:
+// We use a singleton pattern for the pipeline
+// Simple chunking logic: split by double newlines, group up to ~1000 characters
+// Clear existing knowledge base
+// Embed and insert each chunk
+
 --- File: src/app/layout.tsx ---
 IMPORTS:
 import type { Metadata } from "next";
@@ -423,7 +447,7 @@ export default function Home() {
 --- File: src/components/ChatTerminal.tsx ---
 IMPORTS:
 import { useChat } from '@ai-sdk/react'
-import { Sparkles, Send, Loader2, ChevronRight, Cpu, Zap, Brain, User } from 'lucide-react'
+import { Sparkles, Send, Loader2, ChevronRight, Cpu, Zap, Brain, User, Mic, MicOff } from 'lucide-react'
 import { useRef, useEffect, useState, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
 
@@ -432,26 +456,29 @@ function stripThinkTags(text: string): string {
 const openIdx = result.indexOf('<think>')
 function StreamText({ text }: { text: string }) {
 const clean = stripThinkTags(text)
+function CourtSenseDemo() {
 const QUICK_PROMPTS = [
 export default function ChatTerminal() {
+const [isVoiceMode, setIsVoiceMode] = useState(false)
+const isVoiceModeRef = useRef(false)
+const [isListening, setIsListening] = useState(false)
+const speak = useCallback((text: string) => {
+const utterance = new SpeechSynthesisUtterance(text)
+const voices = window.speechSynthesis.getVoices()
+const preferredVoice = voices.find(v => v.name.includes('Google') || v.name.includes('Premium')) || voices[0]
 const { messages, sendMessage, status, error } = useChat({
-const [input, setInput] = useState('')
-const [isFocused, setIsFocused] = useState(false)
-const scrollRef = useRef<HTMLDivElement>(null)
-const inputRef = useRef<HTMLInputElement>(null)
-const isLoading = status === 'submitted' || status === 'streaming'
-const hasMessages = messages.length > 0
-const handleSend = useCallback((content: string) => {
-const getText = (m: any) =>
 
 CODE COMMENTS:
 // ─── Strip DeepSeek R1 <think> reasoning blocks ──────────────────────────────
 // Remove complete <think>...</think> blocks
 // If a <think> block is still open (streaming), hide everything from <think> onward
 // ─── Direct Text Renderer ─────────────────────────────────────────────────────
+// ─── Interactive UI Components ────────────────────────────────────────────────
 // ─── Quick Prompt Chips ──────────────────────────────────────────────────────
 // ─── Main Component ──────────────────────────────────────────────────────────
-// Auto-scroll on new messages
+// Voice Synthesis (Text-to-Speech)
+// Try to find a good English voice
+// Keep ref in sync for useChat callback
 
 --- File: src/data/knowledge.ts ---
 FUNCTIONS/COMPONENTS:
@@ -468,28 +495,7 @@ IMPORTS:
 import tunnel from 'tunnel-rat'
 
 FUNCTIONS/COMPONENTS:
-export const r3f = tunnel()
-
---- File: src/app/api/chat/route.ts ---
-IMPORTS:
-import { groq } from '@ai-sdk/groq';
-import { streamText } from 'ai';
-
-FUNCTIONS/COMPONENTS:
-export const runtime = 'edge';
-const CACHE_TTL = 10 * 60 * 1000;
-async function getExtraContext(): Promise<string> {
-const now = Date.now();
-const res = await fetch('https://udayraj1238.vercel.app/resume_data.txt', {
-const raw = await res.text();
-export async function POST(req: Request) {
-const body = await req.json();
-const extraContext = await getExtraContext();
-const SYSTEM_PROMPT = `You are APEX — the AI portfolio assistant for Uday Raj.
-
-CODE COMMENTS:
-// ─── Cache for supplementary resume context ───────────────────────────────────
-// ─── Route Handler ─────────────────────────────────────────────────────────────============================================================
+export const r3f = tunnel()============================================================
 === REPO: CourtSense-AI ===
 URL: https://github.com/udayraj1238/CourtSense-AI
 Description: End-to-end sports CV pipeline: tennis videos to interactive 3D replays with speed and spin stats. YOLOv8-Pose, SegFormer-B2, OpenCV, FastAPI, React, Three.js
