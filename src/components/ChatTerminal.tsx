@@ -576,7 +576,7 @@ export default function ChatTerminal() {
                       : <StreamText text={text} />
                     }
                     {/* Render tool invocations */}
-                    {m.toolInvocations?.map((toolInvocation: any) => {
+                    {(m as any).toolInvocations?.map((toolInvocation: any) => {
                       if (toolInvocation.toolName === 'show_courtsense_demo' && 'result' in toolInvocation) {
                         return <CourtSenseDemo key={toolInvocation.toolCallId} />
                       }
