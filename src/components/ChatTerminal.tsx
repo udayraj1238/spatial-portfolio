@@ -1,7 +1,7 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import { Sparkles, Send, Loader2, ChevronRight, Cpu, Zap, Brain, User } from 'lucide-react'
+import { Sparkles, Send, Loader2, ChevronRight, Cpu, Zap, Brain, User, Mic, MicOff } from 'lucide-react'
 import { useRef, useEffect, useState, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
 
@@ -25,6 +25,29 @@ function StreamText({ text }: { text: string }) {
   )
 }
 
+// ─── Interactive UI Components ────────────────────────────────────────────────
+function CourtSenseDemo() {
+  return (
+    <div style={{ marginTop: 12, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,240,255,0.3)', background: '#000' }}>
+      <div style={{ padding: '8px 12px', background: 'rgba(0,240,255,0.1)', fontSize: '0.8rem', color: '#00f0ff', display: 'flex', justifyContent: 'space-between' }}>
+        <span>COURTSENSE AI // 3D INTERACTIVE DEMO</span>
+        <span>LIVE</span>
+      </div>
+      <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+        <iframe 
+          src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1" 
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+          allow="autoplay; encrypted-media"
+          title="CourtSense Demo"
+        />
+      </div>
+      <div style={{ padding: 12, fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>
+        Rendered via AI Tool Call • Full 3D Physics & Homography engine active.
+      </div>
+    </div>
+  )
+}
+
 
 // ─── Quick Prompt Chips ──────────────────────────────────────────────────────
 const QUICK_PROMPTS = [
@@ -38,8 +61,31 @@ const QUICK_PROMPTS = [
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 export default function ChatTerminal() {
+  const [isVoiceMode, setIsVoiceMode] = useState(false)
+  const isVoiceModeRef = useRef(false)
+  const [isListening, setIsListening] = useState(false)
+  
+  // Voice Synthesis (Text-to-Speech)
+  const speak = useCallback((text: string) => {
+    if (!window.speechSynthesis) return
+    window.speechSynthesis.cancel() // Stop any current speech
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.rate = 1.05
+    utterance.pitch = 1.0
+    // Try to find a good English voice
+    const voices = window.speechSynthesis.getVoices()
+    const preferredVoice = voices.find(v => v.name.includes('Google') || v.name.includes('Premium')) || voices[0]
+    if (preferredVoice) utterance.voice = preferredVoice
+    window.speechSynthesis.speak(utterance)
+  }, [])
+
   const { messages, sendMessage, status, error } = useChat({
     onError: (e) => console.error('[APEX]', e),
+    onFinish: (message) => {
+      if (isVoiceModeRef.current && message.content) {
+        speak(stripThinkTags(message.content))
+      }
+    }
   })
   const [input, setInput] = useState('')
   const [isFocused, setIsFocused] = useState(false)
@@ -47,6 +93,66 @@ export default function ChatTerminal() {
   const inputRef = useRef<HTMLInputElement>(null)
   const isLoading = status === 'submitted' || status === 'streaming'
   const hasMessages = messages.length > 0
+
+  // Keep ref in sync for useChat callback
+  useEffect(() => {
+    isVoiceModeRef.current = isVoiceMode
+    if (!isVoiceMode) {
+      window.speechSynthesis?.cancel()
+      setIsListening(false)
+    }
+  }, [isVoiceMode])
+
+  // Voice Recognition (Speech-to-Text)
+  const toggleListening = useCallback(() => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('Voice recognition is not supported in this browser.')
+      return
+    }
+    
+    if (isListening) {
+      setIsListening(false)
+      return
+    }
+
+    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
+    const recognition = new SpeechRecognition()
+    recognition.continuous = false
+    recognition.interimResults = true
+    recognition.lang = 'en-US'
+
+    recognition.onstart = () => {
+      setIsListening(true)
+      setIsVoiceMode(true)
+    }
+
+    recognition.onresult = (event: any) => {
+      let interimTranscript = ''
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          const finalStr = event.results[i][0].transcript
+          setInput(finalStr)
+          // Auto-send when done talking
+          sendMessage({ text: finalStr })
+          setInput('')
+        } else {
+          interimTranscript += event.results[i][0].transcript
+          setInput(interimTranscript)
+        }
+      }
+    }
+
+    recognition.onerror = (e: any) => {
+      console.error('Speech recognition error', e.error)
+      setIsListening(false)
+    }
+
+    recognition.onend = () => {
+      setIsListening(false)
+    }
+
+    recognition.start()
+  }, [isListening, sendMessage])
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -59,7 +165,9 @@ export default function ChatTerminal() {
     if (!content.trim() || isLoading) return
     sendMessage({ text: content })
     setInput('')
-  }, [isLoading, sendMessage])
+    // If manually typing, disable voice output
+    if (isVoiceMode) setIsVoiceMode(false)
+  }, [isLoading, sendMessage, isVoiceMode])
 
   const getText = (m: any) =>
     m.parts?.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('\n') || m.content || ''
@@ -467,6 +575,16 @@ export default function ChatTerminal() {
                       ? text
                       : <StreamText text={text} />
                     }
+                    {/* Render tool invocations */}
+                    {m.toolInvocations?.map((toolInvocation: any) => {
+                      if (toolInvocation.toolName === 'show_courtsense_demo' && 'result' in toolInvocation) {
+                        return <CourtSenseDemo key={toolInvocation.toolCallId} />
+                      }
+                      if (toolInvocation.toolName === 'show_courtsense_demo' && !('result' in toolInvocation)) {
+                        return <div key={toolInvocation.toolCallId} className="apex-thinking" style={{marginTop: 10}}><Loader2 size={14} className="animate-spin"/> Launching 3D Demo...</div>
+                      }
+                      return null
+                    })}
                   </div>
                 </div>
               )
@@ -513,6 +631,15 @@ export default function ChatTerminal() {
                 disabled={isLoading}
               />
               <button
+                type="button"
+                onClick={toggleListening}
+                className={`apex-send ${isListening ? 'listening' : isVoiceMode ? 'voice-active' : 'inactive'}`}
+                title="Voice Mode"
+              >
+                {isListening ? <Loader2 size={18} color="#ff4444" style={{ animation: 'spin 1s linear infinite' }} /> : 
+                 isVoiceMode ? <Mic size={18} color="#00f0ff" /> : <MicOff size={18} color="rgba(255,255,255,0.3)" />}
+              </button>
+              <button
                 type="submit"
                 className={`apex-send ${input.trim() && !isLoading ? 'active' : 'inactive'}`}
                 disabled={!input.trim() || isLoading}
@@ -525,7 +652,7 @@ export default function ChatTerminal() {
             </div>
           </form>
           <p className="apex-hint">
-            Powered by <span>Groq · LLaMA 3.3 70B</span> · Trained on Uday's complete profile
+            Powered by <span>Groq · LLaMA 3.3 70B</span> · {isVoiceMode ? <span style={{color: '#00f0ff'}}>Voice Mode Active</span> : "Trained on Uday's complete profile"}
           </p>
         </div>
       </div>

@@ -1,5 +1,7 @@
 import { groq } from '@ai-sdk/groq';
-import { streamText } from 'ai';
+import { streamText, tool } from 'ai';
+import { z } from 'zod';
+import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'edge';
 
@@ -269,12 +271,33 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
       return { role: m.role as 'user' | 'assistant', content: text };
     });
 
+    // --- LEVEL 4: RECRUITER ANALYTICS ---
+    // Log the user's latest query to Supabase (non-blocking)
+    const latestUserMessage = coreMessages.filter(m => m.role === 'user').pop();
+    if (latestUserMessage && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+      // We don't await this so it doesn't block the chat response
+      supabase.from('recruiter_analytics').insert({ query: latestUserMessage.content }).then(({error}) => {
+        if(error) console.error("[Analytics Error]", error);
+      });
+    }
+
     // We are using LLaMA 3.3 70B as the primary model.
     // It is highly stable, extremely fast, and handles the 67k character context window flawlessly.
     const result = streamText({
       model: groq('llama-3.3-70b-versatile'),
       system: SYSTEM_PROMPT,
       messages: coreMessages,
+      tools: {
+        show_courtsense_demo: tool({
+          description: 'Show an interactive 3D demo or video component of CourtSense AI when the user explicitly asks to see, view, or watch a demo of it.',
+          parameters: z.object({}),
+          execute: async () => ({
+            success: true,
+            component: 'CourtSenseDemo'
+          })
+        })
+      }
     });
     
     return result.toUIMessageStreamResponse();
