@@ -30,18 +30,19 @@ LINKEDIN_URL  = "https://www.linkedin.com/in/uday6002/"
 # Option B: Add to Portfolio/.env.local (already gitignored):
 #   GITHUB_TOKEN=ghp_yourtoken
 def _read_token() -> str:
-    # 1. Try environment variable
-    tok = os.environ.get("GITHUB_TOKEN", "")
-    if tok:
-        return tok
-    # 2. Try .env.local (gitignored — safe to store secrets there)
+    # 1. Try .env.local FIRST (user's personal token takes priority)
     env_path = os.path.join(PORTFOLIO_DIR, ".env.local")
     if os.path.exists(env_path):
-        with open(env_path, encoding="utf-8") as f:
+        with open(env_path, encoding="utf-8-sig") as f:
             for line in f:
+                line = line.strip()
                 if line.startswith("GITHUB_TOKEN="):
-                    return line.split("=", 1)[1].strip()
-    return ""
+                    val = line.split("=", 1)[1].strip()
+                    if val and val != "PASTE_YOUR_NEW_TOKEN_HERE":
+                        return val
+    # 2. Fall back to environment variable
+    tok = os.environ.get("GITHUB_TOKEN", "").strip()
+    return tok
 
 GITHUB_TOKEN = _read_token()
 
@@ -374,15 +375,47 @@ def extract_pdf(path: str) -> str:
     if not os.path.exists(path):
         print(f"[ERR] File not found: {path}")
         print(f"   -> Place resume at: {path}")
-        sys.exit(1)
-    print(f"[READ] PDF: {path}")
+        return ""
+    print(f"[READ] PDF: {path} ({os.path.getsize(path):,} bytes)")
+
     text = ""
-    with pdfplumber.open(path) as pdf:
-        for page in pdf.pages:
-            extracted = page.extract_text()
-            if extracted:
-                text += extracted + "\n"
-    return text.strip()
+
+    # Method 1: PyMuPDF (handles more PDF types)
+    try:
+        import fitz
+        doc = fitz.open(path)
+        if doc.page_count > 0:
+            for page in doc:
+                t = page.get_text()
+                if t:
+                    text += t + "\n"
+            doc.close()
+            if text.strip():
+                print(f"   [OK] PyMuPDF extracted {len(text)} chars from {doc.page_count} pages.")
+                return text.strip()
+        else:
+            print(f"   [WARN] PyMuPDF: PDF has 0 pages (may be corrupted or image-only).")
+    except Exception as e:
+        print(f"   [WARN] PyMuPDF failed: {e}")
+
+    # Method 2: pdfplumber fallback
+    try:
+        with pdfplumber.open(path) as pdf:
+            for page in pdf.pages:
+                extracted = page.extract_text()
+                if extracted:
+                    text += extracted + "\n"
+        if text.strip():
+            print(f"   [OK] pdfplumber extracted {len(text)} chars.")
+            return text.strip()
+    except Exception as e:
+        print(f"   [WARN] pdfplumber failed: {e}")
+
+    print("   [ERR] Could not extract text from PDF.")
+    print("         Your resume PDF appears to be image-based or corrupted.")
+    print("         FIX: Open your resume in Word/Google Docs -> Export as PDF (not scan/print to PDF)")
+    print("         The AI brain will use GitHub + hardcoded data for now.")
+    return ""
 
 
 # ── LinkedIn Fetch ────────────────────────────────────────────────────────────

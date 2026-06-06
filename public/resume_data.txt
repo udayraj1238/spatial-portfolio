@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-05-15 17:34
+  Last Updated: 2026-06-06 16:26
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -22,4 +22,1265 @@ Achievements: Shell.ai Top 20/1000+ | AWS Ascend 176th/7000+ | CF:1208 | CC:1512
 (The following is extracted directly from actual source code in each repository.
  This includes imports, classes, functions, docstrings, and architecture patterns.)
 
-GitHub unavailable.
+
+
+=== REPO: spatial-portfolio ===
+URL: https://github.com/udayraj1238/spatial-portfolio
+Description: AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
+Primary Language: TypeScript | Stars: 0
+
+CODE ANALYSIS (from actual source files):
+--- File: README.md ---
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+--- File: generate_sound.py ---
+IMPORTS (Libraries used):
+import wave
+import struct
+import math
+import os
+
+KEY CODE COMMENTS:
+  # Ensure public directory exists
+  # Sine wave with exponential decay
+
+--- File: update_resume_ai.py ---
+IMPORTS (Libraries used):
+import os, sys, re, json, base64, time
+import urllib.request, urllib.error
+import pdfplumber
+from datetime import datetime
+
+FUNCTIONS/METHODS:
+  def _read_token() -> str
+  def gh_api(endpoint: str) -> dict | list | None
+  def gh_file_content(owner: str, repo: str, path: str) -> str -- Fetch and decode a file's content from GitHub.
+  def extract_python_insights(code: str, filepath: str) -> str -- Extract meaningful technical info from Python code.
+
+KEY CONSTANTS/CONFIG:
+  PORTFOLIO_DIR = os.path.dirname(os.path.abspath(__file__))
+  RESUME_PDF    = os.path.join(PORTFOLIO_DIR, "resume_updated.pdf")
+  OUTPUT_TXT    = os.path.join(PORTFOLIO_DIR, "public", "resume_data.txt")
+  GITHUB_USER   = "udayraj1238"
+  LINKEDIN_URL  = "https://www.linkedin.com/in/uday6002/"
+  GITHUB_TOKEN = _read_token()
+  CODE_EXTS = {'.py', '.ts', '.tsx', '.js', '.jsx', '.md', '.ipynb', '.yaml', '.yml'}
+  SKIP_PATTERNS = {
+  MAX_FILES_PER_REPO = 12   # Max files to analyze per repo
+  MAX_CHARS_PER_FILE = 6000  # Max chars to read from each file
+
+KEY CODE COMMENTS:
+  # ── CONFIG ────────────────────────────────────────────────────────────────────
+  # ── GitHub Token (NEVER hardcode this — keep it out of git) ──────────────────
+  # Option A: Set env var in your terminal before running:
+  # PowerShell:  $env:GITHUB_TOKEN = "ghp_yourtoken"
+  # CMD:         set GITHUB_TOKEN=ghp_yourtoken
+  # Option B: Add to Portfolio/.env.local (already gitignored):
+  # GITHUB_TOKEN=ghp_yourtoken
+  # 1. Try environment variable
+  # 2. Try .env.local (gitignored — safe to store secrets there)
+  # Code extensions to analyze
+
+--- File: AGENTS.md ---
+<!-- BEGIN:nextjs-agent-rules -->
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+<!-- END:nextjs-agent-rules -->
+
+--- File: next.config.ts ---
+IMPORTS:
+import type { NextConfig } from "next";
+
+FUNCTIONS/COMPONENTS:
+const nextConfig: NextConfig = {
+
+--- File: src/app/layout.tsx ---
+IMPORTS:
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import Scene from "@/components/canvas/Scene";
+
+FUNCTIONS/COMPONENTS:
+const geistSans = Geist({
+const geistMono = Geist_Mono({
+export const metadata: Metadata = {
+export default function RootLayout({
+
+--- File: src/app/page.tsx ---
+IMPORTS:
+import HeroScene from "@/components/canvas/HeroScene";
+import ChatTerminal from "@/components/ChatTerminal";
+
+FUNCTIONS/COMPONENTS:
+export default function Home() {
+
+--- File: src/components/ChatTerminal.tsx ---
+IMPORTS:
+import { useChat } from '@ai-sdk/react'
+import { Sparkles, Send, Loader2, ChevronRight, Cpu, Zap, Brain, User } from 'lucide-react'
+import { useRef, useEffect, useState, useCallback } from 'react'
+import ReactMarkdown from 'react-markdown'
+
+FUNCTIONS/COMPONENTS:
+function stripThinkTags(text: string): string {
+const openIdx = result.indexOf('<think>')
+function StreamText({ text }: { text: string }) {
+const clean = stripThinkTags(text)
+const QUICK_PROMPTS = [
+export default function ChatTerminal() {
+const { messages, sendMessage, status, error } = useChat({
+const [input, setInput] = useState('')
+const [isFocused, setIsFocused] = useState(false)
+const scrollRef = useRef<HTMLDivElement>(null)
+const inputRef = useRef<HTMLInputElement>(null)
+const isLoading = status === 'submitted' || status === 'streaming'
+const hasMessages = messages.length > 0
+const handleSend = useCallback((content: string) => {
+const getText = (m: any) =>
+
+CODE COMMENTS:
+// ─── Strip DeepSeek R1 <think> reasoning blocks ──────────────────────────────
+// Remove complete <think>...</think> blocks
+// If a <think> block is still open (streaming), hide everything from <think> onward
+// ─── Direct Text Renderer ─────────────────────────────────────────────────────
+// ─── Quick Prompt Chips ──────────────────────────────────────────────────────
+// ─── Main Component ──────────────────────────────────────────────────────────
+// Auto-scroll on new messages
+
+--- File: src/data/knowledge.ts ---
+FUNCTIONS/COMPONENTS:
+export const APEX_KNOWLEDGE = {
+
+CODE COMMENTS:
+// ============================================================
+// APEX KNOWLEDGE BASE — Uday Raj's Complete Professional Profile
+// Auto-syncs with resume_data.txt for real-time accuracy
+// ============================================================
+
+--- File: src/helpers/tunnel.ts ---
+IMPORTS:
+import tunnel from 'tunnel-rat'
+
+FUNCTIONS/COMPONENTS:
+export const r3f = tunnel()
+
+--- File: src/app/api/chat/route.ts ---
+IMPORTS:
+import { groq } from '@ai-sdk/groq';
+import { streamText } from 'ai';
+
+FUNCTIONS/COMPONENTS:
+export const runtime = 'edge';
+const CACHE_TTL = 10 * 60 * 1000;
+async function getExtraContext(): Promise<string> {
+const now = Date.now();
+const res = await fetch('https://udayraj1238.vercel.app/resume_data.txt', {
+const raw = await res.text();
+export async function POST(req: Request) {
+const body = await req.json();
+const extraContext = await getExtraContext();
+const SYSTEM_PROMPT = `You are APEX — the AI portfolio assistant for Uday Raj.
+
+CODE COMMENTS:
+// ─── Cache for supplementary resume context ───────────────────────────────────
+// ─── Route Handler ─────────────────────────────────────────────────────────────============================================================
+=== REPO: CourtSense-AI ===
+URL: https://github.com/udayraj1238/CourtSense-AI
+Description: End-to-end sports CV pipeline: tennis videos to interactive 3D replays with speed and spin stats. YOLOv8-Pose, SegFormer-B2, OpenCV, FastAPI, React, Three.js
+Primary Language: Python | Stars: 0
+
+CODE ANALYSIS (from actual source files):
+--- File: backend/main.py ---
+IMPORTS (Libraries used):
+import json
+import os
+from contextlib import asynccontextmanager
+import numpy as np
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from backend.api.routes import health, jobs
+from backend.config import get_settings
+from backend.models.api import SequenceResponse
+from backend.models.tracking import BallState, Coordinate, FrameData, PlayerState
+from backend.services.job_manager import get_job_manager
+
+FUNCTIONS/METHODS:
+  async def lifespan(app: FastAPI)
+  def create_app() -> FastAPI
+  def get_mock_tracking_sequence()
+  def get_real_tracking_sequence()
+
+KEY CONSTANTS/CONFIG:
+  REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+KEY CODE COMMENTS:
+  # Legacy script path for /api/v1/tracking/real
+  # --- Legacy v1 endpoints (preserved for dev / HF backward compat) ---
+
+--- File: colab_backend.ipynb ---
+[NOTEBOOK DOC]: # CourtSense AI - Free Online Backend
+
+This notebook allows you to run the CourtSense AI backend for free using Google Colab's cloud servers.
+
+**Instructions:**
+1. In the menu, go to **Runtime > Change runtime type** and ensure Hardware accelerator is set to **T4 GPU** (or CPU if GPU is unavailable, though GPU is much faster for YOLOv8).
+2. Click the "Play" button on each cell below (or go to **Ru
+
+[CODE CELL 1]:
+# 1. Clone the repository and install requirements
+# We need this for OpenCV in colab
+
+[CODE CELL 2]:
+import urllib.request
+# 2. Run the FastAPI server in the background 
+# 3. Open Localtunnel endpoint (Copy the your url is: ... link!)
+
+--- File: README.md ---
+---
+title: CourtSense Backend
+emoji: 🎾
+colorFrom: green
+colorTo: blue
+sdk: docker
+app_port: 8000
+---
+<div align="center">
+
+<!-- Animated Header -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0D9488,50:06B6D4,100:3B82F6&height=220&section=header&text=CourtSense%20AI&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=3D%20Tennis%20Analytics%20Engine&descSize=18&descAlignY=55&descAlign=50" width="100%"/>
+
+<!-- Typing SVG -->
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=06B6D4&center=true&vCenter=true&width=600&lines=Tennis+Video+%E2%86%92+Interactive+3D+Replay;YOLOv8-Pose+%7C+SegFormer+%7C+Three.js;Real-time+Speed+%26+Spin+Analytics;150-Frame+Physics-Accurate+Replays" alt="Typing SVG" /></a>
+
+<br/>
+
+<!-- Badges Row 1 -->
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" />
+<img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
+<img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
+<img src="https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white" />
+<img src="https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" />
+
+<br/>
+
+<!-- Badges Row 2 -->
+<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
+<img src="https://img.shields.io/badge/MediaPipe-0097A7?style=for-the-badge&logo=google&logoColor=white" />
+
+<br/><br/>
+
+<!-- Stats Badges -->
+<img src="https://img.shields.io/badge/150%20Frames-Per%20Replay-0D9488?style=flat-square&labelColor=1a1a2e" />
+<img src="https://img.shields.io/badge/17%20Keypoints-Per%20Frame-06B6D4?style=flat-square&labelColor=1a1a2e" />
+<img src="https://img.shields.io/badge/~70%25%20Jitter-Reduction-3B82F6?style=flat-square&labelColor=1a1a2e" />
+<img src="https://img.shields.io/badge/±5%20km%2Fh-Speed%20Accuracy-8B5CF6?style=flat-square&labelColor=1a1a2e" />
+
+</div>
+
+---
+
+<div align="center">
+<h2>🎯 What It Does</h2>
+</div>
+
+<table>
+<tr>
+<td width="50%">
+
+### 📥 Input
+A raw tennis match video from **any camera angle** — broadcast footage, phone recording, or drone shot.
+
+</td>
+<td width="50%">
+
+### 📤 Output
+An **interactive 3D replay** you can rotate, zoom, and replay from any angle — with real-time **speed (km/h)** and **spin (rpm)** overlays.
+
+</td>
+</tr>
+</table>
+
+---
+
+<div align="center">
+<h2>🏗️ Architecture Pipeline</h2>
+</div>
+
+```mermaid
+graph TD
+    A[🎾 Tennis Match Video] --> B[YOLOv8-Pose]
+    A --> C[SegFormer-B2]
+    A --> D[HSV + YOLO]
+    
+    B -->|17 COCO Keypoints| E[OpenCV Homography]
+    C -->
+
+--- File: frontend/README.md ---
+# React + TypeScript + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+--- File: backend/config.py ---
+IMPORTS (Libraries used):
+from functools import lru_cache
+from pathlib import Path
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+CLASSES:
+  class Settings(BaseSettings):
+
+FUNCTIONS/METHODS:
+  def get_settings() -> Settings
+
+KEY CONSTANTS/CONFIG:
+  REPO_ROOT = Path(__file__).resolve().parent.parent
+
+KEY CODE COMMENTS:
+  # Stub pipeline simulates CV work (seconds). Set 0 for instant response in tests.
+
+--- File: backend/cv/ball_tracker.py ---
+IMPORTS (Libraries used):
+import cv2
+import numpy as np
+from typing import Dict, Any, Optional
+from ultralytics import YOLO
+from backend.cv.homography import CourtProjector
+
+CLASSES:
+  class BallTracker:
+
+FUNCTIONS/METHODS:
+  def __init__(self, model_path: str = "yolov8n.pt")
+  def detect_ball(self, frame: np.ndarray, projector: CourtProjector) -> Optional[Dict[str, float]] -- Detects the tennis ball in the frame and projects it to the 2D court ground plane (x, z). Note: The true height (y) is estimated in the pipeline stage, not here. Returns: {"x": float, "z": float, "conf": float, "u": float, "v": float} or None
+
+KEY CODE COMMENTS:
+  # We use a standard YOLOv8n model for V5.0.
+  # In COCO, class 32 is 'sports ball'.
+  # Get center of bounding box
+  # Project pixel to court ground plane (x, z)
+  # Court Bounds Filter: A ball can be out of bounds, but usually within a reasonable distance
+  # Sort by confidence and return the best one
+
+--- File: backend/cv/court_lines.py ---
+IMPORTS (Libraries used):
+from __future__ import annotations
+import cv2
+import numpy as np
+from backend.cv.errors import CalibrationError
+
+FUNCTIONS/METHODS:
+  def _resize(frame: np.ndarray, max_width: int = 1280) -> tuple[np.ndarray, float]
+  def _white_line_mask(bgr: np.ndarray) -> np.ndarray
+  def _line_angle(x1: float, y1: float, x2: float, y2: float) -> float
+  def _collect_segments(mask: np.ndarray) -> list[tuple[float, float, float, float]]
+  def _cluster_lines(
+  def _line_to_abc(x1: float, y1: float, x2: float, y2: float) -> tuple[float, float, float]
+  def _intersect(l1: tuple[float, float, float], l2: tuple[float, float, float]) -> np.ndarray | None
+  def _order_corners(pts: np.ndarray) -> np.ndarray -- Order 4 points as TL, TR, BR, BL.
+  def _pick_extreme_lines(
+  def detect_court_corners(frame: np.ndarray) -> np.ndarray -- Detect 4 court corners in pixel space (TL, TR, BR, BL). Raises CalibrationError if detection fails validation.
+  def extract_preview_frame(video_path: str, out_jpg: str, timestamp_sec: float = 0.5) -> np.ndarray -- Grab a BGR frame from video for calibration preview.
+
+KEY CODE COMMENTS:
+  # top = min y-midpoint, bottom = max y-midpoint
+
+--- File: backend/cv/errors.py ---
+CLASSES:
+  class CalibrationError(Exception):: Auto or manual court calibration failed.
+
+--- File: backend/cv/homography.py ---
+IMPORTS (Libraries used):
+from __future__ import annotations
+import json
+import cv2
+import numpy as np
+from backend.cv.errors import CalibrationError
+from backend.cv.court_lines import detect_court_corners
+
+CLASSES:
+  class CourtProjector:
+
+FUNCTIONS/METHODS:
+  def __init__(self, homography: np.ndarray)
+  def from_corners(cls, src_corners: np.ndarray) -> "CourtProjector" -- Build projector from 4 image corners (TL, TR, BR, BL).
+  def from_frame(cls, frame: np.ndarray) -> "CourtProjector"
+  def pixel_to_court(self, u: float, v: float) -> tuple[float, float] -- Returns (x, z) in meters on the ground plane.
+  def pixel_to_3d(self, u: float, v: float, y: float = 0.0) -> tuple[float, float, float]
+  def clamp_to_court(self, x: float, z: float) -> tuple[float, float]
+  def reprojection_error_px(self, src_corners: np.ndarray) -> float
+  def to_json(self) -> str
+  def from_json(cls, data: str) -> "CourtProjector"
+
+KEY CONSTANTS/CONFIG:
+  COURT_DST = np.array(
+
+KEY CODE COMMENTS:
+  # Destination court corners in meters (x, z): TL, TR, BR, BL============================================================
+=== REPO: Transformer_from_scratch_using_pytorch ===
+URL: https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch
+Description: From-scratch PyTorch implementation of the Transformer (Attention Is All You Need): multi-head attention, positional encoding, encoder-decoder
+Primary Language: Jupyter Notebook | Stars: 0
+
+CODE ANALYSIS (from actual source files):
+--- File: Transformer_from_scratch_using_pytorch/model.py ---
+IMPORTS (Libraries used):
+import torch
+import torch.nn as nn
+import math
+
+CLASSES:
+  class InputEmbeddings(nn.Module):
+  class PositionalEncoding(nn.Module):
+  class LayerNormalization(nn.Module):
+  class FeedForwardBlock(nn.Module):
+  class MultiHeadAttentionBlock(nn.Module):
+  class ResidualConnection(nn.Module):
+  class EncoderBlock(nn.Module):
+
+FUNCTIONS/METHODS:
+  def __init__(self , d_model: int , vocab_size: int)
+  def forward(self , x)
+  def __init__(self , d_model: int , seq_len: int, dropout: float) -> None
+  def forward(self , x)
+  def __init__(self , eps : float = 10**-6) -> None
+  def forward(self , x)
+  def __init__(self , d_model : int , d_ff : int , dropout : float) -> None
+  def forward(self , x)
+  def __init__(self, d_model: int, h: int, dropout: float) -> None
+  def attention(query, key, value, mask, dropout: nn.Dropout)
+  def forward(self, q, k, v, mask)
+  def __init__(self, features: int, dropout: float) -> None
+  def forward(self, x, sublayer)
+  def __init__(self, features: int, self_attention_block: MultiHeadAttentionBlock, feed_forward_block: FeedForwardBlock, dropout: float) -> None
+  def forward(self, x, src_mask)
+
+KEY CODE COMMENTS:
+  # create a matrix of shape (seq_len , d_model)
+  # create a vector of length (seq_len)
+  # Apply the sin to even positions
+  # (Batch , Seq_len , d_model) ---> (Batch , Seq_len , d_ff) ---> (batch , seq_len , d_model)
+  # Make sure d_model is divisible by h
+  # Just apply the formula from the paper
+  # (batch, h, seq_len, d_k) --> (batch, h, seq_len, seq_len)
+  # Write a very low value (indicating -inf) to the positions where mask == 0
+  # (batch, h, seq_len, seq_len) --> (batch, h, seq_len, d_k)
+  # return attention scores which can be used for visualization
+
+--- File: Transformer_from_scratch_using_pytorch/train.py ---
+IMPORTS (Libraries used):
+from model import build_transformer
+from dataset import BilingualDataset, causal_mask
+from config import get_config, get_weights_file_path, latest_weights_file_path
+import torch
+import torch.nn as nn
+from torch.utils.data import Dataset, DataLoader, random_split
+from torch.optim.lr_scheduler import LambdaLR
+import warnings
+from tqdm import tqdm
+import os
+from pathlib import Path
+from datasets import load_dataset
+from tokenizers import Tokenizer
+from tokenizers.models import WordLevel
+from tokenizers.trainers import WordLevelTrainer
+from tokenizers.pre_tokenizers import Whitespace
+import torchmetrics
+from torch.utils.tensorboard import SummaryWriter
+
+FUNCTIONS/METHODS:
+  def greedy_decode(model, source, source_mask, tokenizer_src, tokenizer_tgt, max_len, device)
+  def run_validation(model, validation_ds, tokenizer_src, tokenizer_tgt, max_len, device, print_msg, global_step, writer, num_examples=2)
+  def get_all_sentences(ds, lang)
+  def get_or_build_tokenizer(config, ds, lang)
+  def get_ds(config)
+
+KEY CODE COMMENTS:
+  # Huggingface datasets and tokenizers
+  # Precompute the encoder output and reuse it for every step
+  # Initialize the decoder input with the sos token
+  # build mask for target
+  # calculate output
+  # get the console window width
+  # If we can't get the console width, use 80 as default
+  # check that the batch size is 1
+  # Print the source, target and model output
+  # Evaluate the character error rate
+
+--- File: README.md ---
+<div align="center">
+
+<!-- Animated Header -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:F97316,50:EF4444,100:DC2626&height=220&section=header&text=Transformer&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Built%20from%20Scratch%20in%20PyTorch&descSize=18&descAlignY=55&descAlign=50" width="100%"/>
+
+<!-- Typing SVG -->
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=F97316&center=true&vCenter=true&width=700&lines=Attention+Is+All+You+Need+(2017);Multi-Head+Self-Attention;Positional+Encoding+%7C+Encoder-Decoder;No+nn.Transformer+%E2%80%94+Pure+PyTorch" alt="Typing SVG" /></a>
+
+<br/>
+
+<!-- Badges -->
+<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" />
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+
+<br/><br/>
+
+<!-- Paper Badge -->
+<a href="https://arxiv.org/abs/1706.03762"><img src="https://img.shields.io/badge/arXiv-1706.03762-b31b1b?style=flat-square&logo=arxiv&logoColor=white" /></a>
+<img src="https://img.shields.io/badge/Vaswani%20et%20al.-NeurIPS%202017-F97316?style=flat-square&labelColor=1a1a2e" />
+
+</div>
+
+---
+
+<div align="center">
+<h2>🎯 What This Is</h2>
+<p><i>A complete from-scratch PyTorch implementation of the original Transformer architecture.<br/>Every component — multi-head attention, positional encoding, encoder, decoder — written by hand without <code>nn.Transformer</code>.</i></p>
+</div>
+
+---
+
+<div align="center">
+<h2>🏗️ Architecture</h2>
+</div>
+
+```mermaid
+graph TD
+    subgraph Encoder["🔵 ENCODER (N layers)"]
+        A["Source Tokens"] --> AE["Embedding + Positional Encoding"]
+        AE --> SA["Multi-Head Self-Attention"]
+        SA --> AN1["Add & Norm"]
+        AN1 --> FF1["Feed-Forward Network"]
+        FF1 --> AN2["Add & Norm"]
+    end
+    
+    subgraph Decoder["🔴 DECODER (N layers)"]
+        B["Target Tokens"] --> BE["Embedding + Positional Encoding"]
+        BE --> MSA["Masked Self-Attention"]
+        MSA --> AN3["Add & Norm"]
+        AN3 --> CA["Cross-Attention"]
+        AN2 -->|"K, V"| CA
+        CA --> AN4["Add & Norm"]
+        AN4 --> FF2["Feed-Forward Network"]
+        FF2 --> AN5["Add & Norm"]
+    end
+    
+    AN5 --> LIN["Linear + Softmax"]
+    LIN --> OUT["📤 Output Tokens"]
+    
+    style A fill:#3B82F6,stroke:#3B82F6,color:#fff
+    style AE fill:#60A5FA,stroke:#60A5FA,color:#fff
+    style SA fill:#2563EB,stroke:#2563EB,color:#fff
+    style AN1 fill:#1D4ED8,stroke:#1D4ED8,color:#fff
+    style FF1 fill:#1E40AF,stroke:#1E40AF,color:#fff
+    style AN2 fill:#1D4ED8,stroke:#1D4ED8,color:#fff
+    style B fill:#EF4444,stroke:#EF4444,color:#fff
+    style BE fill:#F87171,stroke:#F87171,color:#fff
+    style MSA fill:#DC2626,stroke:#DC2626,color:#fff
+    style AN3 fill:#B91C1C,stroke:#B91C1C,color:#fff
+    style CA fill:#F97316,stroke:#F97316,color:#fff
+    style AN4 fill:#B91C1C,stroke:#
+
+--- File: Transformer_from_scratch_using_pytorch/config.py ---
+IMPORTS (Libraries used):
+from pathlib import Path
+
+FUNCTIONS/METHODS:
+  def get_config()
+  def get_weights_file_path(config, epoch: str)
+  def latest_weights_file_path(config)
+
+KEY CODE COMMENTS:
+  # Find the latest weights file in the weights folder
+
+--- File: Transformer_from_scratch_using_pytorch/dataset.py ---
+IMPORTS (Libraries used):
+import torch
+import torch.nn as nn
+from torch.utils.data import Dataset
+
+CLASSES:
+  class BilingualDataset(Dataset):
+
+FUNCTIONS/METHODS:
+  def __init__(self, ds, tokenizer_src, tokenizer_tgt, src_lang, tgt_lang, seq_len)
+  def __len__(self)
+  def __getitem__(self, idx)
+  def causal_mask(size)
+
+KEY CODE COMMENTS:
+  # Transform the text into tokens
+  # Add sos, eos and padding to each sentence
+  # We will only add <s>, and </s> only on the label
+  # Make sure the number of padding tokens is not negative. If it is, the sentence is too long
+  # Add <s> and </s> token
+  # Add only <s> token
+  # Add only </s> token
+  # Double check the size of the tensors to make sure they are all seq_len long============================================================
+=== REPO: udayraj1238 ===
+URL: https://github.com/udayraj1238/udayraj1238
+Description: My GitHub profile
+Primary Language: Unknown | Stars: 0
+
+CODE ANALYSIS (from actual source files):
+--- File: README.md ---
+<div align="center">
+
+<!-- Animated Header -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0D9488,25:06B6D4,50:3B82F6,75:8B5CF6,100:EC4899&height=220&section=header&text=Uday%20Raj&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=AI%20%26%20Computer%20Vision%20Engineer&descSize=20&descAlignY=55&descAlign=50" width="100%"/>
+
+<!-- Typing SVG -->
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&pause=1000&color=06B6D4&center=true&vCenter=true&width=800&lines=Building+intelligent+systems+from+research+to+production;Research+Intern+%40+SVNIT+Surat;From-scratch+VLMs+%7C+3D+Sports+Analytics+%7C+Adversarial+ML;B.Tech+AI+%26+Data+Science+%40+IIITDM+Kurnool" alt="Typing SVG" /></a>
+
+<br/>
+
+<!-- Social Badges -->
+<a href="https://www.linkedin.com/in/uday6002/"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" /></a>
+<a href="https://udayraj1238.vercel.app"><img src="https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=vercel&logoColor=white" /></a>
+<a href="mailto:rajuday6002@gmail.com"><img src="https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white" /></a>
+
+<br/>
+
+<!-- Visitor Counter -->
+<img src="https://komarev.com/ghpvc/?username=udayraj1238&style=flat-square&color=0D9488&label=Profile+Views" />
+
+</div>
+
+---
+
+<div align="center">
+<h2>🔬 What I'm Working On</h2>
+</div>
+
+<table>
+<tr>
+<td align="center" width="33%">
+<img src="https://img.shields.io/badge/🔬-Research_Intern-0D9488?style=for-the-badge&labelColor=1a1a2e" /><br/><br/>
+<b>SVNIT Surat</b><br/>
+Adversarial robustness research on transformer-based CV systems.<br/>Paper under review.
+</td>
+<td align="center" width="33%">
+<img src="https://img.shields.io/badge/🤖-ML_Coordinator-3B82F6?style=for-the-badge&labelColor=1a1a2e" /><br/><br/>
+<b>Google Developer Groups</b><br/>
+Led 12-week ML bootcamp for 200+ students.
+</td>
+<td align="center" width="33%">
+<img src="https://img.shields.io/badge/👁️-CV_Coordinator-8B5CF6?style=for-the-badge&labelColor=1a1a2e" /><br/><br/>
+<b>DataWorks Club</b><br/>
+Mentoring 100+ members on real-time CV pipelines.
+</td>
+</tr>
+</table>
+
+---
+
+<div align="center">
+<h2>🚀 Featured Projects</h2>
+</div>
+
+<table>
+<tr>
+<td width="50%">
+
+### [🎾 CourtSense AI](https://github.com/udayraj1238/CourtSense-AI)
+**3D Tennis Analytics Engine**
+
+Converts tennis videos into interactive 3D replays with real-time speed & spin stats.
+
+<img src="https://img.shields.io/badge/YOLOv8-FF6F00?style=flat-square" /> <img src="https://img.shields.io/badge/SegFormer-5C3EE8?style=flat-square" /> <img src="https://img.shields.io/badge/Three.js-000?style=flat-square" /> <img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square" /> <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square" />
+
+</td>
+<td width="50%">
+
+### [🧠 PaliGemma VLM](https://github.com/udayraj1238/Pyto============================================================
+=== REPO: grid07-cognitive-engine ===
+URL: https://github.com/udayraj1238/grid07-cognitive-engine
+Description: AI Cognitive Engine: Vector Routing, LangGraph Orchestration, RAG Combat Engine with Prompt Injection Defense
+Primary Language: Python | Stars: 0
+
+CODE ANALYSIS (from actual source files):
+--- File: main.py ---
+IMPORTS (Libraries used):
+import sys
+import time
+from rich.panel import Panel
+from rich import box
+from utils.logging_config import console, print_success, print_error, print_info
+from phase1_router import run_phase1_demo
+from phase2_content_engine import run_phase2_demo
+from phase3_combat_engine import run_phase3_demo
+
+FUNCTIONS/METHODS:
+  def print_banner() -- Print the Grid07 Cognitive Engine banner.
+  def main() -- Main entry point — runs selected or all phases.
+
+KEY CODE COMMENTS:
+  # Parse simple CLI flags
+  # ─── Phase 1: Vector-Based Persona Matching ─────────────
+  # ─── Phase 2: Autonomous Content Engine ─────────────────
+  # ─── Phase 3: Combat Engine ─────────────────────────────
+  # ─── Summary ────────────────────────────────────────────
+
+--- File: README.md ---
+<div align="center">
+
+<!-- Animated Header -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:06B6D4,50:0EA5E9,100:3B82F6&height=220&section=header&text=Grid07%20Cognitive%20Engine&fontSize=42&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=AI%20Routing%20%7C%20LangGraph%20%7C%20RAG%20%7C%20Prompt%20Defense&descSize=16&descAlignY=55&descAlign=50" width="100%"/>
+
+<!-- Typing SVG -->
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=0EA5E9&center=true&vCenter=true&width=650&lines=Vector+Semantic+Query+Routing;Multi-Agent+LangGraph+Orchestration;RAG+Combat+Engine;Multi-Layered+Prompt+Injection+Defense" alt="Typing SVG" /></a>
+
+<br/>
+
+<!-- Badges -->
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+<img src="https://img.shields.io/badge/LangChain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white" />
+<img src="https://img.shields.io/badge/LangGraph-FF6F00?style=for-the-badge&logo=graphql&logoColor=white" />
+<img src="https://img.shields.io/badge/RAG-8B5CF6?style=for-the-badge&logo=elasticsearch&logoColor=white" />
+
+</div>
+
+---
+
+<div align="center">
+<h2>🎯 What It Does</h2>
+<p><i>An intelligent AI backend that routes queries through semantic vectors, orchestrates multi-step reasoning, and retrieves context-aware responses — all secured against prompt injection attacks.</i></p>
+</div>
+
+---
+
+<div align="center">
+<h2>🏗️ Three-Phase Architecture</h2>
+</div>
+
+```mermaid
+graph TD
+    A["💬 User Query"] --> B["🛡️ Prompt Injection Shield"]
+    
+    B --> C["Phase 1: Router"]
+    
+    subgraph P1["🔵 Phase 1 — Semantic Router"]
+        C --> C1["Vector Embedding"]
+        C1 --> C2["Cosine Similarity"]
+        C2 --> C3["Intent Classification"]
+    end
+    
+    C3 --> D["Phase 2: Content Engine"]
+    
+    subgraph P2["🟣 Phase 2 — Content Engine"]
+        D --> D1["LangGraph State Machine"]
+        D1 --> D2["Multi-Agent Workflow"]
+        D2 --> D3["Conditional Branching"]
+    end
+    
+    D3 --> E["Phase 3: Combat Engine"]
+    
+    subgraph P3["🔴 Phase 3 — RAG Combat"]
+        E --> E1["Vector DB Retrieval"]
+        E1 --> E2["Context Injection"]
+        E2 --> E3["Grounded Generation"]
+    end
+    
+    E3 --> F["✅ Secure Response"]
+    
+    style A fill:#F59E0B,stroke:#F59E0B,color:#fff
+    style B fill:#EF4444,stroke:#EF4444,color:#fff
+    style C fill:#3B82F6,stroke:#3B82F6,color:#fff
+    style C1 fill:#60A5FA,stroke:#60A5FA,color:#fff
+    style C2 fill:#60A5FA,stroke:#60A5FA,color:#fff
+    style C3 fill:#60A5FA,stroke:#60A5FA,color:#fff
+    style D fill:#8B5CF6,stroke:#8B5CF6,color:#fff
+    style D1 fill:#A78BFA,stroke:#A78BFA,color:#fff
+    style D2 fill:#A78BFA,stroke:#A78BFA,color:#fff
+    style D3 fill:#A78BFA,stroke:#A78BFA,color:#fff
+    style E fill:#EF4444,stroke:#EF4444,color:#fff
+    style E1 fill:#F87171,stroke:#F87171,color:#fff
+    style E2 fill:#F87171,stroke:#F87171,color:
+
+--- File: config.py ---
+IMPORTS (Libraries used):
+import os
+from dotenv import load_dotenv
+
+KEY CONSTANTS/CONFIG:
+  GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+  GROQ_MODEL = "llama-3.3-70b-versatile"       # Best free-tier model for tool-calling
+  GROQ_TEMPERATURE = 0                           # Deterministic output for structured data
+  GROQ_MAX_TOKENS = 1024                         # Sufficient for 280-char posts + reasoning
+  VECTOR_COLLECTION_NAME = "bot_personas"
+  VECTOR_DISTANCE_METRIC = "cosine"              # ChromaDB uses cosine distance
+  DEFAULT_SIMILARITY_THRESHOLD = 0.15
+  CANARY_TOKEN = "GRID07-CANARY-Ξ7x9Ψ-DO-NOT-REPEAT"
+  INJECTION_PATTERNS = [
+
+KEY CODE COMMENTS:
+  # Load environment variables from .env file
+  # ─────────────────────────────────────────────
+  # LLM Configuration
+  # ─────────────────────────────────────────────
+  # ─────────────────────────────────────────────
+  # Vector Store Configuration
+  # ─────────────────────────────────────────────
+  # Default similarity threshold for persona matching.
+  # NOTE: The assignment specifies 0.85, but with the all-MiniLM-L6-v2 embedding model,
+  # semantically related texts typically score 0.1–0.6 cosine similarity. A threshold of
+
+--- File: personas.py ---
+IMPORTS (Libraries used):
+from dataclasses import dataclass
+
+CLASSES:
+  class BotPersona:: Immutable bot persona definition.
+
+KEY CONSTANTS/CONFIG:
+  BOT_A = BotPersona(
+  BOT_B = BotPersona(
+  BOT_C = BotPersona(
+  ALL_BOTS = [BOT_A, BOT_B, BOT_C]
+  BOT_REGISTRY = {bot.bot_id: bot for bot in ALL_BOTS}
+
+KEY CODE COMMENTS:
+  # ─────────────────────────────────────────────
+  # The Three Bot Personas (as specified in the assignment)
+  # ─────────────────────────────────────────────
+  # Registry for easy iteration
+
+--- File: phase1_router.py ---
+IMPORTS (Libraries used):
+from rich.panel import Panel
+from rich import box
+from utils.vector_store import PersonaVectorStore
+from utils.logging_config import (
+from config import DEFAULT_SIMILARITY_THRESHOLD
+
+FUNCTIONS/METHODS:
+  def route_post_to_bots(
+  def run_phase1_demo() -- Execute the full Phase 1 demonstration.  Routes multiple test posts through the persona matching system and displays detailed similarity breakdowns with Rich console formatting.
+
+KEY CODE COMMENTS:
+  # Query all bots and get similarity scores
+  # Filter by threshold
+  # Initialize vector store once (reuse across all queries)
+  # ─── Test Posts ───────────────────────────────────────────
+  # Display the post
+  # Query the vector store
+  # Display the similarity table (ALL bots, with pass/fail indicators)
+  # Show which bots were routed
+  # ─── Threshold Comparison ────────────────────────────────
+  # Show with realistic threshold
+
+--- File: phase2_content_engine.py ---
+IMPORTS (Libraries used):
+from typing import Optional
+from typing_extensions import TypedDict
+from pydantic import BaseModel, Field
+from langchain_groq import ChatGroq
+from langchain_core.messages import SystemMessage, HumanMessage
+from langgraph.graph import StateGraph, END
+from config import GROQ_API_KEY, GROQ_MODEL, GROQ_TEMPERATURE, GROQ_MAX_TOKENS
+from personas import ALL_BOTS, BotPersona
+from tools.mock_search import mock_searxng_search
+from utils.logging_config import (
+from rich.panel import Panel
+from rich.syntax import Syntax
+from rich import box
+import json
+
+CLASSES:
+  class BotPost(BaseModel):: Strict output schema for bot-generated posts. Enforced via LangChain's with_structured_output() to guarantee valid JSON output from the LLM every time.
+  class SearchDecision(BaseModel):: Schema for the search query decision node.
+  class ContentEngineState(TypedDict):: State that flows through the LangGraph content generation pipeline.
+
+FUNCTIONS/METHODS:
+  def decide_search_node(state: ContentEngineState) -> dict -- Node 1: Decide Search  The LLM analyzes the bot's persona and decides what trending topic it wants to post about today. It formats a search query to find
+  def web_search_node(state: ContentEngineState) -> dict -- Node 2: Web Search  Executes the mock_searxng_search tool with the query decided in the previous node. No LLM call here — pure tool execution.
+  def draft_post_node(state: ContentEngineState) -> dict -- Node 3: Draft Post  The LLM uses its persona (system prompt) combined with the search results (real-world context) to generate a highly opinionated,
+
+KEY CODE COMMENTS:
+  # ─────────────────────────────────────────────
+  # Pydantic Model for Structured Output
+  # ─────────────────────────────────────────────
+  # ─────────────────────────────────────────────
+  # LangGraph State Definition
+  # ─────────────────────────────────────────────
+  # ─────────────────────────────────────────────
+  # ─────────────────────────────────────────────
+
+--- File: phase3_combat_engine.py ---
+IMPORTS (Libraries used):
+from langchain_groq import ChatGroq
+from langchain_core.messages import SystemMessage, HumanMessage
+from config import GROQ_API_KEY, GROQ_MODEL
+from personas import BOT_A, BotPersona, BOT_REGISTRY
+from utils.prompt_guard import (
+from utils.logging_config import (
+from rich.panel import Panel
+from rich.table import Table
+from rich import box
+
+CLASSES:
+  class ThreadMessage:: Represents a single message in a conversation thread.
+
+FUNCTIONS/METHODS:
+  def __init__(self, author: str, content: str, is_bot: bool = False)
+  def __repr__(self)
+  def generate_defense_reply(
+
+KEY CODE COMMENTS:
+  # ─────────────────────────────────────────────
+  # Thread Data Structure
+  # ─────────────────────────────────────────────
+  # ─────────────────────────────────────────────
+  # Core RAG Function
+  # ─────────────────────────────────────────────
+  # ─── Layer 1: Input Sanitization ────────────────────────
+  # NOTE: We don't BLOCK the message — we LOG the detection and let the
+  # hardened prompt handle it. This is intentional: the assignment asks
+  # the bot to maintain persona and reject the injection, not refuse to reply.
+
+--- File: tools/mock_search.py ---
+IMPORTS (Libraries used):
+from langchain_core.tools import tool
+from multiple news sources. Use it to find current events, trending topics,
+
+FUNCTIONS/METHODS:
+  def mock_searxng_search(query: str) -> str -- Search for recent news and headlines related to the given query.  This tool simulates a SearXNG meta-search engine that aggregates results from multiple news sources. Use it to find current events, trending topics,
+
+KEY CONSTANTS/CONFIG:
+  NEWS_DATABASE = {
+  DEFAULT_HEADLINES = [
+
+KEY CODE COMMENTS:
+  # ─────────────────────────────────────────────
+  # News headline database organized by topic
+  # ─────────────────────────────────────────────
+  # Default fallback headlines for unmatched queries
+  # Match keywords in the query against our news database
+
+--- File: utils/logging_config.py ---
+IMPORTS (Libraries used):
+import sys
+import io
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from rich.text import Text
+from rich import box
+
+FUNCTIONS/METHODS:
+  def print_phase_header(phase_num: int, title: str, description: str) -- Print a prominent phase header with panel styling.
+  def print_success(message: str) -- Print a success message with green checkmark.
+  def print_warning(message: str) -- Print a warning message with yellow indicator.
+  def print_error(message: str) -- Print an error message with red indicator.
+  def print_info(message: str) -- Print an info message with blue indicator.
+  def print_subheader(text: str) -- Print a styled subheader.
+  def create_similarity_table(matches: list[dict], threshold: float) -> Table -- Create a Rich table showing similarity scores for all bots.  Args: matches: List of match dicts from vector_store.query_similar_bots()
+
+KEY CODE COMMENTS:
+  # Force UTF-8 output on Windows to handle Unicode characters.
+  # Skip this when running under pytest (pytest replaces stdout with its own capture).
+  # Global console instance — force_terminal enables ANSI colors even in non-TTY
+
+--- File: utils/prompt_guard.py ---
+IMPORTS (Libraries used):
+import re
+from config import INJECTION_PATTERNS, CANARY_TOKEN
+
+FUNCTIONS/METHODS:
+  def detect_injection(text: str) -> tuple[bool, list[str]] -- Layer 1: Scan input text for known prompt injection patterns.  Uses regex matching against a curated list of injection signatures. This is not foolproof (adversaries can obfuscate), but it catches
+  def validate_canary(output: str) -> bool -- Layer 2: Check if the canary token leaked into the LLM output.  If the canary token appears in the model's response, it means the system prompt was compromised (the model was tricked into revealing
+  def build_defense_system_prompt(persona_system_prompt: str) -> str -- Construct a hardened system prompt with all defense layers embedded.  Layers applied: - Canary token injection (L2)
+  def build_reinforcement_reminder(persona_name: str) -> str -- Layer 3 (Prompt Sandwich): Generate the reinforcement message that appears AFTER user content in the message sequence.  This reminds the LLM of its identity after processing potentially============================================================
+=== REPO: Pytorch_PaliGemma ===
+URL: https://github.com/udayraj1238/Pytorch_PaliGemma
+Description: From-scratch PyTorch implementation of PaliGemma VLM: SigLIP vision encoder + Gemma decoder + multimodal projector, RoPE, KV-cache, 8192-token context
+Primary Language: Python | Stars: 0
+
+CODE ANALYSIS (from actual source files):
+--- File: README.md ---
+<div align="center">
+
+<!-- Animated Header -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:7C3AED,50:8B5CF6,100:A78BFA&height=220&section=header&text=PaliGemma%20VLM&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Vision-Language%20Model%20from%20Scratch&descSize=18&descAlignY=55&descAlign=50" width="100%"/>
+
+<!-- Typing SVG -->
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=A78BFA&center=true&vCenter=true&width=700&lines=No+Hugging+Face.+No+Pre-built+Modules.;Every+Tensor%2C+Every+Layer%2C+Every+Attention+Head;SigLIP+%2B+Gemma+%2B+Multimodal+Projector;Built+From+the+Ground+Up+in+PyTorch" alt="Typing SVG" /></a>
+
+<br/>
+
+<!-- Tech Badges -->
+<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" />
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+<img src="https://img.shields.io/badge/CUDA-76B900?style=for-the-badge&logo=nvidia&logoColor=white" />
+
+<br/><br/>
+
+<!-- Stats -->
+<img src="https://img.shields.io/badge/12%20Layer-Vision%20Transformer-7C3AED?style=flat-square&labelColor=1a1a2e" />
+<img src="https://img.shields.io/badge/196-Visual%20Tokens-8B5CF6?style=flat-square&labelColor=1a1a2e" />
+<img src="https://img.shields.io/badge/8192-Token%20Context-A78BFA?style=flat-square&labelColor=1a1a2e" />
+<img src="https://img.shields.io/badge/768→2048-Projection-C4B5FD?style=flat-square&labelColor=1a1a2e" />
+
+</div>
+
+---
+
+<div align="center">
+<h2>🎯 What This Is</h2>
+<p><i>A complete from-scratch PyTorch implementation of Google's PaliGemma Vision-Language Model.</i></p>
+</div>
+
+> **Why from scratch?** Because calling `model = AutoModel.from_pretrained()` teaches you nothing about *how* the model actually processes images and generates text. Building every component by hand — from patch embeddings to KV-cache — is the only way to truly understand modern VLMs.
+
+---
+
+<div align="center">
+<h2>🏗️ Architecture</h2>
+</div>
+
+```mermaid
+graph TD
+    A["🖼️ Input Image"] --> B["SigLIP Vision Encoder"]
+    T["📝 Text Prompt"] --> C["Text Tokenizer"]
+    
+    subgraph Vision["🔵 SigLIP Vision Transformer"]
+        B --> B1["16×16 Patch Embedding"]
+        B1 --> B2["12 Transformer Layers"]
+        B2 --> B3["196 Visual Tokens (768-dim)"]
+    end
+    
+    subgraph Proj["🟣 Multimodal Bridge"]
+        B3 --> P1["Linear Projection"]
+        P1 --> P2["768 → 2048 dim"]
+    end
+    
+    C --> C1["Token Embeddings"]
+    
+    subgraph LLM["🔴 Gemma Language Decoder"]
+        P2 --> D1["Merged Sequence @ idx 256000"]
+        C1 --> D1
+        D1 --> D2["RMSNorm + RoPE"]
+        D2 --> D3["Grouped KV Attention"]
+        D3 --> D4["KV-Cache"]
+        D4 --> D5["Causal Masking"]
+        D5 --> D6["8192-token Context"]
+    end
+    
+    D6 --> OUT["💬 Generated Text"]
+    
+    style A fill:#3B82F6,stroke:#3B82F6,color:#fff
+    style T fill:#F59E0B,strok
+
+--- File: modeling_siglip.py ---
+IMPORTS (Libraries used):
+from typing import Optional, Tuple
+import torch
+import torch.nn as nn
+
+CLASSES:
+  class SiglipVisionConfig:
+  class SiglipVisionEmbeddings(nn.Module):
+  class SiglipAttention(nn.Module):: Multi-headed attention from 'Attention Is All You Need' paper
+
+FUNCTIONS/METHODS:
+  def __init__(
+  def __init__(self, config: SiglipVisionConfig)
+  def forward(self, pixel_values: torch.FloatTensor) -> torch.Tensor
+  def __init__(self, config)
+  def forward(
+
+KEY CODE COMMENTS:
+  # Convolve the `patch_size` kernel over the image, with no overlapping patches since the stride is equal to the kernel size
+  # The output of the convolution will have shape [Batch_Size, Embed_Dim, Num_Patches_H, Num_Patches_W]
+  # where Num_Patches_H = height // patch_size and Num_Patches_W = width // patch_size
+  # [Batch_Size, Embed_Dim, Num_Patches_H, Num_Patches_W] -> [Batch_Size, Embed_Dim, Num_Patches]
+  # where Num_Patches = Num_Patches_H * Num_Patches_W
+  # [Batch_Size, Embed_Dim, Num_Patches] -> [Batch_Size, Num_Patches, Embed_Dim]
+  # Add position embeddings to each patch. Each positional encoding is a vector of size [Embed_Dim]
+  # [Batch_Size, Num_Patches, Embed_Dim]
+  # hidden_states: [Batch_Size, Num_Patches, Embed_Dim]
+  # query_states: [Batch_Size, Num_Patches, Embed_Dim]
+
+--- File: modelling_gemma.py ---
+IMPORTS (Libraries used):
+import torch
+from torch import nn
+from typing import Optional, Tuple, List
+from torch.nn import CrossEntropyLoss
+import math
+from modeling_siglip import SiglipVisionConfig, SiglipVisionModel
+
+CLASSES:
+  class KVCache():
+  class GemmaConfig():
+  class PaliGemmaConfig():
+  class GemmaRMSNorm(nn.Module):
+  class GemmaRotaryEmbedding(nn.Module):
+
+FUNCTIONS/METHODS:
+  def __init__(self) -> None
+  def num_items(self) -> int
+  def update(
+  def __init__(
+  def __init__(
+  def __init__(self, dim: int, eps: float = 1e-6)
+  def _norm(self, x)
+  def forward(self, x)
+  def __init__(self, dim, max_position_embeddings=2048, base=10000, device=None)
+  def forward(self, x, position_ids, seq_len=None)
+
+KEY CODE COMMENTS:
+  # The shape of the key_cache is [Batch_Size, Num_Heads_KV, Seq_Len, Head_Dim]
+  # If we never added anything to the KV-Cache of this layer, let's create it.
+  # ... otherwise we concatenate the new keys with the existing ones.
+  # each tensor has shape: [Batch_Size, Num_Heads_KV, Seq_Len, Head_Dim]
+  # ... and then we return all the existing keys + the new ones.
+  # Llama does x.to(float16) * w whilst Gemma is (x * w).to(float16)
+  # See https://github.com/huggingface/transformers/pull/29402
+  # Calculate the theta according to the formula theta_i = base^(-2i/dim) where i = 0, 1, 2, ..., dim // 2
+  # x: [bs, num_attention_heads, seq_len, head_size]
+  # Copy the inv_freq tensor for batch in the sequence
+
+--- File: processing_paligemma.py ---
+IMPORTS (Libraries used):
+from typing import Dict, List, Optional, Union, Tuple, Iterable
+import numpy as np
+from PIL import Image
+import torch
+
+CLASSES:
+  class PaliGemmaProcessor:
+
+FUNCTIONS/METHODS:
+  def add_image_tokens_to_prompt(prefix_prompt, bos_token, image_seq_len, image_token)
+  def rescale(
+  def resize(
+  def normalize(
+  def process_images(
+  def __init__(self, tokenizer, num_image_tokens: int, image_size: int)
+  def __call__(
+
+KEY CONSTANTS/CONFIG:
+  IMAGENET_STANDARD_MEAN = [0.5, 0.5, 0.5]
+  IMAGENET_STANDARD_STD = [0.5, 0.5, 0.5]
+  IMAGE_TOKEN = "<image>"
+  EXTRA_TOKENS = [
+
+KEY CODE COMMENTS:
+  # Quoting from the blog (https://huggingface.co/blog/paligemma#detailed-inference-process):
+  # The input text is tokenized normally.
+  # A <bos> token is added at the beginning, and an additional newline token (\n) is appended.
+  # This newline token is an essential part of the input prompt the model was trained with, so adding it explicitly ensures it's always there.
+  # The tokenized text is also prefixed with a fixed number of <image> tokens.
+  # NOTE: from the paper it looks like the `\n` should be tokenized separately, but in the HF implementation this is not done.
+  # ref to HF implementation: https://github.com/huggingface/transformers/blob/7f79a97399bb52aad8460e1da2f36577d5dccfed/src/transformers/models/paligemma/processing_paligemma.py#L55-L73
+  # Convert each image to a numpy array
+  # Rescale the pixel values to be in the range [0, 1]
+  # Normalize the images to have mean 0 and standard deviation 1
