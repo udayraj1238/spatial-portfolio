@@ -81,9 +81,9 @@ export default function ChatTerminal() {
 
   const { messages, sendMessage, status, error } = useChat({
     onError: (e) => console.error('[APEX]', e),
-    onFinish: (message) => {
-      if (isVoiceModeRef.current && message.content) {
-        speak(stripThinkTags(message.content))
+    onFinish: (event) => {
+      if (isVoiceModeRef.current && event.message?.content) {
+        speak(stripThinkTags(event.message.content))
       }
     }
   })
