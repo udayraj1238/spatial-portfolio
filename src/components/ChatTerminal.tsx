@@ -115,7 +115,7 @@ export default function ChatTerminal() {
       return
     }
 
-    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
+    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
     const recognition = new SpeechRecognition()
     recognition.continuous = false
     recognition.interimResults = true
