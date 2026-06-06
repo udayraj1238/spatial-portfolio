@@ -5,14 +5,26 @@ import { Sparkles, Send, Loader2, ChevronRight, Cpu, Zap, Brain, User } from 'lu
 import { useRef, useEffect, useState, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
 
-// ─── Direct Text Renderer (streaming handles its own typewriter effect) ────────
+// ─── Strip DeepSeek R1 <think> reasoning blocks ──────────────────────────────
+function stripThinkTags(text: string): string {
+  // Remove complete <think>...</think> blocks
+  let result = text.replace(/<think>[\s\S]*?<\/think>/gi, '')
+  // If a <think> block is still open (streaming), hide everything from <think> onward
+  const openIdx = result.indexOf('<think>')
+  if (openIdx !== -1) result = result.slice(0, openIdx)
+  return result.trim()
+}
+
+// ─── Direct Text Renderer ─────────────────────────────────────────────────────
 function StreamText({ text }: { text: string }) {
+  const clean = stripThinkTags(text)
   return (
     <div className="md-body">
-      <ReactMarkdown>{text}</ReactMarkdown>
+      <ReactMarkdown>{clean}</ReactMarkdown>
     </div>
   )
 }
+
 
 // ─── Quick Prompt Chips ──────────────────────────────────────────────────────
 const QUICK_PROMPTS = [
