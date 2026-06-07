@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-06-06 19:52
+  Last Updated: 2026-06-07 19:53
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -478,7 +478,6 @@ CODE COMMENTS:
 // ─── Main Component ──────────────────────────────────────────────────────────
 // Voice Synthesis (Text-to-Speech)
 // Try to find a good English voice
-// Keep ref in sync for useChat callback
 
 --- File: src/data/knowledge.ts ---
 FUNCTIONS/COMPONENTS:
