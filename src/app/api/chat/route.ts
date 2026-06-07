@@ -290,7 +290,7 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
     const result = streamText({
       model: groq('llama-3.1-8b-instant'),
       system: SYSTEM_PROMPT,
-      messages: coreMessages,
+      messages: coreMessages.slice(-4), // Only send the last 4 messages to save thousands of tokens
     });
     
     return result.toUIMessageStreamResponse();

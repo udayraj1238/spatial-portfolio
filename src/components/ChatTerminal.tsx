@@ -623,7 +623,7 @@ export default function ChatTerminal() {
               <div className="msg-row">
                 <div className="msg-icon ai"><Brain size={18} color="#ff4444" /></div>
                 <div className="msg-bubble ai" style={{ borderColor: 'rgba(255,60,60,0.3)', color: '#ff8888' }}>
-                  ⚠ APEX encountered an error. Please try again in a moment.
+                  ⚠ {error.message || 'APEX encountered an error. Please try again in a moment.'}
                 </div>
               </div>
             )}
