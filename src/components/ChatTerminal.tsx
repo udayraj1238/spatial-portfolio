@@ -102,7 +102,7 @@ export default function ChatTerminal() {
     window.speechSynthesis.speak(utterance)
   }, [])
 
-  const { messages, append: sendMessage, status, error } = useChat({
+  const { messages, sendMessage, status, error } = useChat({
     onError: (e) => console.error('[APEX]', e),
     onFinish: (event: any) => {
       if (isVoiceModeRef.current && event.message?.content) {
@@ -156,7 +156,7 @@ export default function ChatTerminal() {
           const finalStr = event.results[i][0].transcript
           setInput(finalStr)
           // Auto-send when done talking
-          sendMessage({ role: 'user', content: finalStr })
+          sendMessage({ text: finalStr })
           setInput('')
         } else {
           interimTranscript += event.results[i][0].transcript
@@ -186,7 +186,7 @@ export default function ChatTerminal() {
 
   const handleSend = useCallback((content: string) => {
     if (!content.trim() || isLoading) return
-    sendMessage({ role: 'user', content: content })
+    sendMessage({ text: content })
     setInput('')
     // If manually typing, disable voice output
     if (isVoiceMode) setIsVoiceMode(false)
