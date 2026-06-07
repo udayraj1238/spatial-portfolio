@@ -573,23 +573,12 @@ export default function ChatTerminal() {
                   <div className={`msg-bubble ${m.role === 'user' ? 'user' : 'ai'}`}>
                     {m.role === 'user'
                       ? text
-                      : <StreamText text={text} />
+                      : <StreamText text={text.replace('[COURTSENSE_DEMO_TRIGGER]', '')} />
                     }
-                    {/* Render tool invocations directly without waiting for a server result */}
-                    {((m as any).toolInvocations || []).map((toolInvocation: any) => {
-                      if (toolInvocation.toolName === 'show_courtsense_demo') {
-                        return <CourtSenseDemo key={toolInvocation.toolCallId} />
-                      }
-                      return null
-                    })}
-                    
-                    {/* Fallback check in case tool invocations are inside the parts array (AI SDK v3 changes) */}
-                    {((m as any).parts || []).map((part: any) => {
-                      if (part.type === 'tool-invocation' && part.toolInvocation?.toolName === 'show_courtsense_demo') {
-                        return <CourtSenseDemo key={part.toolInvocation.toolCallId} />
-                      }
-                      return null
-                    })}
+                    {/* Render demo if triggered by the text payload */}
+                    {text.includes('[COURTSENSE_DEMO_TRIGGER]') && (
+                      <CourtSenseDemo key={'demo-' + i} />
+                    )}
                   </div>
                 </div>
               )

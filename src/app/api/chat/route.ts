@@ -262,7 +262,10 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
 5. **TONE:** Direct. Specific. Enthusiastic. Numbers over adjectives. Short punchy opener → detailed expansion.
    - ✅ "94.9% accuracy drop" not "significant reduction"
    - ✅ "crashed the model" not "negatively impacted performance"
-   - Never end with "In conclusion..." — just stop when done.`;
+   - Never end with "In conclusion..." — just stop when done.
+   
+6. **SPECIAL UI TRIGGERS:**
+   - If the user asks to see a demo, interactive 3D, or video of "CourtSense AI", you MUST include the exact text "[COURTSENSE_DEMO_TRIGGER]" anywhere in your response. The UI will detect this and render the demo.`;
 
     const coreMessages = rawMessages.map((m: any) => {
       const text =
@@ -288,16 +291,9 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
       model: groq('llama-3.3-70b-versatile'),
       system: SYSTEM_PROMPT,
       messages: coreMessages,
-      tools: {
-        show_courtsense_demo: tool({
-          description: 'Show an interactive 3D demo or video component of CourtSense AI when the user explicitly asks to see, view, or watch a demo of it.',
-          parameters: z.object({ trigger: z.boolean().optional() }),
-          execute: async () => 'Rendering CourtSense 3D Demo component on client UI'
-        })
-      }
     });
     
-    return result.toUIMessageStreamResponse();
+    return result.toTextStreamResponse();
 
   } catch (err) {
     console.error('[APEX] Route error:', err);
