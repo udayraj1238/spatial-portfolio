@@ -33,15 +33,38 @@ function CourtSenseDemo() {
         <span>COURTSENSE AI // 3D INTERACTIVE DEMO</span>
         <span>LIVE</span>
       </div>
-      <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
-        <iframe 
-          src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1" 
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-          allow="autoplay; encrypted-media"
-          title="CourtSense Demo"
-        />
+      <div style={{ position: 'relative', height: '200px', background: '#001a1a', overflow: 'hidden' }}>
+        {/* Tennis Court Lines */}
+        <div style={{ position: 'absolute', top: '10%', bottom: '10%', left: '20%', right: '20%', border: '2px solid rgba(0, 240, 255, 0.2)' }} />
+        <div style={{ position: 'absolute', top: '50%', left: '20%', right: '20%', borderTop: '2px solid rgba(0, 240, 255, 0.2)' }} />
+        <div style={{ position: 'absolute', top: '10%', bottom: '10%', left: '50%', borderLeft: '2px solid rgba(0, 240, 255, 0.2)' }} />
+        
+        {/* Animated Ball & Bounding Box */}
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes trackBall {
+            0% { transform: translate(0px, 0px); }
+            25% { transform: translate(100px, -50px); }
+            50% { transform: translate(200px, 20px); }
+            75% { transform: translate(100px, 80px); }
+            100% { transform: translate(0px, 0px); }
+          }
+          .cv-target {
+            animation: trackBall 3s infinite linear;
+          }
+        `}} />
+        <div className="cv-target" style={{ position: 'absolute', top: '80px', left: '100px', width: '20px', height: '20px' }}>
+           {/* The Ball */}
+           <div style={{ width: '10px', height: '10px', background: '#e1ff00', borderRadius: '50%', margin: '5px', boxShadow: '0 0 10px #e1ff00' }} />
+           {/* YOLO Bounding Box */}
+           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, border: '1px solid #00f0ff', boxShadow: '0 0 8px rgba(0,240,255,0.5) inset' }}>
+             <span style={{ position: 'absolute', top: '-14px', left: '-1px', background: '#00f0ff', color: '#000', fontSize: '8px', padding: '1px 4px', fontWeight: 'bold' }}>ball 0.98</span>
+           </div>
+        </div>
+        
+        {/* Scanning Overlay */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(180deg, rgba(0,240,255,0) 0%, rgba(0,240,255,0.1) 50%, rgba(0,240,255,0) 100%)', animation: 'scan 2s infinite linear' }} />
       </div>
-      <div style={{ padding: 12, fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>
+      <div style={{ padding: 12, fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', borderTop: '1px solid rgba(0,240,255,0.2)' }}>
         Rendered via AI Tool Call • Full 3D Physics & Homography engine active.
       </div>
     </div>
