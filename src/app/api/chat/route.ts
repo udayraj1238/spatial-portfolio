@@ -293,7 +293,7 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
       messages: coreMessages,
     });
     
-    return result.toTextStreamResponse();
+    return result.toUIMessageStreamResponse();
 
   } catch (err) {
     console.error('[APEX] Route error:', err);
