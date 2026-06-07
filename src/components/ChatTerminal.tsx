@@ -156,7 +156,7 @@ export default function ChatTerminal() {
           const finalStr = event.results[i][0].transcript
           setInput(finalStr)
           // Auto-send when done talking
-          sendMessage({ text: finalStr })
+          sendMessage({ role: 'user', content: finalStr })
           setInput('')
         } else {
           interimTranscript += event.results[i][0].transcript
@@ -186,7 +186,7 @@ export default function ChatTerminal() {
 
   const handleSend = useCallback((content: string) => {
     if (!content.trim() || isLoading) return
-    sendMessage({ text: content })
+    sendMessage({ role: 'user', content: content })
     setInput('')
     // If manually typing, disable voice output
     if (isVoiceMode) setIsVoiceMode(false)
