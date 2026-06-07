@@ -102,7 +102,7 @@ export default function ChatTerminal() {
     window.speechSynthesis.speak(utterance)
   }, [])
 
-  const { messages, sendMessage, status, error } = useChat({
+  const { messages, append: sendMessage, status, error } = useChat({
     onError: (e) => console.error('[APEX]', e),
     onFinish: (event: any) => {
       if (isVoiceModeRef.current && event.message?.content) {

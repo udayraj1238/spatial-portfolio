@@ -285,21 +285,23 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
       });
     }
 
-    // We are using LLaMA 3.3 70B as the primary model.
-    // It is highly stable, extremely fast, and handles the 67k character context window flawlessly.
+    // We are using LLaMA 3.1 8B Instant to ensure extremely high rate limit capacity (30k TPM).
+    // This prevents 500 errors when multiple users or recruiters test the portfolio simultaneously.
     const result = streamText({
-      model: groq('llama-3.3-70b-versatile'),
+      model: groq('llama-3.1-8b-instant'),
       system: SYSTEM_PROMPT,
       messages: coreMessages,
     });
     
     return result.toUIMessageStreamResponse();
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[APEX] Route error:', err);
+    const errorMessage = err?.message || err?.toString() || 'Unknown error';
+    // Send the actual error message back to the client as plain text so useChat can display it
     return new Response(
-      JSON.stringify({ error: 'APEX temporarily unavailable. Please try again in a moment.' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      errorMessage,
+      { status: 500 }
     );
   }
 }
