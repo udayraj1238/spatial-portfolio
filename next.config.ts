@@ -1,18 +1,21 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Enable strict type checking
+  // ━━━ Performance ━━━
+  productionBrowserSourceMaps: false,
+  
+  // ━━━ Type Safety ━━━
   typescript: {
-    // Fail the build if types are wrong
     ignoreBuildErrors: false,
   },
-  eslint: {
-    // Warn about eslint issues but don't fail build
-    ignoreDuringBuilds: false,
+  
+  // ━━━ Images ━━━
+  images: {
+    unoptimized: false,
+    formats: ['image/avif', 'image/webp'],
   },
-  // Performance optimization
-  swcMinify: true,
-  // Headers for security
+  
+  // ━━━ Headers & Security ━━━
   headers: async () => [
     {
       source: "/:path*",
@@ -20,6 +23,8 @@ const nextConfig: NextConfig = {
         { key: "X-Content-Type-Options", value: "nosniff" },
         { key: "X-Frame-Options", value: "DENY" },
         { key: "X-XSS-Protection", value: "1; mode=block" },
+        { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
       ],
     },
   ],

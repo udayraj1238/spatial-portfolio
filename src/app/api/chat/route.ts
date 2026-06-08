@@ -91,9 +91,11 @@ export async function POST(req: Request) {
     }
     
     // Sanitize inputs
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rawMessages = (rawMessages || []).map((m: any) => ({
       ...m,
       content: sanitizeInput(m.content || ''),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       parts: m.parts?.map((p: any) => ({
         ...p,
         text: sanitizeInput(p.text || ''),

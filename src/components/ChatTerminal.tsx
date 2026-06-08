@@ -567,9 +567,9 @@ export default function ChatTerminal() {
             <div className="apex-welcome-icon">
               <Brain size={36} color="#00f0ff" />
             </div>
-            <h1>Hi, I'm <span style={{ color: '#00f0ff' }}>APEX</span></h1>
+            <h1>Hi, I&apos;m <span style={{ color: '#00f0ff' }}>APEX</span></h1>
             <p>
-              Uday's AI — trained exhaustively on his <span>resume</span>, <span>GitHub repos</span>, and <span>research papers</span>.
+              Uday&apos;s AI — trained exhaustively on his <span>resume</span>, <span>GitHub repos</span>, and <span>research papers</span>.
               Ask me literally anything about his projects, skills, or background.
             </p>
             <div className="apex-chips">
@@ -584,7 +584,6 @@ export default function ChatTerminal() {
           <div className="apex-messages" ref={scrollRef}>
             {messages.map((m, i) => {
               const text = getText(m)
-              const isLatestStreaming = i === messages.length - 1 && status === 'streaming'
               return (
                 <div key={i} className={`msg-row ${m.role === 'user' ? 'user' : ''}`}>
                   <div className={`msg-icon ${m.role === 'user' ? 'user-ic' : 'ai'}`}>
@@ -650,7 +649,7 @@ export default function ChatTerminal() {
               <button
                 type="button"
                 onClick={toggleListening}
-                className={`apex-send ${isListening ? 'listening' : isVoiceMode ? 'voice-active' : 'inactive'}`}
+                className={`apex-send ${isListening ? 'active' : isVoiceMode ? 'active' : 'inactive'}`}
                 title="Voice Mode"
               >
                 {isListening ? <Loader2 size={18} color="#ff4444" style={{ animation: 'spin 1s linear infinite' }} /> : 
