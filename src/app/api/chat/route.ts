@@ -1,11 +1,36 @@
 import { groq } from '@ai-sdk/groq';
+import { rateLimit } from '@/helpers/rateLimit';
 import { streamText, tool } from 'ai';
 import { z } from 'zod';
 import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'edge';
 
+// ─── Input Validation & Sanitization ──────────────────────────────────────────
+const MessageSchema = z.object({
+  role: z.enum(['user', 'assistant']).optional(),
+  content: z.string().max(2000), // Prevent huge payloads
+  parts: z.array(z.object({
+    type: z.string(),
+    text: z.string().max(2000)
+  })).optional(),
+});
+
+const ChatRequestSchema = z.object({
+  messages: z.array(MessageSchema).optional(),
+  text: z.string().max(2000).optional(),
+});
+
+function sanitizeInput(text: string): string {
+  // Remove suspicious patterns
+  return text
+    .trim()
+    .replace(/[\x00-\x1F\x7F]/g, '') // Remove control chars
+    .slice(0, 2000); // Hard cap
+}
+
 // ─── Cache for supplementary resume context ───────────────────────────────────
+const PORTFOLIO_URL = process.env.NEXT_PUBLIC_PORTFOLIO_URL || 'https://udayraj1238.vercel.app';
 let cachedExtra: string | null = null;
 let lastFetch = 0;
 const CACHE_TTL = 10 * 60 * 1000;
@@ -14,7 +39,7 @@ async function getExtraContext(): Promise<string> {
   const now = Date.now();
   if (cachedExtra && now - lastFetch < CACHE_TTL) return cachedExtra;
   try {
-    const res = await fetch('https://udayraj1238.vercel.app/resume_data.txt', {
+    const res = await fetch(`${PORTFOLIO_URL}/resume_data.txt`, {
       signal: AbortSignal.timeout(6000),
     });
     if (res.ok) {
@@ -30,10 +55,50 @@ async function getExtraContext(): Promise<string> {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    let rawMessages = body.messages;
-    if (!rawMessages && body.text) {
-      rawMessages = [{ role: 'user', parts: [{ type: 'text', text: body.text }] }];
+
+    // ━━━ ADD RATE LIMITING ━━━
+    const ip = req.headers.get('x-forwarded-for') || 
+               req.headers.get('x-real-ip') || 
+               'unknown';
+    const { success, remaining } = rateLimit(ip);
+    
+    if (!success) {
+      return new Response(
+        JSON.stringify({
+          error: 'Rate limit exceeded. Maximum 10 messages per minute.',
+          remaining,
+        }),
+        { 
+          status: 429,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
     }
+    // ━━━ END RATE LIMITING ━━━
+
+    // Validate structure
+    const validated = ChatRequestSchema.safeParse(body);
+    if (!validated.success) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request format' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    let rawMessages = validated.data.messages;
+    if (!rawMessages && validated.data.text) {
+      rawMessages = [{ role: 'user', content: validated.data.text }];
+    }
+    
+    // Sanitize inputs
+    rawMessages = (rawMessages || []).map((m: any) => ({
+      ...m,
+      content: sanitizeInput(m.content || ''),
+      parts: m.parts?.map((p: any) => ({
+        ...p,
+        text: sanitizeInput(p.text || ''),
+      }))
+    }));
     if (!rawMessages?.length) return new Response('No messages', { status: 400 });
 
     const extraContext = await getExtraContext();
