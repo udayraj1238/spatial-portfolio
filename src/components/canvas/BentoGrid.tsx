@@ -1,5 +1,6 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Float, Text, MeshTransmissionMaterial, PositionalAudio } from '@react-three/drei'

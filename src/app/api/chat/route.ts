@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 import { groq } from '@ai-sdk/groq';
 import { rateLimit } from '@/helpers/rateLimit';
 import { streamText, tool } from 'ai';
