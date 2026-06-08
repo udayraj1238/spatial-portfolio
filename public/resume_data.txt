@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-06-07 19:53
+  Last Updated: 2026-06-08 20:38
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -300,42 +300,98 @@ Primary Language: TypeScript | Stars: 0
 
 CODE ANALYSIS (from actual source files):
 --- File: README.md ---
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Uday Raj's AI Portfolio — Interactive 3D & APEX AI Assistant
 
-## Getting Started
+[![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?style=flat-square&logo=vercel)](https://udayraj1238.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
+[![AI](https://img.shields.io/badge/AI-Groq%20%7C%20LLaMA-FF6B35?style=flat-square)](https://groq.com)
 
-First, run the development server:
+## ✨ Features
+
+- **Interactive 3D Scene** — React Three Fiber with orbital rings, particle systems, and mouse-reactive camera
+- **APEX AI Assistant** — Chat with an AI trained on my complete resume, GitHub, and research papers
+- **Real-Time Streaming** — Edge runtime for instant, low-latency responses (Groq LLaMA 3.3 70B)
+- **Voice Support** — Speech-to-text and text-to-speech for hands-free interaction
+- **Production-Grade Security** — Rate limiting, input validation, error boundaries, environment variable management
+- **Lightning Fast** — Optimized bundle, cached AI responses, edge deployment
+
+## 🎯 Quick Start
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
 
 ```bash
+# Clone the repo
+git clone https://github.com/udayraj1238/spatial-portfolio.git
+cd spatial-portfolio
+
+# Install dependencies
+npm install
+
+# Setup environment (see .env.example)
+cp .env.example .env.local
+# Add your API keys to .env.local
+
+# Run dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔧 Build & Deploy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Production build
+npm run build
 
-## Learn More
+# Start production server
+npm start
+```
 
-To learn more about Next.js, take a look at the following resources:
+**Deploy to Vercel:**
+```bash
+npx vercel
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📚 Project Structure
+src/
+├── app/
+│   ├── page.tsx              # Main landing page
+│   ├── layout.tsx            # Root layout with error boundary
+│   ├── globals.css           # Global styles
+│   └── api/
+│       └── chat/route.ts     # APEX AI endpoint (streaming + rate limiting)
+├── components/
+│   ├── ChatTerminal.tsx      # AI chat UI with voice support
+│   ├── ErrorBoundary.tsx     # React error boundary
+│   └── canvas/
+│       ├── Scene.tsx         # Main 3D scene
+│       ├── HeroScene.tsx     # Hero section
+│       ├── BentoGrid.tsx     # Layout component
+│       └── ScrollCamera.tsx  # Camera controller
+├── data/
+│   └── knowledge.ts          # AI system prompt and knowledge base
+└── helpers/
+├── rateLimit.ts          # Rate limiting middleware
+└── tunnel.ts             # Portal renderer
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🤖 APEX AI
 
-## Deploy on Vercel
+APEX is an AI assistant trained on:
+- **Resume** — Complete education, experience, and skills
+- **GitHub** — All 6 major projects with technical breakdowns
+- **Research** — Adversarial ML, Computer Vision, LLMs
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Ask APEX anything:
+- ⚔️ "Tell me about his adversarial attack research"
+- 🧠 "Explain the PaliGemma multimodal implementation"
+- 🏆 "What are his competition rankings?"
+-
 
 --- File: generate_sound.py ---
 IMPORTS (Libraries used):
@@ -399,6 +455,12 @@ import type { NextConfig } from "next";
 FUNCTIONS/COMPONENTS:
 const nextConfig: NextConfig = {
 
+CODE COMMENTS:
+// ━━━ Performance ━━━
+// ━━━ Type Safety ━━━
+// ━━━ Images ━━━
+// ━━━ Headers & Security ━━━
+
 --- File: scripts/ingest.js ---
 FUNCTIONS/COMPONENTS:
 const fs = require('fs');
@@ -428,6 +490,7 @@ IMPORTS:
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Scene from "@/components/canvas/Scene";
 
 FUNCTIONS/COMPONENTS:
@@ -479,6 +542,17 @@ CODE COMMENTS:
 // Voice Synthesis (Text-to-Speech)
 // Try to find a good English voice
 
+--- File: src/components/ErrorBoundary.tsx ---
+IMPORTS:
+import { Component, ReactNode, ErrorInfo } from 'react';
+
+TYPES/INTERFACES:
+interface Props {
+interface State {
+
+FUNCTIONS/COMPONENTS:
+export class ErrorBoundary extends Component<Props, State> {
+
 --- File: src/data/knowledge.ts ---
 FUNCTIONS/COMPONENTS:
 export const APEX_KNOWLEDGE = {
@@ -487,14 +561,7 @@ CODE COMMENTS:
 // ============================================================
 // APEX KNOWLEDGE BASE — Uday Raj's Complete Professional Profile
 // Auto-syncs with resume_data.txt for real-time accuracy
-// ============================================================
-
---- File: src/helpers/tunnel.ts ---
-IMPORTS:
-import tunnel from 'tunnel-rat'
-
-FUNCTIONS/COMPONENTS:
-export const r3f = tunnel()============================================================
+// ========================================================================================================================
 === REPO: CourtSense-AI ===
 URL: https://github.com/udayraj1238/CourtSense-AI
 Description: End-to-end sports CV pipeline: tennis videos to interactive 3D replays with speed and spin stats. YOLOv8-Pose, SegFormer-B2, OpenCV, FastAPI, React, Three.js
