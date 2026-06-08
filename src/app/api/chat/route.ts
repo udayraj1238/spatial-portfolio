@@ -343,11 +343,23 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
     // Log the user's latest query to Supabase (non-blocking)
     const latestUserMessage = coreMessages.filter((m: { role: string; content: string }) => m.role === 'user').pop();
     if (latestUserMessage && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-      // We don't await this so it doesn't block the chat response
-      supabase.from('recruiter_analytics').insert({ query: latestUserMessage.content }).then(({error}) => {
-        if(error) console.error("[Analytics Error]", error);
-      });
+      try {
+        const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+        // Non-blocking analytics insert with timeout
+        Promise.race([
+          supabase.from('recruiter_analytics').insert({ 
+            query: latestUserMessage.content,
+            timestamp: new Date().toISOString(),
+          }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Analytics timeout')), 3000))
+        ]).catch((error) => {
+          // Silently log analytics failures — they should not block chat
+          console.error("[Analytics]", error.message);
+        });
+      } catch (error) {
+        console.error("[Analytics Setup Error]", error);
+        // Don't throw — just skip analytics
+      }
     }
 
     // We are using LLaMA 3.1 8B Instant to ensure extremely high rate limit capacity (30k TPM).
