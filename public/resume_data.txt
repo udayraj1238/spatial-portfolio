@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-06-08 20:38
+  Last Updated: 2026-06-09 20:24
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -293,6 +293,316 @@ The GitHub Actions workflow will automatically rebuild the AI brain.
 
 
 
+=== REPO: CourtSense-AI ===
+URL: https://github.com/udayraj1238/CourtSense-AI
+Description: End-to-end sports CV pipeline: tennis videos to interactive 3D replays with speed and spin stats. YOLOv8-Pose, SegFormer-B2, OpenCV, FastAPI, React, Three.js
+Primary Language: TypeScript | Stars: 0
+
+CODE ANALYSIS (from actual source files):
+--- File: backend/main.py ---
+IMPORTS (Libraries used):
+import json
+import os
+from contextlib import asynccontextmanager
+import numpy as np
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from backend.api.routes import health, jobs
+from backend.config import get_settings
+from backend.models.api import SequenceResponse
+from backend.models.tracking import BallState, Coordinate, FrameData, PlayerState
+from backend.services.job_manager import get_job_manager
+
+FUNCTIONS/METHODS:
+  async def lifespan(app: FastAPI)
+  def create_app() -> FastAPI
+  def get_mock_tracking_sequence()
+  def get_real_tracking_sequence()
+
+KEY CONSTANTS/CONFIG:
+  REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+KEY CODE COMMENTS:
+  # Legacy script path for /api/v1/tracking/real
+  # --- Legacy v1 endpoints (preserved for dev / HF backward compat) ---
+
+--- File: README.md ---
+---
+title: CourtSense Backend
+emoji: 🎾
+colorFrom: green
+colorTo: blue
+sdk: docker
+app_port: 8000
+---
+<div align="center">
+
+<!-- Animated Header -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0D9488,50:06B6D4,100:3B82F6&height=220&section=header&text=CourtSense%20AI&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=3D%20Tennis%20Analytics%20Engine&descSize=18&descAlignY=55&descAlign=50" width="100%"/>
+
+<!-- Typing SVG -->
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=06B6D4&center=true&vCenter=true&width=600&lines=Tennis+Video+%E2%86%92+Interactive+3D+Replay;YOLOv8-Pose+%7C+Hough+Lines+%7C+Three.js;Physics-Based+Synthesis+%26+Replays;150-Frame+Physics-Accurate+Replays" alt="Typing SVG" /></a>
+
+<br/>
+<br/>
+
+<a href="https://udayraj1238.github.io/CourtSense-AI/" target="_blank">
+  <img src="https://img.shields.io/badge/🎾_Play_Live_Demo-Click_Here_to_Launch-06B6D4?style=for-the-badge&logo=react&logoColor=white" height="50" alt="Launch Live Web App" />
+</a>
+
+<br/>
+
+<!-- Badges Row 1 -->
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" />
+<img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
+<img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
+<img src="https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white" />
+<img src="https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" />
+
+<br/>
+
+<!-- Badges Row 2 -->
+<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
+<img src="https://img.shields.io/badge/MediaPipe-0097A7?style=for-the-badge&logo=google&logoColor=white" />
+
+<br/><br/>
+
+<!-- Stats Badges -->
+<img src="https://img.shields.io/badge/150%20Frames-Per%20Replay-0D9488?style=flat-square&labelColor=1a1a2e" />
+<img src="https://img.shields.io/badge/17%20Keypoints-Per%20Frame-06B6D4?style=flat-square&labelColor=1a1a2e" />
+<img src="https://img.shields.io/badge/~70%25%20Jitter-Reduction-3B82F6?style=flat-square&labelColor=1a1a2e" />
+<img src="https://img.shields.io/badge/±5%20km%2Fh-Speed%20Accuracy-8B5CF6?style=flat-square&labelColor=1a1a2e" />
+
+</div>
+
+---
+
+<div align="center">
+<h2>🎯 What It Does</h2>
+</div>
+
+<table>
+<tr>
+<td width="50%">
+
+### 📥 Input
+A raw tennis match video from **any camera angle** — broadcast footage, phone recording, or drone shot.
+
+</td>
+<td width="50%">
+
+### 📤 Output
+An **interactive 3D replay** you can rotate, zoom, and replay from any angle — with real-time **speed (km/h)** and **spin (rpm)** overlays.
+
+</
+
+--- File: frontend/README.md ---
+# React + TypeScript + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+--- File: backend/config.py ---
+IMPORTS (Libraries used):
+from functools import lru_cache
+from pathlib import Path
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+CLASSES:
+  class Settings(BaseSettings):
+
+FUNCTIONS/METHODS:
+  def get_settings() -> Settings
+
+KEY CONSTANTS/CONFIG:
+  REPO_ROOT = Path(__file__).resolve().parent.parent
+
+KEY CODE COMMENTS:
+  # Stub pipeline simulates CV work (seconds). Set 0 for instant response in tests.
+
+--- File: backend/cv/ball_tracker.py ---
+IMPORTS (Libraries used):
+import cv2
+import numpy as np
+from typing import Dict, Any, Optional
+from ultralytics import YOLO
+from backend.cv.homography import CourtProjector
+
+CLASSES:
+  class BallTracker:
+
+FUNCTIONS/METHODS:
+  def __init__(self, model_path: str = "yolov8n_tennis.pt")
+  def detect_ball(self, frame: np.ndarray, projector: CourtProjector) -> Optional[Dict[str, float]] -- Detects the tennis ball in the frame and projects it to the 2D court ground plane (x, z). Note: The true height (y) is estimated in the pipeline stage, not here. Returns: {"x": float, "z": float, "conf": float, "u": float, "v": float} or None
+
+KEY CODE COMMENTS:
+  # We use a custom fine-tuned YOLOv8 model for V5.0.
+  # In our custom dataset, class 0 is 'tennis_ball'.
+  # Fallback to standard COCO
+  # Get center of bounding box
+  # Project pixel to court ground plane (x, z)
+  # Court Bounds Filter: A ball can be out of bounds, but usually within a reasonable distance
+  # Sort by confidence and return the best one
+
+--- File: backend/cv/court_lines.py ---
+IMPORTS (Libraries used):
+from __future__ import annotations
+import cv2
+import numpy as np
+from backend.cv.errors import CalibrationError
+
+FUNCTIONS/METHODS:
+  def _resize(frame: np.ndarray, max_width: int = 1280) -> tuple[np.ndarray, float]
+  def _white_line_mask(bgr: np.ndarray) -> np.ndarray
+  def _line_angle(x1: float, y1: float, x2: float, y2: float) -> float
+  def _collect_segments(mask: np.ndarray) -> list[tuple[float, float, float, float]]
+  def _cluster_lines(
+  def _line_to_abc(x1: float, y1: float, x2: float, y2: float) -> tuple[float, float, float]
+  def _intersect(l1: tuple[float, float, float], l2: tuple[float, float, float]) -> np.ndarray | None
+  def _order_corners(pts: np.ndarray) -> np.ndarray -- Order 4 points as TL, TR, BR, BL.
+  def _pick_extreme_lines(
+  def detect_court_corners(frame: np.ndarray) -> np.ndarray -- Detect 4 court corners in pixel space (TL, TR, BR, BL). Raises CalibrationError if detection fails validation.
+  def extract_preview_frame(video_path: str, out_jpg: str, timestamp_sec: float = 0.5) -> np.ndarray -- Grab a BGR frame from video for calibration preview.
+
+KEY CODE COMMENTS:
+  # Adaptive threshold — works on all court types
+  # White/light color mask — supplement for hard courts
+  # Also detect yellow lines (some indoor courts)
+  # top = min y-midpoint, bottom = max y-midpoint
+
+--- File: backend/cv/errors.py ---
+CLASSES:
+  class CalibrationError(Exception):: Auto or manual court calibration failed.
+
+--- File: backend/cv/homography.py ---
+IMPORTS (Libraries used):
+from __future__ import annotations
+import json
+import cv2
+import numpy as np
+from backend.cv.errors import CalibrationError
+from backend.cv.court_lines import detect_court_corners
+
+CLASSES:
+  class CourtProjector:
+
+FUNCTIONS/METHODS:
+  def __init__(self, homography: np.ndarray)
+  def from_corners(cls, src_corners: np.ndarray) -> "CourtProjector" -- Build projector from 4 image corners (TL, TR, BR, BL).
+  def from_frame(cls, frame: np.ndarray) -> "CourtProjector"
+  def pixel_to_court(self, u: float, v: float) -> tuple[float, float] -- Returns (x, z) in meters on the ground plane.
+  def pixel_to_3d(self, u: float, v: float, y: float = 0.0) -> tuple[float, float, float]
+  def clamp_to_court(self, x: float, z: float) -> tuple[float, float]
+  def reprojection_error_px(self, src_corners: np.ndarray) -> float
+  def to_json(self) -> str
+  def from_json(cls, data: str) -> "CourtProjector"
+
+KEY CONSTANTS/CONFIG:
+  COURT_DST = np.array(
+
+KEY CODE COMMENTS:
+  # Destination court corners in meters (x, z): TL, TR, BR, BL
+
+--- File: backend/cv/kalman3d.py ---
+IMPORTS (Libraries used):
+import cv2
+import numpy as np
+
+CLASSES:
+  class Kalman3D:
+
+FUNCTIONS/METHODS:
+  def __init__(self, dt: float = 1/30.0)
+  def init_state(self, x: float, y: float, z: float)
+  def predict(self) -> tuple[float, float, float] -- Predict next state and return predicted (x, y, z).
+  def correct(self, x: float, y: float, z: float) -> tuple[float, float, float] -- Update with measurement and return corrected (x, y, z).
+  def get_velocity(self) -> tuple[float, float, float]
+
+KEY CONSTANTS/CONFIG:
+  GRAVITY = 9.81
+
+KEY CODE COMMENTS:
+  # State vector: [x, y, z, vx, vy, vz]
+  # Measurement vector: [x, y, z]
+  # Control vector: [1] (for gravity)
+  # Transition matrix (A)
+  # x_t = x_{t-1} + vx_{t-1} * dt
+  # Control matrix (B)
+  # Measurement matrix (H)
+  # We only measure x, y, z
+  # Process noise covariance (Q)
+  # Small noise for position, larger for velocity to allow for sudden changes (hits/bounces)============================================================
 === REPO: spatial-portfolio ===
 URL: https://github.com/udayraj1238/spatial-portfolio
 Description: AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
@@ -562,310 +872,6 @@ CODE COMMENTS:
 // APEX KNOWLEDGE BASE — Uday Raj's Complete Professional Profile
 // Auto-syncs with resume_data.txt for real-time accuracy
 // ========================================================================================================================
-=== REPO: CourtSense-AI ===
-URL: https://github.com/udayraj1238/CourtSense-AI
-Description: End-to-end sports CV pipeline: tennis videos to interactive 3D replays with speed and spin stats. YOLOv8-Pose, SegFormer-B2, OpenCV, FastAPI, React, Three.js
-Primary Language: Python | Stars: 0
-
-CODE ANALYSIS (from actual source files):
---- File: backend/main.py ---
-IMPORTS (Libraries used):
-import json
-import os
-from contextlib import asynccontextmanager
-import numpy as np
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from backend.api.routes import health, jobs
-from backend.config import get_settings
-from backend.models.api import SequenceResponse
-from backend.models.tracking import BallState, Coordinate, FrameData, PlayerState
-from backend.services.job_manager import get_job_manager
-
-FUNCTIONS/METHODS:
-  async def lifespan(app: FastAPI)
-  def create_app() -> FastAPI
-  def get_mock_tracking_sequence()
-  def get_real_tracking_sequence()
-
-KEY CONSTANTS/CONFIG:
-  REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-
-KEY CODE COMMENTS:
-  # Legacy script path for /api/v1/tracking/real
-  # --- Legacy v1 endpoints (preserved for dev / HF backward compat) ---
-
---- File: colab_backend.ipynb ---
-[NOTEBOOK DOC]: # CourtSense AI - Free Online Backend
-
-This notebook allows you to run the CourtSense AI backend for free using Google Colab's cloud servers.
-
-**Instructions:**
-1. In the menu, go to **Runtime > Change runtime type** and ensure Hardware accelerator is set to **T4 GPU** (or CPU if GPU is unavailable, though GPU is much faster for YOLOv8).
-2. Click the "Play" button on each cell below (or go to **Ru
-
-[CODE CELL 1]:
-# 1. Clone the repository and install requirements
-# We need this for OpenCV in colab
-
-[CODE CELL 2]:
-import urllib.request
-# 2. Run the FastAPI server in the background 
-# 3. Open Localtunnel endpoint (Copy the your url is: ... link!)
-
---- File: README.md ---
----
-title: CourtSense Backend
-emoji: 🎾
-colorFrom: green
-colorTo: blue
-sdk: docker
-app_port: 8000
----
-<div align="center">
-
-<!-- Animated Header -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0D9488,50:06B6D4,100:3B82F6&height=220&section=header&text=CourtSense%20AI&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=3D%20Tennis%20Analytics%20Engine&descSize=18&descAlignY=55&descAlign=50" width="100%"/>
-
-<!-- Typing SVG -->
-<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=06B6D4&center=true&vCenter=true&width=600&lines=Tennis+Video+%E2%86%92+Interactive+3D+Replay;YOLOv8-Pose+%7C+SegFormer+%7C+Three.js;Real-time+Speed+%26+Spin+Analytics;150-Frame+Physics-Accurate+Replays" alt="Typing SVG" /></a>
-
-<br/>
-
-<!-- Badges Row 1 -->
-<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
-<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" />
-<img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
-<img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
-<img src="https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white" />
-<img src="https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" />
-
-<br/>
-
-<!-- Badges Row 2 -->
-<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
-<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
-<img src="https://img.shields.io/badge/MediaPipe-0097A7?style=for-the-badge&logo=google&logoColor=white" />
-
-<br/><br/>
-
-<!-- Stats Badges -->
-<img src="https://img.shields.io/badge/150%20Frames-Per%20Replay-0D9488?style=flat-square&labelColor=1a1a2e" />
-<img src="https://img.shields.io/badge/17%20Keypoints-Per%20Frame-06B6D4?style=flat-square&labelColor=1a1a2e" />
-<img src="https://img.shields.io/badge/~70%25%20Jitter-Reduction-3B82F6?style=flat-square&labelColor=1a1a2e" />
-<img src="https://img.shields.io/badge/±5%20km%2Fh-Speed%20Accuracy-8B5CF6?style=flat-square&labelColor=1a1a2e" />
-
-</div>
-
----
-
-<div align="center">
-<h2>🎯 What It Does</h2>
-</div>
-
-<table>
-<tr>
-<td width="50%">
-
-### 📥 Input
-A raw tennis match video from **any camera angle** — broadcast footage, phone recording, or drone shot.
-
-</td>
-<td width="50%">
-
-### 📤 Output
-An **interactive 3D replay** you can rotate, zoom, and replay from any angle — with real-time **speed (km/h)** and **spin (rpm)** overlays.
-
-</td>
-</tr>
-</table>
-
----
-
-<div align="center">
-<h2>🏗️ Architecture Pipeline</h2>
-</div>
-
-```mermaid
-graph TD
-    A[🎾 Tennis Match Video] --> B[YOLOv8-Pose]
-    A --> C[SegFormer-B2]
-    A --> D[HSV + YOLO]
-    
-    B -->|17 COCO Keypoints| E[OpenCV Homography]
-    C -->
-
---- File: frontend/README.md ---
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
---- File: backend/config.py ---
-IMPORTS (Libraries used):
-from functools import lru_cache
-from pathlib import Path
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
-CLASSES:
-  class Settings(BaseSettings):
-
-FUNCTIONS/METHODS:
-  def get_settings() -> Settings
-
-KEY CONSTANTS/CONFIG:
-  REPO_ROOT = Path(__file__).resolve().parent.parent
-
-KEY CODE COMMENTS:
-  # Stub pipeline simulates CV work (seconds). Set 0 for instant response in tests.
-
---- File: backend/cv/ball_tracker.py ---
-IMPORTS (Libraries used):
-import cv2
-import numpy as np
-from typing import Dict, Any, Optional
-from ultralytics import YOLO
-from backend.cv.homography import CourtProjector
-
-CLASSES:
-  class BallTracker:
-
-FUNCTIONS/METHODS:
-  def __init__(self, model_path: str = "yolov8n.pt")
-  def detect_ball(self, frame: np.ndarray, projector: CourtProjector) -> Optional[Dict[str, float]] -- Detects the tennis ball in the frame and projects it to the 2D court ground plane (x, z). Note: The true height (y) is estimated in the pipeline stage, not here. Returns: {"x": float, "z": float, "conf": float, "u": float, "v": float} or None
-
-KEY CODE COMMENTS:
-  # We use a standard YOLOv8n model for V5.0.
-  # In COCO, class 32 is 'sports ball'.
-  # Get center of bounding box
-  # Project pixel to court ground plane (x, z)
-  # Court Bounds Filter: A ball can be out of bounds, but usually within a reasonable distance
-  # Sort by confidence and return the best one
-
---- File: backend/cv/court_lines.py ---
-IMPORTS (Libraries used):
-from __future__ import annotations
-import cv2
-import numpy as np
-from backend.cv.errors import CalibrationError
-
-FUNCTIONS/METHODS:
-  def _resize(frame: np.ndarray, max_width: int = 1280) -> tuple[np.ndarray, float]
-  def _white_line_mask(bgr: np.ndarray) -> np.ndarray
-  def _line_angle(x1: float, y1: float, x2: float, y2: float) -> float
-  def _collect_segments(mask: np.ndarray) -> list[tuple[float, float, float, float]]
-  def _cluster_lines(
-  def _line_to_abc(x1: float, y1: float, x2: float, y2: float) -> tuple[float, float, float]
-  def _intersect(l1: tuple[float, float, float], l2: tuple[float, float, float]) -> np.ndarray | None
-  def _order_corners(pts: np.ndarray) -> np.ndarray -- Order 4 points as TL, TR, BR, BL.
-  def _pick_extreme_lines(
-  def detect_court_corners(frame: np.ndarray) -> np.ndarray -- Detect 4 court corners in pixel space (TL, TR, BR, BL). Raises CalibrationError if detection fails validation.
-  def extract_preview_frame(video_path: str, out_jpg: str, timestamp_sec: float = 0.5) -> np.ndarray -- Grab a BGR frame from video for calibration preview.
-
-KEY CODE COMMENTS:
-  # top = min y-midpoint, bottom = max y-midpoint
-
---- File: backend/cv/errors.py ---
-CLASSES:
-  class CalibrationError(Exception):: Auto or manual court calibration failed.
-
---- File: backend/cv/homography.py ---
-IMPORTS (Libraries used):
-from __future__ import annotations
-import json
-import cv2
-import numpy as np
-from backend.cv.errors import CalibrationError
-from backend.cv.court_lines import detect_court_corners
-
-CLASSES:
-  class CourtProjector:
-
-FUNCTIONS/METHODS:
-  def __init__(self, homography: np.ndarray)
-  def from_corners(cls, src_corners: np.ndarray) -> "CourtProjector" -- Build projector from 4 image corners (TL, TR, BR, BL).
-  def from_frame(cls, frame: np.ndarray) -> "CourtProjector"
-  def pixel_to_court(self, u: float, v: float) -> tuple[float, float] -- Returns (x, z) in meters on the ground plane.
-  def pixel_to_3d(self, u: float, v: float, y: float = 0.0) -> tuple[float, float, float]
-  def clamp_to_court(self, x: float, z: float) -> tuple[float, float]
-  def reprojection_error_px(self, src_corners: np.ndarray) -> float
-  def to_json(self) -> str
-  def from_json(cls, data: str) -> "CourtProjector"
-
-KEY CONSTANTS/CONFIG:
-  COURT_DST = np.array(
-
-KEY CODE COMMENTS:
-  # Destination court corners in meters (x, z): TL, TR, BR, BL============================================================
 === REPO: Transformer_from_scratch_using_pytorch ===
 URL: https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch
 Description: From-scratch PyTorch implementation of the Transformer (Attention Is All You Need): multi-head attention, positional encoding, encoder-decoder
