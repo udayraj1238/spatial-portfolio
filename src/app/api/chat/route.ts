@@ -372,6 +372,7 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
       model: groq('llama-3.1-8b-instant'),
       system: SYSTEM_PROMPT,
       messages: coreMessages.slice(-4), // Only send the last 4 messages to save thousands of tokens
+      maxTokens: 1000, // Limit generation to prevent default max_tokens from blowing up the 6000 TPM quota
     });
     
     return result.toUIMessageStreamResponse();
