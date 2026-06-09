@@ -9,13 +9,10 @@ export const runtime = 'edge';
 
 // ─── Input Validation & Sanitization ──────────────────────────────────────────
 const MessageSchema = z.object({
-  role: z.enum(['user', 'assistant']).optional(),
-  content: z.string().max(2000), // Prevent huge payloads
-  parts: z.array(z.object({
-    type: z.string(),
-    text: z.string().max(2000)
-  })).optional(),
-});
+  role: z.string().optional(),
+  content: z.string().max(5000).optional(), 
+  parts: z.any().optional(),
+}).passthrough();
 
 const ChatRequestSchema = z.object({
   messages: z.array(MessageSchema).optional(),
@@ -80,8 +77,12 @@ export async function POST(req: Request) {
     // Validate structure
     const validated = ChatRequestSchema.safeParse(body);
     if (!validated.success) {
+      console.error('[Validation Error]', JSON.stringify(validated.error.errors));
       return new Response(
-        JSON.stringify({ error: 'Invalid request format' }),
+        JSON.stringify({
+          error: 'Invalid request format',
+          details: validated.error.errors,
+        }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
