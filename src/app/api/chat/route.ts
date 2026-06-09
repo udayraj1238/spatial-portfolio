@@ -298,9 +298,9 @@ Today: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long'
 - Data augmentation pipeline → **12% improvement in baseline model mAP**
 
 ════════════════════════════════════════════════════
-  SUPPLEMENTARY CONTEXT (live from resume + code)
+  SUPPLEMENTARY CONTEXT
 ════════════════════════════════════════════════════
-${extraContext ? extraContext.slice(0, 8000) : '(unavailable — full hardcoded knowledge above is authoritative)'}
+(Full hardcoded knowledge above is authoritative)
 
 ════════════════════════════════════════════════════
   YOUR PERSONA & RESPONSE STYLE
@@ -371,9 +371,9 @@ You are APEX — a brilliant, direct, fiercely knowledgeable AI that has deeply 
     const result = streamText({
       model: groq('llama-3.1-8b-instant'),
       system: SYSTEM_PROMPT,
-      messages: coreMessages.slice(-4), // Only send the last 4 messages to save thousands of tokens
+      messages: coreMessages.slice(-2), // Only send the last 2 messages to save thousands of tokens per request
       // @ts-ignore - Vercel AI SDK runtime supports maxTokens but strict types fail
-      maxTokens: 1000, // Limit generation to prevent default max_tokens from blowing up the 6000 TPM quota
+      maxTokens: 500, // Limit generation to 500 to allow multiple requests per minute within 6000 TPM limit
     });
     
     return result.toUIMessageStreamResponse();
