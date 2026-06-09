@@ -77,11 +77,11 @@ export async function POST(req: Request) {
     // Validate structure
     const validated = ChatRequestSchema.safeParse(body);
     if (!validated.success) {
-      console.error('[Validation Error]', JSON.stringify(validated.error.errors));
+      console.error('[Validation Error]', JSON.stringify(validated.error.issues));
       return new Response(
         JSON.stringify({
           error: 'Invalid request format',
-          details: validated.error.errors,
+          details: validated.error.issues,
         }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
