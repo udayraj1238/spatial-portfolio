@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-06-11 20:41
+  Last Updated: 2026-06-12 20:33
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -503,13 +503,18 @@ CLASSES:
   class BallTracker:
 
 FUNCTIONS/METHODS:
-  def __init__(self, model_path: str = "yolov8n_tennis.pt")
+  def __init__(self, model_path: str = "yolov8_tennis_ball.pt")
   def detect_ball(self, frame: np.ndarray, projector: CourtProjector) -> Optional[Dict[str, float]] -- Detects the tennis ball in the frame and projects it to the 2D court ground plane (x, z). Note: The true height (y) is estimated in the pipeline stage, not here. Returns: {"x": float, "z": float, "conf": float, "u": float, "v": float} or None
+
+KEY CONSTANTS/CONFIG:
+  INITIAL_CONF = 0.15
+  FINAL_CONF = 0.60
 
 KEY CODE COMMENTS:
   # We use a custom fine-tuned YOLOv8 model for V5.0.
   # In our custom dataset, class 0 is 'tennis_ball'.
   # Fallback to standard COCO
+  # Tennis-Vision dual-threshold pipeline variables
   # Get center of bounding box
   # Project pixel to court ground plane (x, z)
   # Court Bounds Filter: A ball can be out of bounds, but usually within a reasonable distance
@@ -532,8 +537,8 @@ FUNCTIONS/METHODS:
   def _intersect(l1: tuple[float, float, float], l2: tuple[float, float, float]) -> np.ndarray | None
   def _order_corners(pts: np.ndarray) -> np.ndarray -- Order 4 points as TL, TR, BR, BL.
   def _pick_extreme_lines(
-  def detect_court_corners(frame: np.ndarray) -> np.ndarray -- Detect 4 court corners in pixel space (TL, TR, BR, BL). Raises CalibrationError if detection fails validation.
-  def extract_preview_frame(video_path: str, out_jpg: str, timestamp_sec: float = 0.5) -> np.ndarray -- Grab a BGR frame from video for calibration preview.
+  def detect_court_corners(frame: np.ndarray) -> np.ndarray -- Detect 4 court corners in pixel space (TL, TR, BR, BL). Raises CalibrationError if detection fails validation.  TODO: Replace Hough lines with Tennis-Vision's keypoints_model.pth (ResNet-50)
+  def extract_preview_frame(video_path: str, out_jpg: str, timestamp_sec: float = 0.5) -> np.ndarray -- Grab a BGR
 
 KEY CODE COMMENTS:
   # Adaptive threshold — works on all court types
