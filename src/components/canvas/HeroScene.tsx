@@ -5,7 +5,7 @@ import { Stars, Float, MeshDistortMaterial, PerspectiveCamera, Sparkles } from "
 import { Suspense, useRef, useMemo } from "react";
 import * as THREE from "three";
 
-// ─── Floating Data Streams ─────────────────────────────────────────────────
+// ─── Floating Data Streams (with opacity pulse) ────────────────────────────
 function DataStream() {
   const count = 40;
   const meshes = useRef<THREE.Mesh[]>([]);
@@ -20,10 +20,12 @@ function DataStream() {
       speed: THREE.MathUtils.randFloat(0.04, 0.18),
       length: THREE.MathUtils.randFloat(4, 18),
       opacity: THREE.MathUtils.randFloat(0.15, 0.5),
+      phaseOffset: THREE.MathUtils.randFloat(0, Math.PI * 2),
     })), []
   );
 
-  useFrame(() => {
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
     meshes.current.forEach((mesh, i) => {
       if (!mesh) return;
       mesh.position.z += data[i].speed;
@@ -31,6 +33,11 @@ function DataStream() {
         mesh.position.z = -60;
         mesh.position.x = THREE.MathUtils.randFloatSpread(30);
         mesh.position.y = THREE.MathUtils.randFloatSpread(30);
+      }
+      // Opacity pulse
+      const mat = mesh.material as THREE.MeshStandardMaterial;
+      if (mat) {
+        mat.opacity = data[i].opacity * (0.6 + 0.4 * Math.sin(t * 1.2 + data[i].phaseOffset));
       }
     });
   });
@@ -85,6 +92,108 @@ function OrbitalRing({ radius, tilt, speed, color }: {
   );
 }
 
+// ─── Hexagonal Tube Ring ────────────────────────────────────────────────────
+function HexagonalTubeRing() {
+  const ref = useRef<THREE.Mesh>(null);
+  const radius = 11;
+
+  const geometry = useMemo(() => {
+    const points: THREE.Vector3[] = [];
+    for (let i = 0; i <= 6; i++) {
+      const angle = (i % 6) * (Math.PI * 2) / 6;
+      points.push(new THREE.Vector3(
+        Math.cos(angle) * radius,
+        Math.sin(angle) * radius,
+        0
+      ));
+    }
+    const curve = new THREE.CatmullRomCurve3(points, true);
+    return new THREE.TubeGeometry(curve, 64, 0.025, 6, true);
+  }, []);
+
+  useFrame(({ clock }) => {
+    if (ref.current) {
+      const t = clock.getElapsedTime();
+      ref.current.rotation.z = t * 0.05;
+      ref.current.rotation.x = Math.sin(t * 0.3) * 0.08;
+    }
+  });
+
+  return (
+    <mesh ref={ref} geometry={geometry}>
+      <meshStandardMaterial
+        color="#00f0ff"
+        emissive="#00f0ff"
+        emissiveIntensity={2}
+        transparent
+        opacity={0.12}
+      />
+    </mesh>
+  );
+}
+
+// ─── Orbiting Dots ──────────────────────────────────────────────────────────
+interface OrbitingDotConfig {
+  radius: number;
+  tilt: number;
+  speed: number;
+  color: string;
+}
+
+function OrbitingDots() {
+  const dot0 = useRef<THREE.Mesh>(null);
+  const dot1 = useRef<THREE.Mesh>(null);
+  const dot2 = useRef<THREE.Mesh>(null);
+
+  const configs: OrbitingDotConfig[] = useMemo(() => [
+    { radius: 5.5, tilt: 0.8,  speed: 0.6,  color: '#00f0ff' },
+    { radius: 7.0, tilt: -0.5, speed: -0.45, color: '#0066ff' },
+    { radius: 9.0, tilt: 1.2,  speed: 0.35,  color: '#00f0ff' },
+  ], []);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    const dots = [dot0.current, dot1.current, dot2.current];
+
+    dots.forEach((dot, i) => {
+      if (!dot) return;
+      const cfg = configs[i];
+      const angle = t * cfg.speed;
+
+      // Position on the ring's local plane, then apply tilt rotation
+      const localX = Math.cos(angle) * cfg.radius;
+      const localY = Math.sin(angle) * cfg.radius;
+
+      // Apply tilt (rotation around X axis)
+      const cosT = Math.cos(cfg.tilt);
+      const sinT = Math.sin(cfg.tilt);
+      dot.position.x = localX;
+      dot.position.y = localY * cosT;
+      dot.position.z = localY * sinT;
+    });
+  });
+
+  return (
+    <group>
+      {configs.map((cfg, i) => (
+        <mesh
+          key={i}
+          ref={i === 0 ? dot0 : i === 1 ? dot1 : dot2}
+        >
+          <sphereGeometry args={[0.08, 16, 16]} />
+          <meshStandardMaterial
+            color={cfg.color}
+            emissive={cfg.color}
+            emissiveIntensity={8}
+            transparent
+            opacity={0.95}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 // ─── The Core Orb ───────────────────────────────────────────────────────────
 function CoreOrb() {
   const ref = useRef<THREE.Mesh>(null);
@@ -128,7 +237,7 @@ function CoreOrb() {
             distort={0.35}
             radius={1}
             emissive="#00f0ff"
-            emissiveIntensity={3}
+            emissiveIntensity={3.5}
             transparent
             opacity={0.92}
           />
@@ -205,6 +314,13 @@ function SceneContent() {
       <OrbitalRing radius={5.5} tilt={0.8}  speed={0.15}  color="#00f0ff" />
       <OrbitalRing radius={7.0} tilt={-0.5} speed={-0.1}  color="#0066ff" />
       <OrbitalRing radius={9.0} tilt={1.2}  speed={0.08}  color="#00f0ff" />
+      <OrbitalRing radius={12}  tilt={0.4}  speed={0.04}  color="#00f0ff" />
+
+      {/* Hexagonal tube ring */}
+      <HexagonalTubeRing />
+
+      {/* Orbiting dots along rings */}
+      <OrbitingDots />
 
       {/* Core orb */}
       <CoreOrb />
@@ -219,6 +335,7 @@ function SceneContent() {
       <pointLight position={[15, 10, 10]} intensity={2} color="#00c8ff" distance={30} />
       <pointLight position={[-15, -10, -10]} intensity={1.5} color="#3300ff" distance={30} />
       <pointLight position={[0, 15, -10]} intensity={1} color="#00f0ff" distance={25} />
+      <pointLight position={[10, 12, 5]} intensity={1.2} color="#00f0ff" distance={25} />
     </group>
   );
 }
@@ -235,7 +352,7 @@ export default function HeroScene() {
         <PerspectiveCamera makeDefault position={[0, 0, 12]} fov={52} />
         <Suspense fallback={null}>
           <SceneContent />
-          <fog attach="fog" args={['#000208', 15, 70]} />
+          <fog attach="fog" args={['#000208', 18, 70]} />
         </Suspense>
       </Canvas>
     </div>

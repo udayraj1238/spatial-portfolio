@@ -6,6 +6,12 @@
   --glow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.3);
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html,
 body {
   margin: 0;
@@ -21,10 +27,6 @@ body {
   font-family: var(--font-geist-mono), 'Courier New', Courier, monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
 }
 
 a {
@@ -63,19 +65,32 @@ a:hover {
   z-index: 0;
 }
 
-/* Scrollbar styling for chat */
+/* Scrollbar — minimal 3px */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 3px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 3px;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 @keyframes spin {
@@ -86,4 +101,3 @@ a:hover {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
-
