@@ -4,6 +4,23 @@
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
+== RESEARCH EXPERIENCE ==
+Research Intern — SVNIT Surat (Sardar Vallabhbhai National Institute of Technology)
+Under: Dr. Praveen Kumar Chandaliya
+Duration: Nov 2025 – Present
+Topic: Adversarial robustness of transformer-based computer vision systems
+- Designed adversarial attack strategies on ViT and SegFormer architectures
+- Evaluated on Market-1501 benchmark using PyTorch
+- Research paper currently under review
+- Code to be released upon publication
+
+== COURTSENSE-AI: FULL PIPELINE ==
+CourtSense-AI converts tennis match videos into 150-frame interactive 3D replays.
+Pipeline: YOLOv8-Pose (player detection) → SegFormer-B2 (court segmentation)
+→ OpenCV homography → Kalman filtering (ball tracking) → 3D projection
+→ FastAPI backend → React/Three.js frontend
+Achievement: 30+ FPS on edge devices with TensorRT optimization
+
 == SECTION 1: RESUME (Primary Source) ==
 Uday Raj
  +91 8527655484
