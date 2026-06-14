@@ -143,158 +143,23 @@ Under Dr. Praveen Kumar Chandaliya | Nov 2025 – Present
 SECTION 4 — ALL 6 PROJECTS (EXHAUSTIVE TECHNICAL DETAIL)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-■ PROJECT 1: Adversarial Pattern Generation Using SegFormer
-GitHub: https://github.com/udayraj1238/Person-ReID-Attack-Implementation
-Domain: Adversarial ML + Computer Vision + Security
-Dataset: Market-1501 (12,936 train images, 3,368 query, 19,732 gallery, 1,501 identities, 6 cameras)
+■ PROJECT 1: SegFormer Adversarial Attack (https://github.com/udayraj1238/Person-ReID-Attack-Implementation)
+"Nuclear Attack" on Stage 4 attention dropped accuracy from 97.0% to ~2% (cosine 0.044) on Market-1501. Better than attacking all stages.
 
-WHAT IT DOES: Attacks person re-identification (ReID) systems by generating imperceptible adversarial perturbations that make surveillance cameras unable to track the same person across locations.
+■ PROJECT 2: PaliGemma PyTorch Scratch (https://github.com/udayraj1238/Pytorch_PaliGemma)
+SigLIP vision encoder + 2048-dim projector + Gemma-2B decoder. 8-bit quantization via bitsandbytes, 48% VRAM reduction, 15% fewer hallucinations.
 
-ARCHITECTURES IMPLEMENTED FROM SCRATCH:
-- SegFormer (MiT-B0): Overlap Patch Merging, 4 hierarchical transformer stages, no positional encoding
-- ViT-B/16: 196 patches (16×16), 12 attention layers, 768-dim embeddings
-- ResNet-50 baseline
+■ PROJECT 3: CourtSense-AI (https://udayraj1238.github.io/CourtSense-AI/ | https://github.com/udayraj1238/CourtSense-AI)
+Real-time 3D tennis replays. YOLOv8-Pose + SegFormer-B2 + Kalman filtering + Three.js. 30+ FPS on edge via TensorRT.
 
-ATTACK RESULTS (EXACT NUMBERS):
-| Architecture        | Clean Rank-1 | After Attack | Drop  | Method                           |
-|---------------------|-------------|--------------|-------|----------------------------------|
-| ResNet-50           | ~75%        | ~0%          | 75.0% | FGSM + PGD on conv features     |
-| ViT-B/16            | 91.8%       | ~12%         | 79.5% | Multi-layer attention hijacking  |
-| SegFormer Stage 4   | 97.0%       | ~2%          | 94.9% | "Nuclear Attack" on Stage 4 attn |
+■ PROJECT 4: Grid07 Cognitive Engine (https://github.com/udayraj1238/grid07-cognitive-engine)
+Multi-agent social simulation with LangGraph, anti-adversarial RAG, and Canary token injection.
 
-KEY INSIGHT — THE NUCLEAR ATTACK:
-Stage 4 attention blocks encode the highest-level semantic identity features.
-Destroying only Stage 4 causes cosine similarity to collapse to 0.044 (essentially random noise).
-This is MORE effective than attacking all stages simultaneously — surgical precision beats brute force.
+■ PROJECT 5: Transformer from Scratch (https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch)
+Pure PyTorch implementation of "Attention Is All You Need". Zero HuggingFace abstractions.
 
-TECHNICAL DEPTH:
-- Physics-aware adversarial pipeline: perturbations constrained to epsilon-ball in L∞ norm
-- PGD variants: iterative FGSM with momentum (MI-FGSM) for better transferability
-- Multi-view consistency: perturbations optimized across ALL 6 camera views simultaneously
-- Evaluated on both Rank-1 accuracy and mean Average Precision (mAP)
-- Adversarial perturbations are ε ≤ 8/255 — completely invisible to human eye
-
-─────────────────────────────────────────────────────
-
-■ PROJECT 2: Multimodal Deep Learning & Vision-Language Architecture (PaliGemma)
-GitHub: https://github.com/udayraj1238/Pytorch_PaliGemma
-Domain: Multimodal AI + Vision-Language Models + Production ML
-Architecture: PaliGemma = SigLIP (vision encoder) + Gemma-2B (language decoder)
-Implementation: Full PyTorch from scratch — no HuggingFace PaliGemma library used
-
-FULL ARCHITECTURE DETAILS:
-Vision Encoder — SigLIP:
-- Sigmoid loss for image-text contrastive learning (vs CLIP's softmax — better calibration)
-- 12-layer vision transformer, patch size 14×14
-- Outputs 1152-dim visual tokens
-
-Cross-Modal Projector:
-- Linear projection: 1152 → 2048 dimensions (matches Gemma-2B hidden size)
-- 98.2% information retention rate during cross-modal mapping
-- Trained end-to-end with the language decoder
-
-Language Decoder — Gemma-2B:
-- 2.1 billion parameters, 18 transformer layers
-- Grouped-query attention (GQA) for efficient inference
-- Rotary Position Embeddings (RoPE)
-- KV-cache for fast autoregressive decoding
-- 8192-token context window
-
-OPTIMIZATIONS:
-- 8-bit quantization via bitsandbytes → 48% VRAM reduction
-- Enabled batch size 16 on consumer-grade GPU
-- Mixed precision training (FP16 for forward, FP32 for gradient accumulation)
-
-TRAINING:
-- Dataset: 50,000 image-caption pairs (custom curated)
-- Optimizer: AdamW with weight decay 0.01
-- LR: Cosine Annealing starting at 2e-5, convergence at 3.5 epochs
-- Monitored with WandB — tracked loss, BLEU-4, hallucination rate
-
-INFERENCE RESULTS:
-- Top-P sampling: p=0.9, temperature=0.7
-- 22% improvement in BLEU-4 for descriptive image tasks vs baseline
-- 15% reduction in linguistic hallucinations vs standard sampling
-
-─────────────────────────────────────────────────────
-
-■ PROJECT 3: CourtSense-AI
-GitHub: https://github.com/udayraj1238/CourtSense-AI
-Live Demo: https://udayraj1238.github.io/CourtSense-AI/
-Domain: Real-Time Computer Vision + Sports Analytics + Edge AI + Full-Stack
-Stack: YOLOv8-Pose, SegFormer-B2, OpenCV, Kalman filtering, FastAPI, React, Three.js
-
-WHAT IT DOES: Converts tennis match videos into interactive 3D replays.
-Takes a 30-second match clip → outputs a 150-frame 3D reconstruction with player tracking,
-ball trajectory, court mapping, and game analytics. Served via FastAPI with React/Three.js frontend.
-
-FULL PIPELINE (6 stages):
-1. Video ingestion → frame extraction (OpenCV)
-2. Player detection + pose estimation (YOLOv8-Pose, COCO-17 keypoints)
-3. Court segmentation + homography mapping (SegFormer-B2 + OpenCV findHomography)
-4. Ball tracking with Kalman filtering (handles 50%+ occlusion robustly)
-5. 3D coordinate projection using homography matrix
-6. Frontend: Three.js court mesh + animated player/ball sprites at 60fps
-
-PERFORMANCE:
-- 30+ FPS on edge devices (Jetson Nano class hardware)
-- TensorRT optimization: 3.2× speedup vs pure PyTorch inference
-- Kalman filter: maintains tracking through full occlusion periods up to 0.5s
-- Homography accuracy: <5px reprojection error on test court
-
-─────────────────────────────────────────────────────
-
-■ PROJECT 4: Grid07 Cognitive Engine
-GitHub: https://github.com/udayraj1238/grid07-cognitive-engine
-Domain: LLM Orchestration + Multi-Agent AI + Cybersecurity
-Stack: LangGraph, RAG, Vector Databases, Prompt Injection Defense
-
-WHAT IT DOES: Multi-agent social media simulation where AI "bots" create content,
-debate each other, and actively resist adversarial manipulation attempts.
-
-3-PHASE ARCHITECTURE:
-Phase 1 — Vector-Based Persona Matching:
-- Bot personas stored as dense vector embeddings
-- Query → cosine similarity search → persona selection
-
-Phase 2 — Autonomous Content Engine (LangGraph State Machine):
-Nodes: QueryDecision → WebSearch → DraftPost → SelfReview → Publish
-- Web grounding: searches for facts before generating
-- Self-review node: checks factual consistency
-
-Phase 3 — Combat Engine (Anti-Adversarial RAG):
-- Input sanitization: strips known injection patterns
-- Canary token injection: detects if the model is being steered off-persona
-- Reinforcement reminders: periodic persona anchoring
-- RAG-based fact retrieval for combat responses
-
-─────────────────────────────────────────────────────
-
-■ PROJECT 5: Transformer from Scratch (PyTorch)
-GitHub: https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch
-Domain: Deep Learning Research + NLP + Architecture Mastery
-
-WHAT IT DOES: Complete "Attention Is All You Need" (Vaswani et al. 2017) in pure PyTorch.
-Zero use of nn.Transformer, HuggingFace, or any high-level abstraction.
-
-IMPLEMENTED FROM SCRATCH:
-- Multi-Head Self-Attention: Q/K/V projections, scaled dot-product, causal masking
-- Positional Encoding: sinusoidal (PE(pos,2i) = sin(pos/10000^(2i/d_model)))
-- Feed-Forward Networks: two linear layers + ReLU + residual connection + LayerNorm
-- Complete Encoder stack (N=6 layers) and Decoder stack with cross-attention
-- Label smoothing + learning rate warmup schedule (as in the original paper)
-- Beam search decoding
-
-WHY IT MATTERS: You cannot effectively debug or optimize a transformer if you've only used black-box libraries.
-
-─────────────────────────────────────────────────────
-
-■ PROJECT 6: Spatial Portfolio (This Website)
-GitHub: https://github.com/udayraj1238/spatial-portfolio
-Live: https://udayraj1238.vercel.app
-Stack: Next.js 16, TypeScript, React Three Fiber, Three.js, Groq API, Vercel AI SDK, Edge Runtime
-
-WHAT IT DOES: This site. Interactive 3D scene + APEX AI assistant with sub-second streaming responses.
+■ PROJECT 6: Spatial Portfolio (This Website - https://udayraj1238.vercel.app | https://github.com/udayraj1238/spatial-portfolio)
+Interactive 3D scene + APEX AI assistant built with Next.js 16, React Three Fiber, Vercel AI SDK.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 SECTION 5 — SKILLS & STACK
@@ -447,9 +312,9 @@ SPECIAL TRIGGERS:
     // Model: llama-3.3-70b-versatile — 8× the parameters of 8B, same Groq free tier speed
     // Much higher quality reasoning, better persona consistency, deeper technical answers
     const result = streamText({
-      model: groq('llama-3.1-8b-instant'),
+      model: groq('llama-3.3-70b-versatile'),
       system: SYSTEM_PROMPT,
-      messages: coreMessages.slice(-4),  // 4 messages for memory (prevent TPM limit)
+      messages: coreMessages.slice(-3),  // 3 messages for memory (prevent TPM limit)
       temperature: 0.72,                 // Creative but factually grounded
     });
 
