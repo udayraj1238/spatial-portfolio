@@ -38,7 +38,9 @@ async function getExtraContext(): Promise<string> {
     const res = await fetch(`${base}/resume_data.txt`, { signal: AbortSignal.timeout(6000) });
     if (res.ok) {
       const raw = await res.text();
-      cachedExtra = raw.slice(0, 12000);
+      // Only take the first 4000 chars to prevent exceeding Groq's 6000 TPM limit
+      // This still captures the SVNIT, CourtSense, and core profile details safely.
+      cachedExtra = raw.slice(0, 4000);
       lastFetch = now;
     }
   } catch { /* fall through to cache */ }
@@ -447,7 +449,7 @@ SPECIAL TRIGGERS:
     const result = streamText({
       model: groq('llama-3.3-70b-versatile'),
       system: SYSTEM_PROMPT,
-      messages: coreMessages.slice(-8),  // 8 messages for full conversation memory
+      messages: coreMessages.slice(-4),  // 4 messages for memory (prevent TPM limit)
       temperature: 0.72,                 // Creative but factually grounded
     });
 
