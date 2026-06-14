@@ -201,7 +201,6 @@ export async function POST(req: Request) {
       system: buildPrompt(),
       messages: recentMessages,
       temperature: 0.7,
-      maxTokens: 600,   // Enough for thorough answers, prevents runaway responses
     });
 
     return result.toUIMessageStreamResponse();
