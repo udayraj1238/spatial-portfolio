@@ -45,7 +45,7 @@ async function getExtraContext(): Promise<string> {
   return cachedExtra || '';
 }
 
-// ─── Rate limiting (in-memory, edge-compatible, 20 req/min) ───────────────────
+// ─── Rate limiting (in-memory, edge-compatible, 1000 req/min for testing) ─────────
 const rateMap = new Map<string, { count: number; reset: number }>();
 function checkRate(ip: string): boolean {
   const now = Date.now();
@@ -54,7 +54,7 @@ function checkRate(ip: string): boolean {
     rateMap.set(ip, { count: 1, reset: now + 60_000 });
     return true;
   }
-  if (entry.count >= 20) return false;
+  if (entry.count >= 1000) return false;
   entry.count++;
   return true;
 }
