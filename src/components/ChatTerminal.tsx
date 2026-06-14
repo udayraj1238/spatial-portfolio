@@ -252,7 +252,7 @@ export default function ChatTerminal() {
     if (msg.includes('429') || msg.toLowerCase().includes('rate limit')) {
       return 'Rate limit reached — please wait a moment'
     }
-    return 'APEX encountered an error. Please try again.'
+    return `Error: ${msg}`
   }
 
   return (
