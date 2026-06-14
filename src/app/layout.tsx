@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import Scene from "@/components/canvas/Scene";
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -49,11 +47,6 @@ export default function RootLayout({
       <body>
         <div id="dom-root">
           {children}
-        </div>
-        <div id="canvas-container">
-          <ErrorBoundary fallback={<div style={{ width: '100%', height: '100%', background: '#000' }} />}>
-            <Scene />
-          </ErrorBoundary>
         </div>
       </body>
     </html>
