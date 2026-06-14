@@ -312,7 +312,7 @@ SPECIAL TRIGGERS:
     // Model: llama-3.3-70b-versatile — 8× the parameters of 8B, same Groq free tier speed
     // Much higher quality reasoning, better persona consistency, deeper technical answers
     const result = streamText({
-      model: groq('llama-3.3-70b-versatile'),
+      model: groq('llama-3.1-8b-instant'),
       system: SYSTEM_PROMPT,
       messages: coreMessages.slice(-3),  // 3 messages for memory (prevent TPM limit)
       temperature: 0.72,                 // Creative but factually grounded
