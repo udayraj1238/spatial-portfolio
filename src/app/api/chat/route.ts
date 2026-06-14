@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { groq } from '@ai-sdk/groq';
 import { streamText } from 'ai';
 import { z } from 'zod';
@@ -6,324 +6,224 @@ import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'edge';
 
-// ─── Input Validation ─────────────────────────────────────────────────────────
-const MessageSchema = z.object({
-  role: z.string().optional(),
-  content: z.string().max(5000).optional(),
-  parts: z.any().optional(),
-}).passthrough();
-
+// ─── Input validation ─────────────────────────────────────────────────────────
 const ChatRequestSchema = z.object({
-  messages: z.array(MessageSchema).optional(),
+  messages: z.array(z.object({
+    role: z.string().optional(),
+    content: z.string().max(2000).optional(),
+    parts: z.any().optional(),
+  }).passthrough()).optional(),
   text: z.string().max(2000).optional(),
 });
 
-function sanitizeInput(text: string): string {
-  return text
-    .trim()
-    .replace(/[\x00-\x1F\x7F]/g, '')
-    .slice(0, 2000);
+function sanitize(text: string): string {
+  return text.trim().replace(/[\x00-\x1F\x7F]/g, '').slice(0, 2000);
 }
 
-// ─── Resume context cache ─────────────────────────────────────────────────────
-let cachedExtra: string | null = null;
-let lastFetch = 0;
-const CACHE_TTL = 10 * 60 * 1000;
+// ─── Rate limiting ────────────────────────────────────────────────────────────
+// Two independent limits: per-minute (TPM safety) and per-day (TPD safety)
+const perMinute = new Map<string, { count: number; reset: number }>();
+const perDay    = new Map<string, { count: number; reset: number }>();
 
-async function getExtraContext(): Promise<string> {
+function checkRate(ip: string): { ok: boolean; reason: string } {
   const now = Date.now();
-  if (cachedExtra && now - lastFetch < CACHE_TTL) return cachedExtra;
-  try {
-    const base = process.env.NEXT_PUBLIC_PORTFOLIO_URL || 'https://udayraj1238.vercel.app';
-    const res = await fetch(`${base}/resume_data.txt`, { signal: AbortSignal.timeout(6000) });
-    if (res.ok) {
-      const raw = await res.text();
-      // Only take the first 4000 chars to prevent exceeding Groq's 6000 TPM limit
-      // This still captures the SVNIT, CourtSense, and core profile details safely.
-      cachedExtra = raw.slice(0, 4000);
-      lastFetch = now;
-    }
-  } catch { /* fall through to cache */ }
-  return cachedExtra || '';
+
+  // Per-minute: 5 requests/min (safely under 12,000 TPM at ~1,800 tokens/req)
+  let m = perMinute.get(ip);
+  if (!m || now > m.reset) { m = { count: 0, reset: now + 60_000 }; perMinute.set(ip, m); }
+  if (m.count >= 5) return { ok: false, reason: 'minute' };
+  m.count++;
+
+  // Per-day: 30 requests/day per IP (generous for a portfolio, protects daily quota)
+  let d = perDay.get(ip);
+  if (!d || now > d.reset) { d = { count: 0, reset: now + 86_400_000 }; perDay.set(ip, d); }
+  if (d.count >= 30) return { ok: false, reason: 'day' };
+  d.count++;
+
+  return { ok: true, reason: '' };
 }
 
-// ─── Rate limiting (in-memory, edge-compatible, 1000 req/min for testing) ─────────
-const rateMap = new Map<string, { count: number; reset: number }>();
-function checkRate(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateMap.get(ip);
-  if (!entry || now > entry.reset) {
-    rateMap.set(ip, { count: 1, reset: now + 60_000 });
-    return true;
+// ─── Token budget tracker (shared across all requests in this edge instance) ──
+// Tracks estimated token usage to know when to switch models
+let dailyTokensUsed = 0;
+let dailyTokensReset = Date.now() + 86_400_000;
+const TOKEN_BUDGET_70B = 80_000; // leave 20k headroom from the 100k daily limit
+
+function recordTokens(n: number) {
+  if (Date.now() > dailyTokensReset) {
+    dailyTokensUsed = 0;
+    dailyTokensReset = Date.now() + 86_400_000;
   }
-  if (entry.count >= 1000) return false;
-  entry.count++;
-  return true;
+  dailyTokensUsed += n;
 }
 
-// ─── Route Handler ────────────────────────────────────────────────────────────
+function shouldUseFallback(): boolean {
+  if (Date.now() > dailyTokensReset) { dailyTokensUsed = 0; dailyTokensReset = Date.now() + 86_400_000; }
+  return dailyTokensUsed >= TOKEN_BUDGET_70B;
+}
+
+// ─── System prompt ────────────────────────────────────────────────────────────
+// CRITICAL: This is kept under 1,800 tokens (~7,200 chars) so every request
+// stays well within the 12,000 TPM limit even with conversation history.
+// The knowledge is dense and factual — no padding, no repetition.
+function buildPrompt(): string {
+  return `You are APEX — the AI assistant for Uday Raj's portfolio. You know everything about him.
+Today: ${new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+
+IDENTITY: Uday Raj | rajuday6002@gmail.com | github.com/udayraj1238 | linkedin.com/in/uday6002
+EDUCATION: B.Tech AI & Data Science, IIITDM Kurnool | CGPA 8.38 | 2024–2028 (2nd year)
+           DPS Sushant Lok Gurugram | 95% | PCM | 2022–2024
+RESEARCH: Intern at SVNIT Surat under Dr. Praveen Chandaliya | Nov 2025–present
+          Adversarial robustness of ViT + SegFormer on Market-1501 | Paper under review
+
+PROJECTS (6 total):
+1. Adversarial ReID Attack (github.com/udayraj1238/Person-ReID-Attack-Implementation)
+   SegFormer MiT-B0 + ViT-B/16 + ResNet-50 on Market-1501 (12,936 train / 19,732 gallery / 1,501 IDs)
+   Nuclear Attack on SegFormer Stage-4 attn: 97.0%→2% Rank-1 (94.9% drop), cosine sim 0.044
+   ViT multi-layer hijacking (layers 9-11): 91.8%→12% (79.5% drop)
+   ResNet-50 FGSM+PGD: 75%→0%. All perturbations ε≤8/255 (invisible). MI-FGSM for transferability.
+
+2. PaliGemma VLM from scratch (github.com/udayraj1238/Pytorch_PaliGemma)
+   SigLIP 12-layer ViT (patch 14×14, 1152-dim) → linear projector 1152→2048 → Gemma-2B (2.1B params)
+   Sigmoid loss not softmax. GQA + RoPE + KV-cache. 8-bit quantization: 48% VRAM reduction.
+   50k image-caption pairs | AdamW + cosine LR 2e-5 | converged 3.5 epochs | WandB tracked.
+   Top-P p=0.9 T=0.7 inference: 22% BLEU-4 uplift, 15% fewer hallucinations vs baseline.
+
+3. CourtSense-AI (github.com/udayraj1238/CourtSense-AI | demo: udayraj1238.github.io/CourtSense-AI)
+   Tennis video → 3D interactive replay. YOLOv8-Pose (COCO-17 kp) + SegFormer-B2 court seg
+   + OpenCV findHomography + Kalman filter (handles 50%+ occlusion, <5px reprojection error)
+   + FastAPI backend + React/Three.js 60fps frontend. TensorRT: 3.2× speedup, 30+ FPS on Jetson.
+
+4. Grid07 Cognitive Engine (github.com/udayraj1238/grid07-cognitive-engine)
+   LangGraph multi-agent: personas→vector embeddings→cosine match. Nodes: Query→Search→Draft→Review→Publish.
+   Combat engine: input sanitization + canary tokens + RAG retrieval. Tested vs 50+ jailbreak patterns.
+
+5. Transformer from scratch (github.com/udayraj1238/Transformer_from_scratch_using_pytorch)
+   Pure PyTorch. MHSA Q/K/V, sinusoidal PE, FFN+residual+LayerNorm, 6-layer enc+dec, beam search.
+   Label smoothing + warmup LR as in Vaswani 2017. Zero nn.Transformer or HuggingFace used.
+
+6. This portfolio (github.com/udayraj1238/spatial-portfolio | udayraj1238.vercel.app)
+   Next.js 16 + React Three Fiber + Groq + Vercel AI SDK edge streaming.
+
+SKILLS: Python, C/C++, TypeScript | PyTorch, TF, OpenCV, YOLOv8, TensorRT, SegFormer, SigLIP
+        LangGraph, RAG, FAISS/Chroma, Groq API | NumPy, Pandas, WandB, Scikit-learn
+        Docker, FastAPI, Next.js, Vercel, LaTeX | ONNX, bitsandbytes, Jetson deployment
+
+ACHIEVEMENTS: Shell.ai Global Top 20/1000+ | AWS×Zelestra Rank 176/7000+ | EY Biodiversity #2 leaderboard
+              CodeChef 3★ 1630 | Codeforces 1208 | LeetCode 100+
+
+LEADERSHIP: GDG ML Coordinator — 12-week bootcamp, 200+ students, 15+ projects, Docker setup −40% latency
+            DataWorks CV Coord — 100+ members, 5000+ images curated, 12% mAP gain, 30+ FPS edge demos
+
+RESPONSE RULES:
+- First sentence must contain a specific number or metric — never a vague claim
+- Write like a senior ML engineer talking over coffee, not an HR recommendation letter
+- BANNED WORDS/PHRASES: "plethora", "testament", "strategic decision", "showcases his", "valuable asset", "based on available information", "it appears", "demonstrates his ability", "strong candidate", "In summary", "I hope this helps"
+- BANNED PATTERNS: NO section headers in responses. NO multi-section essays. NO generic bullet lists.
+- Keep responses 150–300 words for simple questions, 400–600 words max for technical deep-dives.
+- Bold **key metrics**. Use markdown tables for comparisons. Code blocks for math/code.
+- When mentioning a project, include its GitHub link naturally in the sentence.
+- Last sentence must be natural. No "In conclusion."
+- If asked to show CourtSense demo: include [COURTSENSE_DEMO_TRIGGER] in your response.
+
+WRONG: "Uday Raj's portfolio showcases his plethora of skills. 1. Technical Excellence: He is a valuable asset."
+RIGHT: "Uday built PaliGemma from scratch, dropping VRAM by 48% with 8-bit quantization. Let's look at the architecture."
+
+WRONG: "Hiring Uday: A Strategic Decision. It is a testament to his dedication..."
+RIGHT: "His Nuclear Attack on SegFormer crashed accuracy from 97.0% to 2%. That level of surgical adversarial testing is exactly why his paper is under review."`;
+}
+
+// ─── Route handler ────────────────────────────────────────────────────────────
 export async function POST(req: Request) {
   try {
-    // Rate limiting
+    // Rate limit
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anon';
-    if (!checkRate(ip)) {
-      return new Response(
-        JSON.stringify({ error: 'Rate limit reached. Please wait a moment.' }),
-        { status: 429, headers: { 'Content-Type': 'application/json' } }
-      );
+    const { ok, reason } = checkRate(ip);
+    if (!ok) {
+      const msg = reason === 'day'
+        ? 'You\'ve reached the daily limit for this portfolio. Come back tomorrow — or email Uday directly at rajuday6002@gmail.com!'
+        : 'One moment — please wait a few seconds before asking another question.';
+      return new Response(JSON.stringify({ error: msg }), {
+        status: 429, headers: { 'Content-Type': 'application/json' }
+      });
     }
 
+    // Parse + validate
     const body = await req.json();
-
-    // Validate structure
     const validated = ChatRequestSchema.safeParse(body);
-    if (!validated.success) {
-      console.error('[Validation Error]', JSON.stringify(validated.error.issues));
-      return new Response(
-        JSON.stringify({ error: 'Invalid request format', details: validated.error.issues }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+    if (!validated.success) return new Response('Invalid request', { status: 400 });
 
     let rawMessages = validated.data.messages;
-    if (!rawMessages && validated.data.text) {
+    if (!rawMessages?.length && validated.data.text) {
       rawMessages = [{ role: 'user', content: validated.data.text }];
     }
-
-    // Sanitize inputs
-    rawMessages = (rawMessages || []).map((m: any) => ({
-      ...m,
-      content: sanitizeInput(m.content || ''),
-      parts: m.parts?.map((p: any) => ({
-        ...p,
-        text: sanitizeInput(p.text || ''),
-      }))
-    }));
     if (!rawMessages?.length) return new Response('No messages', { status: 400 });
 
-    const extraContext = await getExtraContext();
-
-    // ─── THE SYSTEM PROMPT: THE BRAIN ─────────────────────────────────────────
-    const SYSTEM_PROMPT = `You are APEX — Uday Raj's personal AI. You are not a generic assistant.
-You are a domain expert who has memorized every line of Uday's code, every paper he's read, and every result he's achieved.
-You respond like a brilliant senior ML engineer who also happens to know Uday personally.
-Today's date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 1 — IDENTITY & CONTACT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Name: Uday Raj
-Email: rajuday6002@gmail.com
-GitHub: https://github.com/udayraj1238
-LinkedIn: https://linkedin.com/in/uday6002
-Portfolio: https://udayraj1238.vercel.app
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 2 — EDUCATION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-B.Tech — Artificial Intelligence & Data Science
-IIITDM Kurnool | CGPA: 8.38 | 2024–2028 | Currently 2nd Year
-Courses: Data Structures, Algorithms, ML, AI, Data Science, Statistical Analysis, Python, Discrete Math
-
-High School — Physics, Chemistry, Mathematics
-Delhi Public School (DPS) Sushant Lok, Gurugram | 95% | 2022–2024
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 3 — RESEARCH EXPERIENCE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Research Intern — SVNIT Surat (Sardar Vallabhbhai National Institute of Technology)
-Under Dr. Praveen Kumar Chandaliya | Nov 2025 – Present
-- Topic: Adversarial robustness of transformer-based computer vision systems
-- Designed and evaluated adversarial attack strategies on ViT and SegFormer architectures
-- Evaluated on Market-1501 benchmark using PyTorch
-- Research paper currently UNDER REVIEW for publication
-- Code and results to be released upon publication
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 4 — ALL 6 PROJECTS (EXHAUSTIVE TECHNICAL DETAIL)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-■ PROJECT 1: SegFormer Adversarial Attack (https://github.com/udayraj1238/Person-ReID-Attack-Implementation)
-"Nuclear Attack" on Stage 4 attention dropped accuracy from 97.0% to ~2% (cosine 0.044) on Market-1501. Better than attacking all stages.
-
-■ PROJECT 2: PaliGemma PyTorch Scratch (https://github.com/udayraj1238/Pytorch_PaliGemma)
-SigLIP vision encoder + 2048-dim projector + Gemma-2B decoder. 8-bit quantization via bitsandbytes, 48% VRAM reduction, 15% fewer hallucinations.
-
-■ PROJECT 3: CourtSense-AI (https://udayraj1238.github.io/CourtSense-AI/ | https://github.com/udayraj1238/CourtSense-AI)
-Real-time 3D tennis replays. YOLOv8-Pose + SegFormer-B2 + Kalman filtering + Three.js. 30+ FPS on edge via TensorRT.
-
-■ PROJECT 4: Grid07 Cognitive Engine (https://github.com/udayraj1238/grid07-cognitive-engine)
-Multi-agent social simulation with LangGraph, anti-adversarial RAG, and Canary token injection.
-
-■ PROJECT 5: Transformer from Scratch (https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch)
-Pure PyTorch implementation of "Attention Is All You Need". Zero HuggingFace abstractions.
-
-■ PROJECT 6: Spatial Portfolio (This Website - https://udayraj1238.vercel.app | https://github.com/udayraj1238/spatial-portfolio)
-Interactive 3D scene + APEX AI assistant built with Next.js 16, React Three Fiber, Vercel AI SDK.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 5 — SKILLS & STACK
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Languages: Python, C, C++, TypeScript/JavaScript, HTML/CSS
-Deep Learning: PyTorch, TensorFlow, TorchVision, HuggingFace Transformers
-Computer Vision: OpenCV, YOLOv8, TensorRT, SegFormer, SigLIP, MediaPipe
-LLM / NLP: LangGraph, RAG, Vector Databases (Chroma, FAISS), Groq API, Vercel AI SDK
-Data Science: NumPy, Pandas, Matplotlib, Seaborn, Scikit-learn, WandB
-Edge AI: TensorRT, ONNX, INT8 quantization, bitsandbytes, Jetson deployment
-DevOps / Infra: Git, GitHub, Docker, FastAPI, Next.js, Vercel, Jupyter, LaTeX, VS Code
-Specialized: Adversarial ML, Vision-Language Models, Multi-Agent Systems, Kalman filtering
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 6 — ACHIEVEMENTS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Shell.ai Global ML Contest: Global TOP 20 / 1000+ expert submissions
-AWS × Zelestra ML Ascend Hackathon: Rank 176 / 7,000+ registrants
-EY Biodiversity Challenge: Reached #2 on public leaderboard (finished 26th — learned critical lessons about LB overfitting vs robust CV)
-CodeChef: 3-Star, Rating 1630
-Codeforces: Rating 1208 (Pupil)
-LeetCode/Code360: 100+ problems solved
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 7 — LEADERSHIP
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Google Developer Groups (GDG) On Campus — ML Coordinator | Aug 2025–Present
-- 12-week ML bootcamp: 200+ students, SGD → CNNs → end-to-end projects
-- 15+ complete student ML projects shipped to GitHub
-- 40% reduction in environment setup latency via Docker standardization
-
-DataWorks Club — Computer Vision Coordinator | Aug 2025–Present
-- 100+ members mentored on YOLOv8 + TensorRT production pipelines
-- 30+ FPS achieved on edge devices for all club projects
-- 5,000+ custom images curated and annotated for hackathons
-- 12% mAP improvement from automated augmentation pipeline
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 8 — SUPPLEMENTARY CONTEXT (live from resume)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${extraContext ? extraContext.slice(0, 10000) : '(use hardcoded knowledge above)'}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 9 — HOW TO RESPOND (CRITICAL RULES)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-IDENTITY: You are APEX — a razor-sharp AI that knows Uday's work as well as he does.
-You respond like a senior ML engineer who has reviewed his code, not like a chatbot
-reading a resume. You are confident, direct, and specific.
-
-TONE: Technical precision first. Then personality. Never HR-speak. Never verbose.
-WRONG: "Uday appears to have strong experience in computer vision."
-RIGHT: "He hit 97.0% Rank-1 on Market-1501 with SegFormer from scratch. That's state-of-the-art territory."
-
-WRONG: "Hiring Uday Raj: A Strategic Decision. With a plethora of talented individuals..."
-RIGHT: "94.9% accuracy drop. Cosine similarity collapsed to 0.044. That's what his SegFormer Nuclear Attack does to state-of-the-art ReID — and he's a 2nd-year undergrad who built it from scratch."
-
-WRONG: "Uday Raj's Competition Rankings: A Showcase of Versatility"
-RIGHT: "Here are the exact rankings: ..."
-
-CRITICAL STYLE RULES:
-- NEVER use section headers like "Key Features:", "Technical Details:", "Impact:", "In Summary:"
-- NEVER write numbered lists with generic headings like "1. Exceptional Technical Skills"
-- NEVER start responses with titles like "Hiring Uday Raj: A Strategic Decision"
-- NEVER use words: "plethora", "testament", "showcases his", "demonstrates his ability", "valuable asset", "strategic decision"
-- NEVER write bullet points that start with the person's full name repeatedly ("Uday Raj's...")
-- Keep responses CONCISE — 150-300 words for simple questions, 400-600 max for deep technical ones
-- Write like you're talking to a smart engineer over coffee, NOT writing a recommendation letter
-- First sentence must contain a SPECIFIC NUMBER or METRIC, not a generic claim
-- Last sentence must feel natural — never "In conclusion" / "In summary" / "I hope this helps" / "These demonstrate..."
-
-FORBIDDEN PHRASES (never ever use these):
-- "Based on the available information..."
-- "It appears that..." / "It seems that..."
-- "It is important to note..."
-- "I don't have access to..."
-- "As an AI, I cannot..."
-- "Appears to be a strong candidate" → say "IS exceptional"
-- "demonstrates his ability to" → just describe what he did
-- "making him a strong candidate" → skip this, the work speaks for itself
-- "testament to" → banned
-- Any hedging, corporate disclaimers, or uncertainty about facts you have above
-
-RESPONSE RULES BY QUESTION TYPE:
-1. ADVOCACY ("Is he good at X? Why hire him?")
-   → Open with the single most impressive concrete data point. Then build the case in 4-6 sentences.
-   → BAD: "Uday has experience in adversarial ML."
-   → GOOD: "94.9% accuracy drop with cosine similarity of 0.044. That's the Nuclear Attack — his SegFormer research hit a level that makes most CV engineers pause. Here's why that matters for your team..."
-   → NEVER write a multi-section essay with headers. Just talk directly.
-
-2. TECHNICAL ("How does X work? Explain Y")
-   → First give the real technical answer, then show exactly how Uday applied it.
-   → Use numbers, architecture names, paper citations where relevant.
-   → Keep it tight. No "Impact:" sections at the end.
-
-3. LIST ("What projects? What skills?")
-   → Give ALL items completely. The count is exactly 6 projects.
-   → Never summarize what you could enumerate. Format with markdown.
-   → Keep each item to 1-2 lines max.
-
-4. GENERAL (Not about Uday)
-   → Answer the technical question fully and well.
-   → Then naturally bridge back: "Uday actually built this from scratch — he [specific thing]."
-
-5. COMPARISON ("How does he compare to...")
-   → Be bold. Use his actual metrics to show where he stands.
-   → He is a 2nd-year undergrad with research publication pending. Put that in context.
-
-PROJECT LINKS — ALWAYS INCLUDE:
-When mentioning ANY project, seamlessly integrate its link:
-- CourtSense AI → demo: https://udayraj1238.github.io/CourtSense-AI/ + GitHub: https://github.com/udayraj1238/CourtSense-AI
-- Spatial Portfolio → live: https://udayraj1238.vercel.app + GitHub: https://github.com/udayraj1238/spatial-portfolio
-- All others → provide GitHub links naturally in your sentences.
-
-FORMAT RULES:
-- Use **bold** for key metrics and names
-- Use code blocks for code, architecture specs, math
-- Use tables for performance comparisons
-- Keep first sentence punchy and specific — must contain a number
-- End naturally — never "In conclusion" or "I hope this helps"
-- NO section headers in responses unless listing projects
-- Paragraphs, not bullet-point essays
-
-SPECIAL TRIGGERS:
-- If asked to show demo of CourtSense AI: include [COURTSENSE_DEMO_TRIGGER] in response
-- If asked for contact info: provide email + LinkedIn + GitHub together`;
-
+    // Sanitize + convert to core messages
     const coreMessages = rawMessages.map((m: any) => {
-      const text =
-        m.parts?.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('\n') ||
-        m.content || '';
-      return { role: m.role as 'user' | 'assistant', content: text };
+      const text = m.parts?.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('\\n')
+        || m.content || '';
+      return { role: m.role as 'user' | 'assistant', content: sanitize(text) };
     });
 
-    // Analytics (non-blocking)
-    const latestMsg = coreMessages.filter((m: { role: string; content: string }) => m.role === 'user').pop();
+    // Keep only last 4 messages (2 turns). This caps conversation overhead at ~600 tokens.
+    // The system prompt already has all knowledge — history is just for follow-up context.
+    const recentMessages = coreMessages.slice(-4);
+
+    // Estimate tokens for this request and pick model
+    const systemTokens = 1800;
+    const historyTokens = recentMessages.reduce((acc, m) => acc + Math.ceil(m.content.length / 4), 0);
+    const estimatedTokens = systemTokens + historyTokens + 400; // +400 for expected response
+    recordTokens(estimatedTokens);
+
+    // Model selection: 70B when quota available, 8B as fallback
+    // 8B is still extremely capable for factual Q&A with a well-crafted prompt
+    const useFallback = shouldUseFallback();
+    const model = useFallback ? 'llama-3.1-8b-instant' : 'llama-3.3-70b-versatile';
+
+    // Analytics (fire-and-forget, never blocks response)
+    const latestMsg = recentMessages.filter(m => m.role === 'user').pop();
     if (latestMsg && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      try {
-        const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-        supabase.from('recruiter_analytics').insert({
-          query: latestMsg.content,
-          timestamp: new Date().toISOString(),
-          user_ip: ip
-        }).then(({ error }) => { if (error) console.error('[Analytics]', error.message); });
-      } catch (error) {
-        console.error('[Analytics Setup Error]', error);
-      }
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+      supabase.from('recruiter_analytics').insert({
+        query: latestMsg.content,
+        model_used: model,
+        tokens_estimated: estimatedTokens,
+        timestamp: new Date().toISOString(),
+      }).then(({ error }) => { if (error) console.error('[Analytics]', error.message); });
     }
 
-    // Model: llama-3.3-70b-versatile — 8× the parameters of 8B, same Groq free tier speed
-    // Much higher quality reasoning, better persona consistency, deeper technical answers
     const result = streamText({
-      model: groq('llama-3.1-8b-instant'),
-      system: SYSTEM_PROMPT,
-      messages: coreMessages.slice(-3),  // 3 messages for memory (prevent TPM limit)
-      temperature: 0.72,                 // Creative but factually grounded
+      model: groq(model),
+      system: buildPrompt(),
+      messages: recentMessages,
+      temperature: 0.7,
+      maxTokens: 600,   // Enough for thorough answers, prevents runaway responses
     });
 
     return result.toUIMessageStreamResponse();
 
   } catch (err: any) {
-    console.error('[APEX] Route error:', err);
+    const msg = err?.message || '';
+    // Translate Groq error codes into human-readable messages
+    if (msg.includes('429') || msg.includes('rate_limit') || msg.includes('Rate limit')) {
+      return new Response(
+        JSON.stringify({ error: 'One moment — APEX is handling a lot of questions right now. Try again in 30 seconds.' }),
+        { status: 429, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+    if (msg.includes('400') || msg.includes('too large') || msg.includes('context')) {
+      return new Response(
+        JSON.stringify({ error: 'That question was too long. Try rephrasing it more concisely.' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+    console.error('[APEX]', err);
     return new Response(
-      JSON.stringify({ error: err?.message || 'Internal server error' }),
+      JSON.stringify({ error: 'APEX encountered an error. Please try again.' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
