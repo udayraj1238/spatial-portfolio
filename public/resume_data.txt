@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-06-13 20:00
+  Last Updated: 2026-06-14 20:04
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -501,7 +501,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import Scene from "@/components/canvas/Scene";
 
 FUNCTIONS/COMPONENTS:
 const geistSans = Geist({
@@ -547,9 +546,394 @@ interface State {
 
 FUNCTIONS/COMPONENTS:
 export class ErrorBoundary extends Component<Props, State> {============================================================
+=== REPO: Transformer_from_scratch_using_pytorch ===
+URL: https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch
+Description: Complete Attention Is All You Need transformer in pure PyTorch — MHSA, positional encoding, encoder-decoder, beam search.
+Primary Language: Jupyter Notebook | Stars: 0
+
+CODE ANALYSIS (from actual source files):
+--- File: Transformer_from_scratch_using_pytorch/model.py ---
+IMPORTS (Libraries used):
+import torch
+import torch.nn as nn
+import math
+
+CLASSES:
+  class InputEmbeddings(nn.Module):
+  class PositionalEncoding(nn.Module):
+  class LayerNormalization(nn.Module):
+  class FeedForwardBlock(nn.Module):
+  class MultiHeadAttentionBlock(nn.Module):
+  class ResidualConnection(nn.Module):
+  class EncoderBlock(nn.Module):
+
+FUNCTIONS/METHODS:
+  def __init__(self , d_model: int , vocab_size: int)
+  def forward(self , x)
+  def __init__(self , d_model: int , seq_len: int, dropout: float) -> None
+  def forward(self , x)
+  def __init__(self , eps : float = 10**-6) -> None
+  def forward(self , x)
+  def __init__(self , d_model : int , d_ff : int , dropout : float) -> None
+  def forward(self , x)
+  def __init__(self, d_model: int, h: int, dropout: float) -> None
+  def attention(query, key, value, mask, dropout: nn.Dropout)
+  def forward(self, q, k, v, mask)
+  def __init__(self, features: int, dropout: float) -> None
+  def forward(self, x, sublayer)
+  def __init__(self, features: int, self_attention_block: MultiHeadAttentionBlock, feed_forward_block: FeedForwardBlock, dropout: float) -> None
+  def forward(self, x, src_mask)
+
+KEY CODE COMMENTS:
+  # create a matrix of shape (seq_len , d_model)
+  # create a vector of length (seq_len)
+  # Apply the sin to even positions
+  # (Batch , Seq_len , d_model) ---> (Batch , Seq_len , d_ff) ---> (batch , seq_len , d_model)
+  # Make sure d_model is divisible by h
+  # Just apply the formula from the paper
+  # (batch, h, seq_len, d_k) --> (batch, h, seq_len, seq_len)
+  # Write a very low value (indicating -inf) to the positions where mask == 0
+  # (batch, h, seq_len, seq_len) --> (batch, h, seq_len, d_k)
+  # return attention scores which can be used for visualization
+
+--- File: Transformer_from_scratch_using_pytorch/train.py ---
+IMPORTS (Libraries used):
+from model import build_transformer
+from dataset import BilingualDataset, causal_mask
+from config import get_config, get_weights_file_path, latest_weights_file_path
+import torch
+import torch.nn as nn
+from torch.utils.data import Dataset, DataLoader, random_split
+from torch.optim.lr_scheduler import LambdaLR
+import warnings
+from tqdm import tqdm
+import os
+from pathlib import Path
+from datasets import load_dataset
+from tokenizers import Tokenizer
+from tokenizers.models import WordLevel
+from tokenizers.trainers import WordLevelTrainer
+from tokenizers.pre_tokenizers import Whitespace
+import torchmetrics
+from torch.utils.tensorboard import SummaryWriter
+
+FUNCTIONS/METHODS:
+  def greedy_decode(model, source, source_mask, tokenizer_src, tokenizer_tgt, max_len, device)
+  def run_validation(model, validation_ds, tokenizer_src, tokenizer_tgt, max_len, device, print_msg, global_step, writer, num_examples=2)
+  def get_all_sentences(ds, lang)
+  def get_or_build_tokenizer(config, ds, lang)
+  def get_ds(config)
+
+KEY CODE COMMENTS:
+  # Huggingface datasets and tokenizers
+  # Precompute the encoder output and reuse it for every step
+  # Initialize the decoder input with the sos token
+  # build mask for target
+  # calculate output
+  # get the console window width
+  # If we can't get the console width, use 80 as default
+  # check that the batch size is 1
+  # Print the source, target and model output
+  # Evaluate the character error rate
+
+--- File: README.md ---
+<div align="center">
+
+<!-- Animated Header -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:F97316,50:EF4444,100:DC2626&height=220&section=header&text=Transformer&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Built%20from%20Scratch%20in%20PyTorch&descSize=18&descAlignY=55&descAlign=50" width="100%"/>
+
+<!-- Typing SVG -->
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=F97316&center=true&vCenter=true&width=700&lines=Attention+Is+All+You+Need+(2017);Multi-Head+Self-Attention;Positional+Encoding+%7C+Encoder-Decoder;No+nn.Transformer+%E2%80%94+Pure+PyTorch" alt="Typing SVG" /></a>
+
+<br/>
+
+<!-- Badges -->
+<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" />
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+
+<br/><br/>
+
+<!-- Paper Badge -->
+<a href="https://arxiv.org/abs/1706.03762"><img src="https://img.shields.io/badge/arXiv-1706.03762-b31b1b?style=flat-square&logo=arxiv&logoColor=white" /></a>
+<img src="https://img.shields.io/badge/Vaswani%20et%20al.-NeurIPS%202017-F97316?style=flat-square&labelColor=1a1a2e" />
+
+</div>
+
+---
+
+<div align="center">
+<h2>🎯 What This Is</h2>
+<p><i>A complete from-scratch PyTorch implementation of the original Transformer architecture.<br/>Every component — multi-head attention, positional encoding, encoder, decoder — written by hand without <code>nn.Transformer</code>.</i></p>
+</div>
+
+---
+
+<div align="center">
+<h2>🏗️ Architecture</h2>
+</div>
+
+```mermaid
+graph TD
+    subgraph Encoder["🔵 ENCODER (N layers)"]
+        A["Source Tokens"] --> AE["Embedding + Positional Encoding"]
+        AE --> SA["Multi-Head Self-Attention"]
+        SA --> AN1["Add & Norm"]
+        AN1 --> FF1["Feed-Forward Network"]
+        FF1 --> AN2["Add & Norm"]
+    end
+    
+    subgraph Decoder["🔴 DECODER (N layers)"]
+        B["Target Tokens"] --> BE["Embedding + Positional Encoding"]
+        BE --> MSA["Masked Self-Attention"]
+        MSA --> AN3["Add & Norm"]
+        AN3 --> CA["Cross-Attention"]
+        AN2 -->|"K, V"| CA
+        CA --> AN4["Add & Norm"]
+        AN4 --> FF2["Feed-Forward Network"]
+        FF2 --> AN5["Add & Norm"]
+    end
+    
+    AN5 --> LIN["Linear + Softmax"]
+    LIN --> OUT["📤 Output Tokens"]
+    
+    style A fill:#3B82F6,stroke:#3B82F6,color:#fff
+    style AE fill:#60A5FA,stroke:#60A5FA,color:#fff
+    style SA fill:#2563EB,stroke:#2563EB,color:#fff
+    style AN1 fill:#1D4ED8,stroke:#1D4ED8,color:#fff
+    style FF1 fill:#1E40AF,stroke:#1E40AF,color:#fff
+    style AN2 fill:#1D4ED8,stroke:#1D4ED8,color:#fff
+    style B fill:#EF4444,stroke:#EF4444,color:#fff
+    style BE fill:#F87171,stroke:#F87171,color:#fff
+    style MSA fill:#DC2626,stroke:#DC2626,color:#fff
+    style AN3 fill:#B91C1C,stroke:#B91C1C,color:#fff
+    style CA fill:#F97316,stroke:#F97316,color:#fff
+    style AN4 fill:#B91C1C,stroke:#
+
+--- File: Transformer_from_scratch_using_pytorch/config.py ---
+IMPORTS (Libraries used):
+from pathlib import Path
+
+FUNCTIONS/METHODS:
+  def get_config()
+  def get_weights_file_path(config, epoch: str)
+  def latest_weights_file_path(config)
+
+KEY CODE COMMENTS:
+  # Find the latest weights file in the weights folder
+
+--- File: Transformer_from_scratch_using_pytorch/dataset.py ---
+IMPORTS (Libraries used):
+import torch
+import torch.nn as nn
+from torch.utils.data import Dataset
+
+CLASSES:
+  class BilingualDataset(Dataset):
+
+FUNCTIONS/METHODS:
+  def __init__(self, ds, tokenizer_src, tokenizer_tgt, src_lang, tgt_lang, seq_len)
+  def __len__(self)
+  def __getitem__(self, idx)
+  def causal_mask(size)
+
+KEY CODE COMMENTS:
+  # Transform the text into tokens
+  # Add sos, eos and padding to each sentence
+  # We will only add <s>, and </s> only on the label
+  # Make sure the number of padding tokens is not negative. If it is, the sentence is too long
+  # Add <s> and </s> token
+  # Add only <s> token
+  # Add only </s> token
+  # Double check the size of the tensors to make sure they are all seq_len long============================================================
+=== REPO: Pytorch_PaliGemma ===
+URL: https://github.com/udayraj1238/Pytorch_PaliGemma
+Description: PaliGemma VLM from scratch in PyTorch — SigLIP vision encoder + Gemma-2B decoder + 8-bit quantization. 22% BLEU-4 improvement.
+Primary Language: Python | Stars: 0
+
+CODE ANALYSIS (from actual source files):
+--- File: README.md ---
+<div align="center">
+
+<!-- Animated Header -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:7C3AED,50:8B5CF6,100:A78BFA&height=220&section=header&text=PaliGemma%20VLM&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Vision-Language%20Model%20from%20Scratch&descSize=18&descAlignY=55&descAlign=50" width="100%"/>
+
+<!-- Typing SVG -->
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=A78BFA&center=true&vCenter=true&width=700&lines=No+Hugging+Face.+No+Pre-built+Modules.;Every+Tensor%2C+Every+Layer%2C+Every+Attention+Head;SigLIP+%2B+Gemma+%2B+Multimodal+Projector;Built+From+the+Ground+Up+in+PyTorch" alt="Typing SVG" /></a>
+
+<br/>
+
+<!-- Tech Badges -->
+<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" />
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+<img src="https://img.shields.io/badge/CUDA-76B900?style=for-the-badge&logo=nvidia&logoColor=white" />
+
+<br/><br/>
+
+<!-- Stats -->
+<img src="https://img.shields.io/badge/12%20Layer-Vision%20Transformer-7C3AED?style=flat-square&labelColor=1a1a2e" />
+<img src="https://img.shields.io/badge/196-Visual%20Tokens-8B5CF6?style=flat-square&labelColor=1a1a2e" />
+<img src="https://img.shields.io/badge/8192-Token%20Context-A78BFA?style=flat-square&labelColor=1a1a2e" />
+<img src="https://img.shields.io/badge/768→2048-Projection-C4B5FD?style=flat-square&labelColor=1a1a2e" />
+
+</div>
+
+---
+
+<div align="center">
+<h2>🎯 What This Is</h2>
+<p><i>A complete from-scratch PyTorch implementation of Google's PaliGemma Vision-Language Model.</i></p>
+</div>
+
+> **Why from scratch?** Because calling `model = AutoModel.from_pretrained()` teaches you nothing about *how* the model actually processes images and generates text. Building every component by hand — from patch embeddings to KV-cache — is the only way to truly understand modern VLMs.
+
+---
+
+<div align="center">
+<h2>🏗️ Architecture</h2>
+</div>
+
+```mermaid
+graph TD
+    A["🖼️ Input Image"] --> B["SigLIP Vision Encoder"]
+    T["📝 Text Prompt"] --> C["Text Tokenizer"]
+    
+    subgraph Vision["🔵 SigLIP Vision Transformer"]
+        B --> B1["16×16 Patch Embedding"]
+        B1 --> B2["12 Transformer Layers"]
+        B2 --> B3["196 Visual Tokens (768-dim)"]
+    end
+    
+    subgraph Proj["🟣 Multimodal Bridge"]
+        B3 --> P1["Linear Projection"]
+        P1 --> P2["768 → 2048 dim"]
+    end
+    
+    C --> C1["Token Embeddings"]
+    
+    subgraph LLM["🔴 Gemma Language Decoder"]
+        P2 --> D1["Merged Sequence @ idx 256000"]
+        C1 --> D1
+        D1 --> D2["RMSNorm + RoPE"]
+        D2 --> D3["Grouped KV Attention"]
+        D3 --> D4["KV-Cache"]
+        D4 --> D5["Causal Masking"]
+        D5 --> D6["8192-token Context"]
+    end
+    
+    D6 --> OUT["💬 Generated Text"]
+    
+    style A fill:#3B82F6,stroke:#3B82F6,color:#fff
+    style T fill:#F59E0B,strok
+
+--- File: modeling_siglip.py ---
+IMPORTS (Libraries used):
+from typing import Optional, Tuple
+import torch
+import torch.nn as nn
+
+CLASSES:
+  class SiglipVisionConfig:
+  class SiglipVisionEmbeddings(nn.Module):
+  class SiglipAttention(nn.Module):: Multi-headed attention from 'Attention Is All You Need' paper
+
+FUNCTIONS/METHODS:
+  def __init__(
+  def __init__(self, config: SiglipVisionConfig)
+  def forward(self, pixel_values: torch.FloatTensor) -> torch.Tensor
+  def __init__(self, config)
+  def forward(
+
+KEY CODE COMMENTS:
+  # Convolve the `patch_size` kernel over the image, with no overlapping patches since the stride is equal to the kernel size
+  # The output of the convolution will have shape [Batch_Size, Embed_Dim, Num_Patches_H, Num_Patches_W]
+  # where Num_Patches_H = height // patch_size and Num_Patches_W = width // patch_size
+  # [Batch_Size, Embed_Dim, Num_Patches_H, Num_Patches_W] -> [Batch_Size, Embed_Dim, Num_Patches]
+  # where Num_Patches = Num_Patches_H * Num_Patches_W
+  # [Batch_Size, Embed_Dim, Num_Patches] -> [Batch_Size, Num_Patches, Embed_Dim]
+  # Add position embeddings to each patch. Each positional encoding is a vector of size [Embed_Dim]
+  # [Batch_Size, Num_Patches, Embed_Dim]
+  # hidden_states: [Batch_Size, Num_Patches, Embed_Dim]
+  # query_states: [Batch_Size, Num_Patches, Embed_Dim]
+
+--- File: modelling_gemma.py ---
+IMPORTS (Libraries used):
+import torch
+from torch import nn
+from typing import Optional, Tuple, List
+from torch.nn import CrossEntropyLoss
+import math
+from modeling_siglip import SiglipVisionConfig, SiglipVisionModel
+
+CLASSES:
+  class KVCache():
+  class GemmaConfig():
+  class PaliGemmaConfig():
+  class GemmaRMSNorm(nn.Module):
+  class GemmaRotaryEmbedding(nn.Module):
+
+FUNCTIONS/METHODS:
+  def __init__(self) -> None
+  def num_items(self) -> int
+  def update(
+  def __init__(
+  def __init__(
+  def __init__(self, dim: int, eps: float = 1e-6)
+  def _norm(self, x)
+  def forward(self, x)
+  def __init__(self, dim, max_position_embeddings=2048, base=10000, device=None)
+  def forward(self, x, position_ids, seq_len=None)
+
+KEY CODE COMMENTS:
+  # The shape of the key_cache is [Batch_Size, Num_Heads_KV, Seq_Len, Head_Dim]
+  # If we never added anything to the KV-Cache of this layer, let's create it.
+  # ... otherwise we concatenate the new keys with the existing ones.
+  # each tensor has shape: [Batch_Size, Num_Heads_KV, Seq_Len, Head_Dim]
+  # ... and then we return all the existing keys + the new ones.
+  # Llama does x.to(float16) * w whilst Gemma is (x * w).to(float16)
+  # See https://github.com/huggingface/transformers/pull/29402
+  # Calculate the theta according to the formula theta_i = base^(-2i/dim) where i = 0, 1, 2, ..., dim // 2
+  # x: [bs, num_attention_heads, seq_len, head_size]
+  # Copy the inv_freq tensor for batch in the sequence
+
+--- File: processing_paligemma.py ---
+IMPORTS (Libraries used):
+from typing import Dict, List, Optional, Union, Tuple, Iterable
+import numpy as np
+from PIL import Image
+import torch
+
+CLASSES:
+  class PaliGemmaProcessor:
+
+FUNCTIONS/METHODS:
+  def add_image_tokens_to_prompt(prefix_prompt, bos_token, image_seq_len, image_token)
+  def rescale(
+  def resize(
+  def normalize(
+  def process_images(
+  def __init__(self, tokenizer, num_image_tokens: int, image_size: int)
+  def __call__(
+
+KEY CONSTANTS/CONFIG:
+  IMAGENET_STANDARD_MEAN = [0.5, 0.5, 0.5]
+  IMAGENET_STANDARD_STD = [0.5, 0.5, 0.5]
+  IMAGE_TOKEN = "<image>"
+  EXTRA_TOKENS = [
+
+KEY CODE COMMENTS:
+  # Quoting from the blog (https://huggingface.co/blog/paligemma#detailed-inference-process):
+  # The input text is tokenized normally.
+  # A <bos> token is added at the beginning, and an additional newline token (\n) is appended.
+  # This newline token is an essential part of the input prompt the model was trained with, so adding it explicitly ensures it's always there.
+  # The tokenized text is also prefixed with a fixed number of <image> tokens.
+  # NOTE: from the paper it looks like the `\n` should be tokenized separately, but in the HF implementation this is not done.
+  # ref to HF implementation: https://github.com/huggingface/transformers/blob/7f79a97399bb52aad8460e1da2f36577d5dccfed/src/transformers/models/paligemma/processing_paligemma.py#L55-L73
+  # Convert each image to a numpy array
+  # Rescale the pixel values to be in the range [0, 1]
+  # Normalize the images to have mean 0 and standard deviation 1============================================================
 === REPO: CourtSense-AI ===
 URL: https://github.com/udayraj1238/CourtSense-AI
-Description: End-to-end sports CV pipeline: tennis videos to interactive 3D replays with speed and spin stats. YOLOv8-Pose, SegFormer-B2, OpenCV, FastAPI, React, Three.js
+Description: Tennis match video → interactive 3D replay. YOLOv8-Pose + SegFormer-B2 + Kalman filter + FastAPI + Three.js. 30+ FPS on edge devices.
 Primary Language: TypeScript | Stars: 0
 
 CODE ANALYSIS (from actual source files):
@@ -862,205 +1246,6 @@ KEY CODE COMMENTS:
   # We only measure x, y, z
   # Process noise covariance (Q)
   # Small noise for position, larger for velocity to allow for sudden changes (hits/bounces)============================================================
-=== REPO: Transformer_from_scratch_using_pytorch ===
-URL: https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch
-Description: From-scratch PyTorch implementation of the Transformer (Attention Is All You Need): multi-head attention, positional encoding, encoder-decoder
-Primary Language: Jupyter Notebook | Stars: 0
-
-CODE ANALYSIS (from actual source files):
---- File: Transformer_from_scratch_using_pytorch/model.py ---
-IMPORTS (Libraries used):
-import torch
-import torch.nn as nn
-import math
-
-CLASSES:
-  class InputEmbeddings(nn.Module):
-  class PositionalEncoding(nn.Module):
-  class LayerNormalization(nn.Module):
-  class FeedForwardBlock(nn.Module):
-  class MultiHeadAttentionBlock(nn.Module):
-  class ResidualConnection(nn.Module):
-  class EncoderBlock(nn.Module):
-
-FUNCTIONS/METHODS:
-  def __init__(self , d_model: int , vocab_size: int)
-  def forward(self , x)
-  def __init__(self , d_model: int , seq_len: int, dropout: float) -> None
-  def forward(self , x)
-  def __init__(self , eps : float = 10**-6) -> None
-  def forward(self , x)
-  def __init__(self , d_model : int , d_ff : int , dropout : float) -> None
-  def forward(self , x)
-  def __init__(self, d_model: int, h: int, dropout: float) -> None
-  def attention(query, key, value, mask, dropout: nn.Dropout)
-  def forward(self, q, k, v, mask)
-  def __init__(self, features: int, dropout: float) -> None
-  def forward(self, x, sublayer)
-  def __init__(self, features: int, self_attention_block: MultiHeadAttentionBlock, feed_forward_block: FeedForwardBlock, dropout: float) -> None
-  def forward(self, x, src_mask)
-
-KEY CODE COMMENTS:
-  # create a matrix of shape (seq_len , d_model)
-  # create a vector of length (seq_len)
-  # Apply the sin to even positions
-  # (Batch , Seq_len , d_model) ---> (Batch , Seq_len , d_ff) ---> (batch , seq_len , d_model)
-  # Make sure d_model is divisible by h
-  # Just apply the formula from the paper
-  # (batch, h, seq_len, d_k) --> (batch, h, seq_len, seq_len)
-  # Write a very low value (indicating -inf) to the positions where mask == 0
-  # (batch, h, seq_len, seq_len) --> (batch, h, seq_len, d_k)
-  # return attention scores which can be used for visualization
-
---- File: Transformer_from_scratch_using_pytorch/train.py ---
-IMPORTS (Libraries used):
-from model import build_transformer
-from dataset import BilingualDataset, causal_mask
-from config import get_config, get_weights_file_path, latest_weights_file_path
-import torch
-import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader, random_split
-from torch.optim.lr_scheduler import LambdaLR
-import warnings
-from tqdm import tqdm
-import os
-from pathlib import Path
-from datasets import load_dataset
-from tokenizers import Tokenizer
-from tokenizers.models import WordLevel
-from tokenizers.trainers import WordLevelTrainer
-from tokenizers.pre_tokenizers import Whitespace
-import torchmetrics
-from torch.utils.tensorboard import SummaryWriter
-
-FUNCTIONS/METHODS:
-  def greedy_decode(model, source, source_mask, tokenizer_src, tokenizer_tgt, max_len, device)
-  def run_validation(model, validation_ds, tokenizer_src, tokenizer_tgt, max_len, device, print_msg, global_step, writer, num_examples=2)
-  def get_all_sentences(ds, lang)
-  def get_or_build_tokenizer(config, ds, lang)
-  def get_ds(config)
-
-KEY CODE COMMENTS:
-  # Huggingface datasets and tokenizers
-  # Precompute the encoder output and reuse it for every step
-  # Initialize the decoder input with the sos token
-  # build mask for target
-  # calculate output
-  # get the console window width
-  # If we can't get the console width, use 80 as default
-  # check that the batch size is 1
-  # Print the source, target and model output
-  # Evaluate the character error rate
-
---- File: README.md ---
-<div align="center">
-
-<!-- Animated Header -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:F97316,50:EF4444,100:DC2626&height=220&section=header&text=Transformer&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Built%20from%20Scratch%20in%20PyTorch&descSize=18&descAlignY=55&descAlign=50" width="100%"/>
-
-<!-- Typing SVG -->
-<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=F97316&center=true&vCenter=true&width=700&lines=Attention+Is+All+You+Need+(2017);Multi-Head+Self-Attention;Positional+Encoding+%7C+Encoder-Decoder;No+nn.Transformer+%E2%80%94+Pure+PyTorch" alt="Typing SVG" /></a>
-
-<br/>
-
-<!-- Badges -->
-<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" />
-<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
-
-<br/><br/>
-
-<!-- Paper Badge -->
-<a href="https://arxiv.org/abs/1706.03762"><img src="https://img.shields.io/badge/arXiv-1706.03762-b31b1b?style=flat-square&logo=arxiv&logoColor=white" /></a>
-<img src="https://img.shields.io/badge/Vaswani%20et%20al.-NeurIPS%202017-F97316?style=flat-square&labelColor=1a1a2e" />
-
-</div>
-
----
-
-<div align="center">
-<h2>🎯 What This Is</h2>
-<p><i>A complete from-scratch PyTorch implementation of the original Transformer architecture.<br/>Every component — multi-head attention, positional encoding, encoder, decoder — written by hand without <code>nn.Transformer</code>.</i></p>
-</div>
-
----
-
-<div align="center">
-<h2>🏗️ Architecture</h2>
-</div>
-
-```mermaid
-graph TD
-    subgraph Encoder["🔵 ENCODER (N layers)"]
-        A["Source Tokens"] --> AE["Embedding + Positional Encoding"]
-        AE --> SA["Multi-Head Self-Attention"]
-        SA --> AN1["Add & Norm"]
-        AN1 --> FF1["Feed-Forward Network"]
-        FF1 --> AN2["Add & Norm"]
-    end
-    
-    subgraph Decoder["🔴 DECODER (N layers)"]
-        B["Target Tokens"] --> BE["Embedding + Positional Encoding"]
-        BE --> MSA["Masked Self-Attention"]
-        MSA --> AN3["Add & Norm"]
-        AN3 --> CA["Cross-Attention"]
-        AN2 -->|"K, V"| CA
-        CA --> AN4["Add & Norm"]
-        AN4 --> FF2["Feed-Forward Network"]
-        FF2 --> AN5["Add & Norm"]
-    end
-    
-    AN5 --> LIN["Linear + Softmax"]
-    LIN --> OUT["📤 Output Tokens"]
-    
-    style A fill:#3B82F6,stroke:#3B82F6,color:#fff
-    style AE fill:#60A5FA,stroke:#60A5FA,color:#fff
-    style SA fill:#2563EB,stroke:#2563EB,color:#fff
-    style AN1 fill:#1D4ED8,stroke:#1D4ED8,color:#fff
-    style FF1 fill:#1E40AF,stroke:#1E40AF,color:#fff
-    style AN2 fill:#1D4ED8,stroke:#1D4ED8,color:#fff
-    style B fill:#EF4444,stroke:#EF4444,color:#fff
-    style BE fill:#F87171,stroke:#F87171,color:#fff
-    style MSA fill:#DC2626,stroke:#DC2626,color:#fff
-    style AN3 fill:#B91C1C,stroke:#B91C1C,color:#fff
-    style CA fill:#F97316,stroke:#F97316,color:#fff
-    style AN4 fill:#B91C1C,stroke:#
-
---- File: Transformer_from_scratch_using_pytorch/config.py ---
-IMPORTS (Libraries used):
-from pathlib import Path
-
-FUNCTIONS/METHODS:
-  def get_config()
-  def get_weights_file_path(config, epoch: str)
-  def latest_weights_file_path(config)
-
-KEY CODE COMMENTS:
-  # Find the latest weights file in the weights folder
-
---- File: Transformer_from_scratch_using_pytorch/dataset.py ---
-IMPORTS (Libraries used):
-import torch
-import torch.nn as nn
-from torch.utils.data import Dataset
-
-CLASSES:
-  class BilingualDataset(Dataset):
-
-FUNCTIONS/METHODS:
-  def __init__(self, ds, tokenizer_src, tokenizer_tgt, src_lang, tgt_lang, seq_len)
-  def __len__(self)
-  def __getitem__(self, idx)
-  def causal_mask(size)
-
-KEY CODE COMMENTS:
-  # Transform the text into tokens
-  # Add sos, eos and padding to each sentence
-  # We will only add <s>, and </s> only on the label
-  # Make sure the number of padding tokens is not negative. If it is, the sentence is too long
-  # Add <s> and </s> token
-  # Add only <s> token
-  # Add only </s> token
-  # Double check the size of the tensors to make sure they are all seq_len long============================================================
 === REPO: udayraj1238 ===
 URL: https://github.com/udayraj1238/udayraj1238
 Description: My GitHub profile
@@ -1434,190 +1619,4 @@ FUNCTIONS/METHODS:
   def detect_injection(text: str) -> tuple[bool, list[str]] -- Layer 1: Scan input text for known prompt injection patterns.  Uses regex matching against a curated list of injection signatures. This is not foolproof (adversaries can obfuscate), but it catches
   def validate_canary(output: str) -> bool -- Layer 2: Check if the canary token leaked into the LLM output.  If the canary token appears in the model's response, it means the system prompt was compromised (the model was tricked into revealing
   def build_defense_system_prompt(persona_system_prompt: str) -> str -- Construct a hardened system prompt with all defense layers embedded.  Layers applied: - Canary token injection (L2)
-  def build_reinforcement_reminder(persona_name: str) -> str -- Layer 3 (Prompt Sandwich): Generate the reinforcement message that appears AFTER user content in the message sequence.  This reminds the LLM of its identity after processing potentially============================================================
-=== REPO: Pytorch_PaliGemma ===
-URL: https://github.com/udayraj1238/Pytorch_PaliGemma
-Description: From-scratch PyTorch implementation of PaliGemma VLM: SigLIP vision encoder + Gemma decoder + multimodal projector, RoPE, KV-cache, 8192-token context
-Primary Language: Python | Stars: 0
-
-CODE ANALYSIS (from actual source files):
---- File: README.md ---
-<div align="center">
-
-<!-- Animated Header -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:7C3AED,50:8B5CF6,100:A78BFA&height=220&section=header&text=PaliGemma%20VLM&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Vision-Language%20Model%20from%20Scratch&descSize=18&descAlignY=55&descAlign=50" width="100%"/>
-
-<!-- Typing SVG -->
-<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=A78BFA&center=true&vCenter=true&width=700&lines=No+Hugging+Face.+No+Pre-built+Modules.;Every+Tensor%2C+Every+Layer%2C+Every+Attention+Head;SigLIP+%2B+Gemma+%2B+Multimodal+Projector;Built+From+the+Ground+Up+in+PyTorch" alt="Typing SVG" /></a>
-
-<br/>
-
-<!-- Tech Badges -->
-<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" />
-<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
-<img src="https://img.shields.io/badge/CUDA-76B900?style=for-the-badge&logo=nvidia&logoColor=white" />
-
-<br/><br/>
-
-<!-- Stats -->
-<img src="https://img.shields.io/badge/12%20Layer-Vision%20Transformer-7C3AED?style=flat-square&labelColor=1a1a2e" />
-<img src="https://img.shields.io/badge/196-Visual%20Tokens-8B5CF6?style=flat-square&labelColor=1a1a2e" />
-<img src="https://img.shields.io/badge/8192-Token%20Context-A78BFA?style=flat-square&labelColor=1a1a2e" />
-<img src="https://img.shields.io/badge/768→2048-Projection-C4B5FD?style=flat-square&labelColor=1a1a2e" />
-
-</div>
-
----
-
-<div align="center">
-<h2>🎯 What This Is</h2>
-<p><i>A complete from-scratch PyTorch implementation of Google's PaliGemma Vision-Language Model.</i></p>
-</div>
-
-> **Why from scratch?** Because calling `model = AutoModel.from_pretrained()` teaches you nothing about *how* the model actually processes images and generates text. Building every component by hand — from patch embeddings to KV-cache — is the only way to truly understand modern VLMs.
-
----
-
-<div align="center">
-<h2>🏗️ Architecture</h2>
-</div>
-
-```mermaid
-graph TD
-    A["🖼️ Input Image"] --> B["SigLIP Vision Encoder"]
-    T["📝 Text Prompt"] --> C["Text Tokenizer"]
-    
-    subgraph Vision["🔵 SigLIP Vision Transformer"]
-        B --> B1["16×16 Patch Embedding"]
-        B1 --> B2["12 Transformer Layers"]
-        B2 --> B3["196 Visual Tokens (768-dim)"]
-    end
-    
-    subgraph Proj["🟣 Multimodal Bridge"]
-        B3 --> P1["Linear Projection"]
-        P1 --> P2["768 → 2048 dim"]
-    end
-    
-    C --> C1["Token Embeddings"]
-    
-    subgraph LLM["🔴 Gemma Language Decoder"]
-        P2 --> D1["Merged Sequence @ idx 256000"]
-        C1 --> D1
-        D1 --> D2["RMSNorm + RoPE"]
-        D2 --> D3["Grouped KV Attention"]
-        D3 --> D4["KV-Cache"]
-        D4 --> D5["Causal Masking"]
-        D5 --> D6["8192-token Context"]
-    end
-    
-    D6 --> OUT["💬 Generated Text"]
-    
-    style A fill:#3B82F6,stroke:#3B82F6,color:#fff
-    style T fill:#F59E0B,strok
-
---- File: modeling_siglip.py ---
-IMPORTS (Libraries used):
-from typing import Optional, Tuple
-import torch
-import torch.nn as nn
-
-CLASSES:
-  class SiglipVisionConfig:
-  class SiglipVisionEmbeddings(nn.Module):
-  class SiglipAttention(nn.Module):: Multi-headed attention from 'Attention Is All You Need' paper
-
-FUNCTIONS/METHODS:
-  def __init__(
-  def __init__(self, config: SiglipVisionConfig)
-  def forward(self, pixel_values: torch.FloatTensor) -> torch.Tensor
-  def __init__(self, config)
-  def forward(
-
-KEY CODE COMMENTS:
-  # Convolve the `patch_size` kernel over the image, with no overlapping patches since the stride is equal to the kernel size
-  # The output of the convolution will have shape [Batch_Size, Embed_Dim, Num_Patches_H, Num_Patches_W]
-  # where Num_Patches_H = height // patch_size and Num_Patches_W = width // patch_size
-  # [Batch_Size, Embed_Dim, Num_Patches_H, Num_Patches_W] -> [Batch_Size, Embed_Dim, Num_Patches]
-  # where Num_Patches = Num_Patches_H * Num_Patches_W
-  # [Batch_Size, Embed_Dim, Num_Patches] -> [Batch_Size, Num_Patches, Embed_Dim]
-  # Add position embeddings to each patch. Each positional encoding is a vector of size [Embed_Dim]
-  # [Batch_Size, Num_Patches, Embed_Dim]
-  # hidden_states: [Batch_Size, Num_Patches, Embed_Dim]
-  # query_states: [Batch_Size, Num_Patches, Embed_Dim]
-
---- File: modelling_gemma.py ---
-IMPORTS (Libraries used):
-import torch
-from torch import nn
-from typing import Optional, Tuple, List
-from torch.nn import CrossEntropyLoss
-import math
-from modeling_siglip import SiglipVisionConfig, SiglipVisionModel
-
-CLASSES:
-  class KVCache():
-  class GemmaConfig():
-  class PaliGemmaConfig():
-  class GemmaRMSNorm(nn.Module):
-  class GemmaRotaryEmbedding(nn.Module):
-
-FUNCTIONS/METHODS:
-  def __init__(self) -> None
-  def num_items(self) -> int
-  def update(
-  def __init__(
-  def __init__(
-  def __init__(self, dim: int, eps: float = 1e-6)
-  def _norm(self, x)
-  def forward(self, x)
-  def __init__(self, dim, max_position_embeddings=2048, base=10000, device=None)
-  def forward(self, x, position_ids, seq_len=None)
-
-KEY CODE COMMENTS:
-  # The shape of the key_cache is [Batch_Size, Num_Heads_KV, Seq_Len, Head_Dim]
-  # If we never added anything to the KV-Cache of this layer, let's create it.
-  # ... otherwise we concatenate the new keys with the existing ones.
-  # each tensor has shape: [Batch_Size, Num_Heads_KV, Seq_Len, Head_Dim]
-  # ... and then we return all the existing keys + the new ones.
-  # Llama does x.to(float16) * w whilst Gemma is (x * w).to(float16)
-  # See https://github.com/huggingface/transformers/pull/29402
-  # Calculate the theta according to the formula theta_i = base^(-2i/dim) where i = 0, 1, 2, ..., dim // 2
-  # x: [bs, num_attention_heads, seq_len, head_size]
-  # Copy the inv_freq tensor for batch in the sequence
-
---- File: processing_paligemma.py ---
-IMPORTS (Libraries used):
-from typing import Dict, List, Optional, Union, Tuple, Iterable
-import numpy as np
-from PIL import Image
-import torch
-
-CLASSES:
-  class PaliGemmaProcessor:
-
-FUNCTIONS/METHODS:
-  def add_image_tokens_to_prompt(prefix_prompt, bos_token, image_seq_len, image_token)
-  def rescale(
-  def resize(
-  def normalize(
-  def process_images(
-  def __init__(self, tokenizer, num_image_tokens: int, image_size: int)
-  def __call__(
-
-KEY CONSTANTS/CONFIG:
-  IMAGENET_STANDARD_MEAN = [0.5, 0.5, 0.5]
-  IMAGENET_STANDARD_STD = [0.5, 0.5, 0.5]
-  IMAGE_TOKEN = "<image>"
-  EXTRA_TOKENS = [
-
-KEY CODE COMMENTS:
-  # Quoting from the blog (https://huggingface.co/blog/paligemma#detailed-inference-process):
-  # The input text is tokenized normally.
-  # A <bos> token is added at the beginning, and an additional newline token (\n) is appended.
-  # This newline token is an essential part of the input prompt the model was trained with, so adding it explicitly ensures it's always there.
-  # The tokenized text is also prefixed with a fixed number of <image> tokens.
-  # NOTE: from the paper it looks like the `\n` should be tokenized separately, but in the HF implementation this is not done.
-  # ref to HF implementation: https://github.com/huggingface/transformers/blob/7f79a97399bb52aad8460e1da2f36577d5dccfed/src/transformers/models/paligemma/processing_paligemma.py#L55-L73
-  # Convert each image to a numpy array
-  # Rescale the pixel values to be in the range [0, 1]
-  # Normalize the images to have mean 0 and standard deviation 1
+  def build_reinforcement_reminder(persona_name: str) -> str -- Layer 3 (Prompt Sandwich): Generate the reinforcement message that appears AFTER user content in the message sequence.  This reminds the LLM of its identity after processing potentially
