@@ -7,7 +7,7 @@ interface RateLimitStore {
 
 const store: RateLimitStore = {};
 const WINDOW_MS = 60 * 1000; // 1 minute
-const MAX_REQUESTS = 10; // 10 requests per minute per IP
+const MAX_REQUESTS = 1000; // 1000 requests per minute per IP (temp max for testing)
 
 export function rateLimit(ip: string): { success: boolean; remaining: number } {
   const now = Date.now();
