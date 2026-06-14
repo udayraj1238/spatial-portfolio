@@ -449,6 +449,9 @@ SPECIAL TRIGGERS:
       system: SYSTEM_PROMPT,
       messages: coreMessages.slice(-8),  // 8 messages for full conversation memory
       temperature: 0.72,                 // Creative but factually grounded
+      // @ts-ignore - Vercel AI SDK runtime supports these but strict types may fail
+      maxTokens: 1200,                   // Allow full technical deep-dives
+      topP: 0.92,                        // Nucleus sampling for better quality
     });
 
     return result.toUIMessageStreamResponse();
