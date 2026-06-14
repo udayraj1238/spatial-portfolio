@@ -387,18 +387,24 @@ export default function ChatTerminal() {
         .apex-id-sub { font-size: 0.7rem; color: rgba(0,240,255,0.5); letter-spacing: 1.5px; margin-top: 2px; }
         .apex-id-right {
           display: flex;
-          gap: 8px;
+          gap: 6px;
+          flex-wrap: wrap;
         }
         .apex-social-btn {
-          width: 34px; height: 34px;
-          border-radius: 10px;
+          height: 28px;
+          border-radius: 8px;
           border: 1px solid rgba(255,255,255,0.1);
           background: rgba(255,255,255,0.03);
-          display: flex; align-items: center; justify-content: center;
+          display: flex; align-items: center; justify-content: center; gap: 5px;
           cursor: pointer;
           color: rgba(255,255,255,0.45);
           transition: all 0.2s ease;
           text-decoration: none;
+          padding: 0 10px;
+          font-size: 0.62rem;
+          letter-spacing: 0.8px;
+          font-family: 'Courier New', monospace;
+          white-space: nowrap;
         }
         .apex-social-btn:hover {
           border-color: rgba(0,240,255,0.4);
@@ -728,7 +734,8 @@ export default function ChatTerminal() {
                 className="apex-social-btn"
                 title={link.label}
               >
-                <link.icon size={15} />
+                <link.icon size={13} />
+                <span>{link.label}</span>
               </a>
             ))}
           </div>
