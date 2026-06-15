@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { useRef, useEffect, useState, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 // ─── Strip DeepSeek R1 <think> reasoning blocks ──────────────────────────────
 function stripThinkTags(text: string): string {
@@ -34,6 +35,7 @@ function StreamText({ text }: { text: string }) {
   return (
     <div className="md">
       <ReactMarkdown 
+        remarkPlugins={[remarkGfm]}
         components={{
           a: ({ node, ...props }) => <a {...props} target="_blank" rel="noopener noreferrer" />
         }}
