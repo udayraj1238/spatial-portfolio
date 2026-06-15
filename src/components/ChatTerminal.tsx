@@ -33,7 +33,13 @@ function StreamText({ text }: { text: string }) {
   const clean = stripThinkTags(text)
   return (
     <div className="md">
-      <ReactMarkdown>{clean}</ReactMarkdown>
+      <ReactMarkdown 
+        components={{
+          a: ({ node, ...props }) => <a {...props} target="_blank" rel="noopener noreferrer" />
+        }}
+      >
+        {clean}
+      </ReactMarkdown>
     </div>
   )
 }
@@ -393,11 +399,11 @@ export default function ChatTerminal() {
         .apex-social-btn {
           height: 28px;
           border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(0,240,255,0.4);
+          background: rgba(0,240,255,0.1);
           display: flex; align-items: center; justify-content: center; gap: 5px;
           cursor: pointer;
-          color: rgba(255,255,255,0.45);
+          color: #00f0ff;
           transition: all 0.2s ease;
           text-decoration: none;
           padding: 0 10px;
@@ -453,10 +459,11 @@ export default function ChatTerminal() {
           line-height: 1.65;
         }
         .msg-bubble.ai {
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(255,255,255,0.06);
-          color: rgba(255,255,255,0.9);
+          background: rgba(10, 20, 35, 0.95);
+          border: 1px solid rgba(0, 240, 255, 0.15);
+          color: rgba(255, 255, 255, 0.95);
           border-radius: 4px 20px 20px 20px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
         .msg-bubble.user {
           background: linear-gradient(135deg, #00d4ff, #0066ff);
@@ -503,7 +510,21 @@ export default function ChatTerminal() {
         .md table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 0.85em; }
         .md th { background: rgba(0,240,255,0.1); color: var(--c); padding: 6px 10px; text-align: left; }
         .md td { padding: 5px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .md a { color: var(--c); text-decoration: underline; text-decoration-color: rgba(0,240,255,0.3); }
+        .md a { 
+          color: #fff; 
+          text-decoration: none; 
+          background: rgba(0,240,255,0.15); 
+          border: 1px solid rgba(0,240,255,0.4); 
+          padding: 2px 6px; 
+          border-radius: 4px; 
+          transition: all 0.2s ease;
+          display: inline-block;
+          margin: 2px 0;
+        }
+        .md a:hover {
+          background: rgba(0,240,255,0.25);
+          box-shadow: 0 0 10px rgba(0,240,255,0.3);
+        }
 
         /* Thinking indicator */
         .apex-thinking {
