@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-06-17 20:34
+  Last Updated: 2026-06-18 20:43
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -293,6 +293,255 @@ The GitHub Actions workflow will automatically rebuild the AI brain.
 
 
 
+=== REPO: DistroSync ===
+URL: https://github.com/udayraj1238/DistroSync
+Description: No description
+Primary Language: Python | Stars: 0
+
+CODE ANALYSIS (from actual source files):
+--- File: README.md ---
+# DistroSync
+
+A distributed task queue with adaptive load shedding — built from scratch in Python.
+
+## What is this?
+
+DistroSync is a ground-up implementation of a message broker and task queue system, similar to what Kafka, RabbitMQ, and Celery do under the hood. No libraries for the core — just raw Python sockets, asyncio, and multiprocessing.
+
+## Architecture
+
+- **Broker** — Central TCP server that accepts tasks from producers and dispatches them to workers
+- **Producers** — Client programs that submit tasks to the broker
+- **Workers** — Processes that pull tasks and execute them
+
+## Tech Stack
+
+- Python 3.10+
+- asyncio (non-blocking I/O)
+- Raw TCP sockets (length-prefixed JSON protocol)
+- SQLite / WAL mode (crash-safe persistence)
+- multiprocessing (CPU-bound task execution)
+- FastAPI (observability dashboard)
+- Docker (containerized deployment)
+
+## Status
+
+🚧 Under active development
+
+--- File: broker/dead_letter.py ---
+IMPORTS (Libraries used):
+import asyncio
+import time
+import logging
+from collections import OrderedDict
+from typing import Optional, List
+
+CLASSES:
+  class DeadLetterQueue:: In-memory Dead Letter Queue for permanently failed tasks.  Tasks land here after exhausting their retry budget. Each task retains its full history: original payload, queue name, attempt count, and the timestamp when it was dead-lettered.  The DLQ is implemented as an OrderedDict keyed by task_id so that tasks maintain insertion order (useful for FIFO inspection) and can be looked up by ID in O(1) for individual operations.  Thread safety: protected by an asyncio.Lock since the broker's event loop, the NACK handler, and any future admin API all access the DLQ concurrently.
+
+FUNCTIONS/METHODS:
+  def __init__(self)
+  async def add(self, task) -> None -- Add a permanently failed task to the DLQ.  Called by QueueManager.negative_acknowledge() when a task has exceeded its maximum retry count.
+  async def peek(self, limit: int = 10) -> List[dict] -- Inspect tasks in the DLQ without removing them.  Returns a list of task summaries in insertion order (oldest first).
+  async def remove(self, task_id: str) -> bool -- Remove a specific task from the DLQ.  Used after manual inspection/processing of a failed task.
+  async def retry(self, task_id: str, queue_manager) -> bool -- Move a task from the DLQ back to its original queue for retry.  This is used when an operator has fixed the underlying issue (e.g., patched a bug, restored a downstream service) and wants
+  async def purge(self) -> int -- Remove ALL tasks from the DLQ.  Use w
+
+KEY CODE COMMENTS:
+  # OrderedDict preserves insertion order AND allows O(1) lookup
+  # Reset the task for a fresh retry cycle
+
+--- File: broker/queue_manager.py ---
+IMPORTS (Libraries used):
+import asyncio
+import uuid
+import time
+import logging
+from collections import deque
+from dataclasses import dataclass, field
+from typing import Optional, Dict
+from broker.dead_letter import DeadLetterQueue
+
+CLASSES:
+  class Task:: Represents a single unit of work in the queue.  Attributes: task_id:         Unique identifier (UUID4 string). queue_name:      Which named queue this task belongs to. payload:         The actual task data (arbitrary dict from the producer). status:          One of "pending", "in_flight", "done", "failed", "dead_lettered". created_at:      Unix timestamp when the task was enqueued. assigned_worker: ID of the worker currently processing this task (if any). attempts:        How many times this task has been attempted. dead_lettered_at: Unix timestamp when moved to DLQ (if applicable).
+  class QueueManager:: Manages multiple named in-memory FIFO queues.  The QueueManager is the heart of the broker's data plane. It handles: - Creating queues on-the-fly when a producer first writes to them - Enqueuing tasks (PRODUCE command) - Dequeuing tasks and assigning them to a specific worker (CONSUME command) - Acknowledging successful completion (ACK command) - Handling task failure (NACK command) with retry counting: * If attempts < max_retries: re-enqueue at front of queue * If attempts >= max_retries: route to Dead Letter Queue (DLQ)  Why asyncio.Lock? asyncio coroutines are cooperative — they yield control at every `await`. Without a lock, two coroutines could interleave their reads and writes to the same queue, causing duplicated or lost tasks. The lock guarantees atomicity of each queue operation.
+
+FUNCTIONS/METHODS:
+  def __init__(self, max_retries: int = 3) -- Initialize the QueueManager.  Args: max_retries: Maximum number of attempts before a task is
+  def _ensure_queue(self, queue_name: str) -- Create the named queue if it doesn't already exist.  This is called inside the lock, so it's safe from races. Using a helper keeps the enqueue/dequeue methods clean.
+  async def enqueue(self, queue_name: str, payload: dict) -> str -- Add a new task to the specified queue.  Creates the queue automatically if it doesn't exist yet. Returns the unique task_id assigned to this task.
+
+KEY CODE COMMENTS:
+  # Pending queues: queue_name -> deque of Task objects waiting to be consumed
+  # In-flight registry: task_id -> Task object currently being processed
+  # Completed archive: task_id -> Task (for inspection and debugging)
+  # Dead Letter Queue for permanently failed tasks
+  # Maximum retry attempts before DLQ routing
+  # Asyncio lock for safe concurrent access within the event loop
+
+--- File: broker/server.py ---
+IMPORTS (Libraries used):
+import asyncio
+import json
+import signal
+import logging
+import sys
+from broker.queue_manager import QueueManager
+from broker.worker_registry import WorkerRegistry
+
+CLASSES:
+  class BrokerServer:: Asyncio-based TCP server that acts as the DistroSync message broker.  Lifecycle: 1. Create an instance: broker = BrokerServer(host, port) 2. Call await broker.start() to begin accepting connections 3. The server runs until interrupted (Ctrl+C) or shut down  The server delegates data management to: - QueueManager: handles task enqueue/dequeue/ACK/NACK - WorkerRegistry: tracks which workers are connected and alive
+
+FUNCTIONS/METHODS:
+  def __init__(self, host: str = "0.0.0.0", port: int = 5555) -- Initialize the broker server.  Args: host: The IP address to bind to. "0.0.0.0" means all interfaces.
+  async def handle_connection(
+
+KEY CODE COMMENTS:
+  # Configure logging to show timestamps, level, and module name
+  # Step 1: Read the 4-byte length prefix
+  # readexactly() blocks (yields) until exactly 4 bytes are available.
+  # If the client disconnects mid-read, it raises IncompleteReadError.
+  # Sanity check: reject absurdly large messages (> 10 MB)
+  # Step 2: Read exactly msg_len bytes of the JSON payload
+  # Step 3: Decode and parse the JSON
+  # Step 4: Route the command to the appropriate handler
+  # Step 5: Send the response back to the client
+  # Client disconnected cleanly (or mid-message). This is norm
+
+--- File: broker/worker_registry.py ---
+IMPORTS (Libraries used):
+import asyncio
+import time
+import logging
+from dataclasses import dataclass, field
+from typing import Dict, Set, Optional
+
+CLASSES:
+  class WorkerInfo:: Metadata about a single connected worker.  Attributes: worker_id:        Unique identifier for this worker. queues:           List of queue names this worker consumes from. address:          Tuple of (host, port) the worker connected from. registered_at:    Unix timestamp when the worker first connected. last_heartbeat:   Unix timestamp of the most recent heartbeat. in_flight_tasks:  Set of task_ids currently assigned to this worker. If the worker dies, these tasks get reassigned. status:           One of "active", "evicted".
+  class WorkerRegistry:: Registry that tracks all known workers and evicts dead ones.  The registry has two responsibilities: 1. Tracking: know which workers are alive and what they're doing 2. Eviction: detect dead workers and reassign their tasks  The eviction loop runs as a background coroutine on the broker's event loop, checking every 2 seconds for workers whose last heartbeat is older than HEARTBEAT_TIMEOUT_SECONDS.  Why does the registry need a reference to the QueueManager? When a dead worker is evicted, its in-flight tasks need to go back into the queue. The registry holds the worker's task_ids but the QueueManager holds the actual Task objects. The registry calls queue_manager.requeue_by_id() for each orphaned task.
+
+FUNCTIONS/METHODS:
+  def __init__(self, queue_manager=None) -- Initialize the worker registry.  Args: queue_manager: Reference to the broker's QueueManager.
+  async def register(
+  async def unregister(self, wo
+
+KEY CONSTANTS/CONFIG:
+  HEARTBEAT_TIMEOUT_SECONDS = 6
+
+KEY CODE COMMENTS:
+  # A worker must send a heartbeat at least every 2 seconds.
+  # If we miss 3 consecutive heartbeats, the worker is considered dead.
+  # 3 * 2s = 6s timeout. This is the same strategy used by Redis Sentinel.
+  # worker_id -> WorkerInfo
+  # Reference to the queue manager for task requeuing on eviction
+  # Asyncio lock — protects concurrent access to the worker dict.
+  # The eviction loop and heartbeat handlers both mutate _workers.
+  # Eviction loop control
+
+--- File: producer/backoff.py ---
+IMPORTS (Libraries used):
+import random
+import logging
+
+CLASSES:
+  class ExponentialBackoff:: Calculates retry delays using exponential backoff with full jitter.  Usage: backoff = ExponentialBackoff()  # In a retry loop: delay = backoff.next_wait() await asyncio.sleep(delay)  # Or with a server-suggested retry_after hint: delay = backoff.next_wait(retry_after=response["retry_after_seconds"])  # Reset after a successful operation: backoff.reset()  Attributes: base_delay:   Starting delay in seconds (default: 1.0) max_delay:    Maximum delay cap in seconds (default: 60.0) multiplier:   Factor to multiply delay by on each attempt (default: 2.0) jitter:       Whether to add randomness (default: True) max_attempts: Maximum number of retries before giving up (default: 10)
+
+FUNCTIONS/METHODS:
+  def __init__(
+  def attempt(self) -> int -- Current attempt number (0 = first attempt hasn't happened yet).
+  def exhausted(self) -> bool -- True if we've exceeded the maximum number of retry attempts.
+  def next_wait(self, retry_after: float | None = None) -> float -- Calculate the next wait duration and advance the attempt counter.  If the server provides a `retry_after` hint (like an HTTP 429 Retry-After header), we use that as a floor — we'll wait at
+  def reset(self) -- Reset the attempt counter after a successful operation.  Call this after a successful produce so that the next failure starts the backoff sequence from the beginning.
+  def __repr__(self) -> str
+
+KEY CODE COMMENTS:
+  # In a retry loop:
+  # Or with a server-suggested retry_after hint:
+  # Reset after a successful operation:
+  # Calculate the exponential delay: base * multiplier^attempt
+  # For default values: 1, 2, 4, 8, 16, 32, 60, 60, 60...
+  # Cap at max_delay to prevent absurdly long waits
+  # Apply full jitter: pick a random value between 0 and capped_delay
+  # This spreads out retries across the entire window
+  # If the server said "retry after X seconds", respect that as a floor
+
+--- File: producer/client.py ---
+IMPORTS (Libraries used):
+import asyncio
+import json
+import logging
+from typing import Optional
+from producer.backoff import ExponentialBackoff
+
+CLASSES:
+  class ProducerClient:: Async TCP client for submitting tasks to the DistroSync broker.  The client maintains a persistent TCP connection to the broker. This is more efficient than opening a new connection for each task, because TCP connection setup involves a 3-way handshake (SYN, SYN-ACK, ACK) which adds latency.  The client uses the same length-prefixed JSON protocol as the broker: [4 bytes: message length][JSON payload]
+
+FUNCTIONS/METHODS:
+  def __init__(self, host: str = "localhost", port: int = 5555) -- Initialize the producer client.  Does NOT connect immediately — call connect() or use as an async context manager.
+  async def connect(self) -- Establish a TCP connection to the broker.  This opens an asyncio stream connection. Under the hood, asyncio.open_connection() creates a socket, performs the TCP
+  async def _send(self, message: dict) -> dict -- Send a length-prefixed JSON message and wait for the response.  This is the core wire protocol method. It: 1. JSON-encodes the message
+  async def produce(
+
+KEY CODE COMMENTS:
+  # Or without context manager:
+  # Encode and send with length prefix
+  # Read the response (also length-prefixed)
+
+--- File: worker/base_worker.py ---
+IMPORTS (Libraries used):
+import asyncio
+import json
+import uuid
+import logging
+from typing import Optional
+
+CLASSES:
+  class EmailWorker(BaseWorker):
+  class BaseWorker:: Base class for DistroSync task workers.  Lifecycle: 1. connect()    — establishes TCP connection and registers with broker 2. run()        — starts heartbeat + consume loop (runs forever) 3. execute()    — override this to define your task processing logic 4. shutdown()   — graceful cleanup (called automatically on interrupt)  The worker runs two concurrent coroutines: - _heartbeat_loop: sends HEARTBEAT every 2s so broker knows we're alive - main consume loop in run(): polls for tasks, executes them, sends ACK/NACK
+
+FUNCTIONS/METHODS:
+  async def execute(self, payload: dict) -> dict
+  def __init__(
+  async def connect(self) -- Connect to the broker and register this worker.  Registration tells the broker: - Our worker_id (so it can track us)
+  async def _send(self, message: dict) -> dict -- Send a length-prefixed JSON message and read the response.  IMPORTANT: This method acquires the connection lock to prevent the heartbeat loop and consume loop from interleaving their
+
+KEY CODE COMMENTS:
+  # TCP connection state
+  # Connection lock — prevents heartbeat and consume from
+  # interleaving their send/receive operations on the same socket
+  # Register with the broker
+
+--- File: worker/task_executor.py ---
+IMPORTS (Libraries used):
+import asyncio
+import os
+import functools
+import logging
+from concurrent.futures import ProcessPoolExecutor
+from typing import Optional, Callable
+from worker.base_worker import BaseWorker
+
+CLASSES:
+  class ProcessPoolWorker(BaseWorker):: Worker that executes tasks in a multiprocessing pool.  Extends BaseWorker with a ProcessPoolExecutor for CPU-bound tasks. While a task is running in a child process, the asyncio event loop remains free — heartbeats continue, and the worker stays responsive to the broker.  Usage: # Default: uses cpu_bound_task for all tasks worker = ProcessPoolWorker( queue_name="compute_queue", max_workers=4, ) asyncio.run(worker.run())  # Custom: provide your own task function def my_processor(payload: dict) -> dict: # Your CPU-heavy logic here return {"done": True}  worker = ProcessPoolWorker( queue_name="compute_queue", task_func=my_processor, )  Attributes: max_workers: Number of child processes in the pool. Default 4 is good for most machines. Set to os.cpu_count() for maximum CPU utilization. task_func:   Module-level function to execute in child processes. Must accept a dict and return a dict.
+
+FUNCTIONS/METHODS:
+  def cpu_bound_task(payload: dict) -> dict -- Default CPU-bound task handler. Runs in a child process.  This is an example/default implementation. In production, you'd register different task handlers for different task types.
+  def fib(x)
+  def _execute_task_func(func: Callable, payload: dict) -> dict -- Wrapper that calls a task function with its payload.  Used by run_in_executor when a custom task function is provided. This wrapper exists because functools.partial can sometimes cause
+  def my_processor(payload: dict) -> dict
+  def __ini
+
+KEY CODE COMMENTS:
+  # ── Module-Level Task Functions ────────────────────────────────────
+  # These MUST be at module level for pickle serialization.
+  # Each function runs in a SEPARATE PROCESS with its own GIL.
+  # Simulated CPU-intensive computation
+  # Deliberately naive recursive fibonacci — actually CPU heavy
+  # Sort a large list — memory-intensive CPU work
+  # Echo — for testing
+  # Default: uses cpu_bound_task for all tasks
+  # Custom: provide your own task function
+  # Your CPU-heavy logic here============================================================
 === REPO: spatial-portfolio ===
 URL: https://github.com/udayraj1238/spatial-portfolio
 Description: AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
