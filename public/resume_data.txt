@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-06-18 20:43
+  Last Updated: 2026-06-19 20:12
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -351,6 +351,23 @@ KEY CODE COMMENTS:
   # OrderedDict preserves insertion order AND allows O(1) lookup
   # Reset the task for a fresh retry cycle
 
+--- File: broker/load_shedder.py ---
+IMPORTS (Libraries used):
+import asyncio
+import time
+import logging
+from dataclasses import dataclass, field
+from typing import Dict
+
+CLASSES:
+  class TokenBucket:: A single token bucket for rate-limiting.  The bucket starts full (tokens = capacity). Tokens are consumed by accepted requests and refilled over time at the adjusted rate.  Why float tokens instead of int? Token refill is time-based. If 0.3 seconds elapsed at 100 tokens/sec, we add 30.0 tokens. Using int would truncate fractional tokens on every refill, causing drift over time.  Attributes: capacity:          Maximum tokens the bucket can hold. nominal_fill_rate: Tokens per second at zero load. tokens:            Current token count. last_refill:       Monotonic timestamp of the last refill.
+  class AdaptiveLoadShedder:: Rate limiter that adjusts its fill rate based on system pressure.  The load shedder maintains one TokenBucket per queue. Each bucket's fill rate is adjusted every time a produce request comes in, based on the current queue depth and average worker latency.  Tuning parameters: BASE_FILL_RATE (100 tokens/sec): The nominal rate at zero load. 100 means the system can handle 100 tasks/sec per queue when things are healthy.  MIN_FILL_RATE (5 tokens/sec): Floor rate. Even under extreme load, we still allow some tasks through so the system doesn't completely starve. This prevents a total blackout during load spikes.  QUEUE_DEPTH_THRESHOLD (50): Start throttling when queue depth exceeds this. 50 is a good default for most workloads — it gives workers a buffer without letting the queue grow unbounded.  LATENCY_THRESHOLD_MS (200): Start throttling when average worker latency exceeds 200ms. This catches cases where the queue isn't deep yet but workers are clearly struggling (e.g., downstream service is slow).  BUCKET_CAPACITY (200): Max tokens in each bucket. This allows short b
+
+FUNCTIONS/METHODS:
+  def __post_init__(self)
+  def refill(self, adjusted_rate: float) -- Add tokens based on time elapsed and the current adjusted rate.  Uses monotonic clock because wall clock (time.time) can jump backwards during NTP corrections, which would break the elapsed
+  def consume(self) -> bool -- Try to consume one token from the bucket.  Returns: True if a token was available and consumed (request allowed).
+
 --- File: broker/queue_manager.py ---
 IMPORTS (Libraries used):
 import asyncio
@@ -388,6 +405,7 @@ import logging
 import sys
 from broker.queue_manager import QueueManager
 from broker.worker_registry import WorkerRegistry
+from broker.load_shedder import AdaptiveLoadShedder
 
 CLASSES:
   class BrokerServer:: Asyncio-based TCP server that acts as the DistroSync message broker.  Lifecycle: 1. Create an instance: broker = BrokerServer(host, port) 2. Call await broker.start() to begin accepting connections 3. The server runs until interrupted (Ctrl+C) or shut down  The server delegates data management to: - QueueManager: handles task enqueue/dequeue/ACK/NACK - WorkerRegistry: tracks which workers are connected and alive
@@ -405,25 +423,23 @@ KEY CODE COMMENTS:
   # Step 2: Read exactly msg_len bytes of the JSON payload
   # Step 3: Decode and parse the JSON
   # Step 4: Route the command to the appropriate handler
-  # Step 5: Send the response back to the client
-  # Client disconnected cleanly (or mid-message). This is norm
 
 --- File: broker/worker_registry.py ---
 IMPORTS (Libraries used):
 import asyncio
 import time
 import logging
+from collections import deque
 from dataclasses import dataclass, field
 from typing import Dict, Set, Optional
 
 CLASSES:
-  class WorkerInfo:: Metadata about a single connected worker.  Attributes: worker_id:        Unique identifier for this worker. queues:           List of queue names this worker consumes from. address:          Tuple of (host, port) the worker connected from. registered_at:    Unix timestamp when the worker first connected. last_heartbeat:   Unix timestamp of the most recent heartbeat. in_flight_tasks:  Set of task_ids currently assigned to this worker. If the worker dies, these tasks get reassigned. status:           One of "active", "evicted".
+  class WorkerInfo:: Metadata about a single connected worker.  Attributes: worker_id:        Unique identifier for this worker. queues:           List of queue names this worker consumes from. address:          Tuple of (host, port) the worker connected from. registered_at:    Unix timestamp when the worker first connected. last_heartbeat:   Unix timestamp of the most recent heartbeat. in_flight_tasks:  Set of task_ids currently assigned to this worker. If the worker dies, these tasks get reassigned. task_start_times: Maps task_id -> monotonic timestamp when it was assigned. Used to measure task completion latency. status:           One of "active", "evicted".
   class WorkerRegistry:: Registry that tracks all known workers and evicts dead ones.  The registry has two responsibilities: 1. Tracking: know which workers are alive and what they're doing 2. Eviction: detect dead workers and reassign their tasks  The eviction loop runs as a background coroutine on the broker's event loop, checking every 2 seconds for workers whose last heartbeat is older than HEARTBEAT_TIMEOUT_SECONDS.  Why does the registry need a reference to the QueueManager? When a dead worker is evicted, its in-flight tasks need to go back into the queue. The registry holds the worker's task_ids but the QueueManager holds the actual Task objects. The registry calls queue_manager.requeue_by_id() for each orphaned task.
 
 FUNCTIONS/METHODS:
   def __init__(self, queue_manager=None) -- Initialize the worker registry.  Args: queue_manager: Reference to the broker's QueueManager.
   async def register(
-  async def unregister(self, wo
 
 KEY CONSTANTS/CONFIG:
   HEARTBEAT_TIMEOUT_SECONDS = 6
@@ -437,6 +453,8 @@ KEY CODE COMMENTS:
   # Asyncio lock — protects concurrent access to the worker dict.
   # The eviction loop and heartbeat handlers both mutate _workers.
   # Eviction loop control
+  # Per-queue latency tracking (sliding window of recent latencies in ms)
+  # Used by the AdaptiveLoadShedder to gauge worker performance.
 
 --- File: producer/backoff.py ---
 IMPORTS (Libraries used):
@@ -487,61 +505,22 @@ KEY CODE COMMENTS:
   # Encode and send with length prefix
   # Read the response (also length-prefixed)
 
---- File: worker/base_worker.py ---
+--- File: rewrite_history.py ---
 IMPORTS (Libraries used):
-import asyncio
-import json
-import uuid
-import logging
-from typing import Optional
-
-CLASSES:
-  class EmailWorker(BaseWorker):
-  class BaseWorker:: Base class for DistroSync task workers.  Lifecycle: 1. connect()    — establishes TCP connection and registers with broker 2. run()        — starts heartbeat + consume loop (runs forever) 3. execute()    — override this to define your task processing logic 4. shutdown()   — graceful cleanup (called automatically on interrupt)  The worker runs two concurrent coroutines: - _heartbeat_loop: sends HEARTBEAT every 2s so broker knows we're alive - main consume loop in run(): polls for tasks, executes them, sends ACK/NACK
-
-FUNCTIONS/METHODS:
-  async def execute(self, payload: dict) -> dict
-  def __init__(
-  async def connect(self) -- Connect to the broker and register this worker.  Registration tells the broker: - Our worker_id (so it can track us)
-  async def _send(self, message: dict) -> dict -- Send a length-prefixed JSON message and read the response.  IMPORTANT: This method acquires the connection lock to prevent the heartbeat loop and consume loop from interleaving their
-
-KEY CODE COMMENTS:
-  # TCP connection state
-  # Connection lock — prevents heartbeat and consume from
-  # interleaving their send/receive operations on the same socket
-  # Register with the broker
-
---- File: worker/task_executor.py ---
-IMPORTS (Libraries used):
-import asyncio
 import os
-import functools
-import logging
-from concurrent.futures import ProcessPoolExecutor
-from typing import Optional, Callable
-from worker.base_worker import BaseWorker
-
-CLASSES:
-  class ProcessPoolWorker(BaseWorker):: Worker that executes tasks in a multiprocessing pool.  Extends BaseWorker with a ProcessPoolExecutor for CPU-bound tasks. While a task is running in a child process, the asyncio event loop remains free — heartbeats continue, and the worker stays responsive to the broker.  Usage: # Default: uses cpu_bound_task for all tasks worker = ProcessPoolWorker( queue_name="compute_queue", max_workers=4, ) asyncio.run(worker.run())  # Custom: provide your own task function def my_processor(payload: dict) -> dict: # Your CPU-heavy logic here return {"done": True}  worker = ProcessPoolWorker( queue_name="compute_queue", task_func=my_processor, )  Attributes: max_workers: Number of child processes in the pool. Default 4 is good for most machines. Set to os.cpu_count() for maximum CPU utilization. task_func:   Module-level function to execute in child processes. Must accept a dict and return a dict.
+import subprocess
 
 FUNCTIONS/METHODS:
-  def cpu_bound_task(payload: dict) -> dict -- Default CPU-bound task handler. Runs in a child process.  This is an example/default implementation. In production, you'd register different task handlers for different task types.
-  def fib(x)
-  def _execute_task_func(func: Callable, payload: dict) -> dict -- Wrapper that calls a task function with its payload.  Used by run_in_executor when a custom task function is provided. This wrapper exists because functools.partial can sometimes cause
-  def my_processor(payload: dict) -> dict
-  def __ini
+  def run(cmd, env=None, check=True)
+  def c(date, msg)
+  def checkout_file(hash_val, paths)
+
+KEY CONSTANTS/CONFIG:
+  HEAD = "backup-old-history"
 
 KEY CODE COMMENTS:
-  # ── Module-Level Task Functions ────────────────────────────────────
-  # These MUST be at module level for pickle serialization.
-  # Each function runs in a SEPARATE PROCESS with its own GIL.
-  # Simulated CPU-intensive computation
-  # Deliberately naive recursive fibonacci — actually CPU heavy
-  # Sort a large list — memory-intensive CPU work
-  # Echo — for testing
-  # Default: uses cpu_bound_task for all tasks
-  # Custom: provide your own task function
-  # Your CPU-heavy logic here============================================================
+  # check if there are changes to commit
+  # create an empty commit or make a tiny change============================================================
 === REPO: spatial-portfolio ===
 URL: https://github.com/udayraj1238/spatial-portfolio
 Description: AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
