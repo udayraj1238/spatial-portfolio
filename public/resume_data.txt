@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-06-25 20:32
+  Last Updated: 2026-06-26 20:15
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -461,6 +461,78 @@ Despite everything I’ve built, there is still a massive gap in my knowledge th
 
 I believe I’d be a great fit for this program because I have a proven track record of diving into the deep end and learning fast. I’m the kind of developer who tears architectures apart to find their bottlenecks rather than just using them blindly. I would absolutely love the opportunity to absorb Amazon’s expertise in scalable AI, use it to push my research further, and eventually share those enterprise-grade insights with the students I mentor.
 
+--- File: comprehensive_architecture_guide.md ---
+# The Uday Raj Spatial AI Portfolio: Comprehensive Architectural Guide
+
+This document serves as the absolute deep-dive into the architecture, features, experimental decisions, and underlying logic of the Spatial AI Portfolio. It is designed to make the complete workings of this project crystal clear, from the WebGL context down to the Vercel Edge Runtime LLM token management.
+
+---
+
+## 1. Introduction & Core Concept
+
+Traditional software engineering and ML portfolios are static: a list of GitHub links, a PDF resume, and perhaps a basic React website. The goal of this project was to build a **living, breathing AI portfolio**. Instead of telling a recruiter that Uday Raj knows AI, the portfolio *shows* it by embedding a custom-engineered AI assistant ("APEX") directly into a highly interactive, 3D WebGL environment. 
+
+The portfolio is split into two massive pillars:
+1. **The Spatial Frontend:** A React Three Fiber (R3F) powered 3D universe that reacts to user interactions.
+2. **The Intelligence Engine:** A Vercel Edge Runtime backend connecting to Groq's ultra-fast Llama 3 LLMs, bound by aggressive rate-limiting, dynamic token budgeting, and advanced prompt engineering.
+
+---
+
+## 2. The Tech Stack Breakdown
+
+### Frontend Framework: Next.js 16 (App Router)
+We chose Next.js 16 because of its robust App Router (`src/app`), excellent TypeScript support, and seamless integration with Vercel's Edge Functions. The App Router allows us to perfectly separate server-side API routes (`route.ts`) from client-side interactive components (`page.tsx`, `HeroScene.tsx`).
+
+### 3D Graphics: React Three Fiber (R3F) & Three.js
+Writing raw WebGL or Three.js code is notoriously verbose. R3F allows us to write 3D scenes declaratively using React components. We supplemented this with `@react-three/drei`, a collection of useful helpers (like `Stars`, `Float`, and `PerspectiveCamera`) that drastically reduced boilerplate code.
+
+### AI Infrastructure: Vercel AI SDK & Groq API
+Instead of building a custom WebSocket or Server-Sent Events (SSE) pipeline from scratch for AI streaming, we utilized the `@ai-sdk/react` library (`useChat`). This hook automatically manages the streaming state of AI responses. The backend uses the Groq API, which leverages custom LPU (Language Processing Unit) hardware to serve Llama 3 models at blistering speeds (up to 800 tokens per second), providing instant responses that make the AI feel truly alive.
+
+---
+
+## 3. The Spatial Frontend (The 3D Canvas)
+
+### A. The WebGL Context Experiment (Bug 1)
+**The Experiment:** Initially, we attempted to wrap the entire application in a global `<Canvas>` element inside `layout.tsx`. The idea was that the 3D background would persist seamlessly across page navigations.
+**The Failure:** Mobile devices and laptops without dedicated GPUs began crashing. We realized that by having a Canvas in `layout.tsx` and another 3D component rendering in `page.tsx`, we accidentally created **two overlapping WebGL contexts**. Browser
+
+--- File: final_comprehensive_architecture_guide.md ---
+# The Uday Raj Spatial AI Portfolio: Comprehensive Architectural Guide
+
+This document serves as the absolute deep-dive into the architecture, features, experimental decisions, and underlying logic of the Spatial AI Portfolio. It is designed to make the complete workings of this project crystal clear, from the WebGL context down to the Vercel Edge Runtime LLM token management.
+
+---
+
+## 1. Introduction & Core Concept
+
+Traditional software engineering and ML portfolios are static: a list of GitHub links, a PDF resume, and perhaps a basic React website. The goal of this project was to build a **living, breathing AI portfolio**. Instead of telling a recruiter that Uday Raj knows AI, the portfolio *shows* it by embedding a custom-engineered AI assistant ("APEX") directly into a highly interactive, 3D WebGL environment. 
+
+The portfolio is split into two massive pillars:
+1. **The Spatial Frontend:** A React Three Fiber (R3F) powered 3D universe that reacts to user interactions.
+2. **The Intelligence Engine:** A Vercel Edge Runtime backend connecting to Groq's ultra-fast Llama 3 LLMs, bound by aggressive rate-limiting, dynamic token budgeting, and advanced prompt engineering.
+
+---
+
+## 2. The Tech Stack Breakdown
+
+### Frontend Framework: Next.js 16 (App Router)
+We chose Next.js 16 because of its robust App Router (`src/app`), excellent TypeScript support, and seamless integration with Vercel's Edge Functions. The App Router allows us to perfectly separate server-side API routes (`route.ts`) from client-side interactive components (`page.tsx`, `HeroScene.tsx`).
+
+### 3D Graphics: React Three Fiber (R3F) & Three.js
+Writing raw WebGL or Three.js code is notoriously verbose. R3F allows us to write 3D scenes declaratively using React components. We supplemented this with `@react-three/drei`, a collection of useful helpers (like `Stars`, `Float`, and `PerspectiveCamera`) that drastically reduced boilerplate code.
+
+### AI Infrastructure: Vercel AI SDK & Groq API
+Instead of building a custom WebSocket or Server-Sent Events (SSE) pipeline from scratch for AI streaming, we utilized the `@ai-sdk/react` library (`useChat`). This hook automatically manages the streaming state of AI responses. The backend uses the Groq API, which leverages custom LPU (Language Processing Unit) hardware to serve Llama 3 models at blistering speeds (up to 800 tokens per second), providing instant responses that make the AI feel truly alive.
+
+---
+
+## 3. The Spatial Frontend (The 3D Canvas)
+
+### A. The WebGL Context Experiment (Bug 1)
+**The Experiment:** Initially, we attempted to wrap the entire application in a global `<Canvas>` element inside `layout.tsx`. The idea was that the 3D background would persist seamlessly across page navigations.
+**The Failure:** Mobile devices and laptops without dedicated GPUs began crashing. We realized that by having a Canvas in `layout.tsx` and another 3D component rendering in `page.tsx`, we accidentally created **two overlapping WebGL contexts**. Browser
+
 --- File: next-env.d.ts ---
 IMPORTS:
 import "./.next/types/routes.d.ts";
@@ -519,36 +591,7 @@ FUNCTIONS/COMPONENTS:
 const geistSans = Geist({
 const geistMono = Geist_Mono({
 export const metadata: Metadata = {
-export default function RootLayout({
-
---- File: src/app/page.tsx ---
-IMPORTS:
-import HeroScene from "@/components/canvas/HeroScene";
-import ChatTerminal from "@/components/ChatTerminal";
-
-FUNCTIONS/COMPONENTS:
-export default function Home() {
-
---- File: src/components/ChatTerminal.tsx ---
-IMPORTS:
-import { useChat } from '@ai-sdk/react'
-import { useRef, useEffect, useState, useCallback } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-
-FUNCTIONS/COMPONENTS:
-function stripThinkTags(text: string): string {
-const openIdx = result.indexOf('<think>')
-function StreamText({ text }: { text: string }) {
-const clean = stripThinkTags(text)
-function CourtSenseDemo() {
-const QUICK_PROMPTS = [
-
-CODE COMMENTS:
-// ─── Strip DeepSeek R1 <think> reasoning blocks ──────────────────────────────
-// ─── Direct Text Renderer ─────────────────────────────────────────────────────
-// ─── CourtSense Interactive Demo ──────────────────────────────────────────────
-// ─── Quick Prompt Chips ──────────────────────────────────────────────────────============================================================
+export default function RootLayout({============================================================
 === REPO: DistroSync ===
 URL: https://github.com/udayraj1238/DistroSync
 Description: No description
@@ -659,26 +702,27 @@ import json
 import signal
 import logging
 import sys
-from broker.queue_manager import QueueManager
+from broker.queue_manager import QueueManager, Task
 from broker.worker_registry import WorkerRegistry
 from broker.load_shedder import AdaptiveLoadShedder
+from persistence.wal_store import WALStore
 
 CLASSES:
   class BrokerServer:: Asyncio-based TCP server that acts as the DistroSync message broker.  Lifecycle: 1. Create an instance: broker = BrokerServer(host, port) 2. Call await broker.start() to begin accepting connections 3. The server runs until interrupted (Ctrl+C) or shut down  The server delegates data management to: - QueueManager: handles task enqueue/dequeue/ACK/NACK - WorkerRegistry: tracks which workers are connected and alive
 
 FUNCTIONS/METHODS:
-  def __init__(self, host: str = "0.0.0.0", port: int = 5555) -- Initialize the broker server.  Args: host: The IP address to bind to. "0.0.0.0" means all interfaces.
+  def __init__(self, host: str = "0.0.0.0", port: int = 5555,
   async def handle_connection(
 
 KEY CODE COMMENTS:
   # Configure logging to show timestamps, level, and module name
+  # Optional WAL-mode persistence layer
   # Step 1: Read the 4-byte length prefix
   # readexactly() blocks (yields) until exactly 4 bytes are available.
   # If the client disconnects mid-read, it raises IncompleteReadError.
   # Sanity check: reject absurdly large messages (> 10 MB)
   # Step 2: Read exactly msg_len bytes of the JSON payload
   # Step 3: Decode and parse the JSON
-  # Step 4: Route the command to the appropriate handler
 
 --- File: broker/worker_registry.py ---
 IMPORTS (Libraries used):
@@ -711,6 +755,26 @@ KEY CODE COMMENTS:
   # Eviction loop control
   # Per-queue latency tracking (sliding window of recent latencies in ms)
   # Used by the AdaptiveLoadShedder to gauge worker performance.
+
+--- File: persistence/wal_store.py ---
+IMPORTS (Libraries used):
+import sqlite3
+import json
+import time
+import threading
+import logging
+from typing import Optional, List, Dict
+
+CLASSES:
+  class WALStore:: SQLite WAL-mode persistence backend for the DistroSync broker.  This class handles all database interactions. It's designed to be used by the QueueManager and DeadLetterQueue as an optional persistence layer — the broker can run without it (in-memory only) or with it (crash-safe).  Each thread gets its own SQLite connection via threading.local(), preventing the "ProgrammingError: SQLite objects created in a thread can only be used in that same thread" issue.  Usage: store = WALStore("distrosync.db") store.save_task(task)                    # Persist a task tasks = store.load_pending_tasks()       # Recover after crash store.update_task_status(task_id, "done") # Mark complete store.add_to_dlq(task, "handler crashed") # Move to DLQ dlq = store.get_dlq_tasks("emails")      # Query the DLQ task = store.replay_dlq_task(task_id)     # Replay a DLQ task
+
+FUNCTIONS/METHODS:
+  def __init__(self, db_path: str = DB_PATH) -- Initialize the WAL store.  Args: db_path: Path to the SQLite database file. The file and its
+  def _get_conn(self) -> sqlite3.Connection -- Get or create a thread-local SQLite connection.  Each thread gets its own connection to avoid SQLite's thread-safety constraints. The connection is configured with:
+  def _init_db(self) -- Create the database schema if it doesn't exist.  This is idempotent — safe to call on every startup. The schema uses IF NOT EXISTS so it won't clobber existing data.
+
+KEY CONSTANTS/CONFIG:
+  DB_PATH = "distrosync.db"
 
 --- File: producer/backoff.py ---
 IMPORTS (Libraries used):
@@ -759,24 +823,7 @@ FUNCTIONS/METHODS:
 KEY CODE COMMENTS:
   # Or without context manager:
   # Encode and send with length prefix
-  # Read the response (also length-prefixed)
-
---- File: rewrite_history.py ---
-IMPORTS (Libraries used):
-import os
-import subprocess
-
-FUNCTIONS/METHODS:
-  def run(cmd, env=None, check=True)
-  def c(date, msg)
-  def checkout_file(hash_val, paths)
-
-KEY CONSTANTS/CONFIG:
-  HEAD = "backup-old-history"
-
-KEY CODE COMMENTS:
-  # check if there are changes to commit
-  # create an empty commit or make a tiny change============================================================
+  # Read the response (also length-prefixed)============================================================
 === REPO: Transformer_from_scratch_using_pytorch ===
 URL: https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch
 Description: Complete Attention Is All You Need transformer in pure PyTorch — MHSA, positional encoding, encoder-decoder, beam search.
