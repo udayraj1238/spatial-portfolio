@@ -175,10 +175,10 @@ export async function POST(req: Request) {
     const estimatedTokens = systemTokens + historyTokens + 400; // +400 for expected response
     recordTokens(estimatedTokens);
 
-    // Model selection: 70B when quota available, 8B as fallback
-    // 8B is still extremely capable for factual Q&A with a well-crafted prompt
+    // Model selection: 70B when quota available, 20B as fallback
+    // 20B is still extremely capable for factual Q&A with a well-crafted prompt
     const useFallback = shouldUseFallback();
-    const model = useFallback ? 'llama-3.1-8b-instant' : 'llama-3.3-70b-versatile';
+    const model = useFallback ? 'openai/gpt-oss-20b' : 'llama-3.3-70b-versatile';
 
     // Analytics (fire-and-forget, never blocks response)
     const latestMsg = recentMessages.filter(m => m.role === 'user').pop();
