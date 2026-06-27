@@ -7,7 +7,7 @@ import * as THREE from "three";
 
 // ─── Floating Data Streams (with opacity pulse) ────────────────────────────
 function DataStream() {
-  const count = 40;
+  const count = 60;
   const meshes = useRef<THREE.Mesh[]>([]);
 
   const data = useMemo(() =>

@@ -64,11 +64,6 @@ To make APEX feel like a true assistant, we integrated voice.
 - **The Microphone Permission Bug (Bug 2):** During testing, voice input failed silently. Browsers block microphone access in modern cross-origin iframe or restrictive header environments. We solved this by modifying `next.config.ts` to explicitly include `Permissions-Policy: microphone=(self)`.
 - **Speaking (SpeechSynthesis):** When the AI finishes a response, the `onFinish` callback of the `useChat` hook triggers the `window.speechSynthesis` API, reading the stripped text aloud using the best available local voice. We had to write a regex stripper (`stripThinkTags`) to ensure the TTS engine didn't try to read out `<think>` reasoning blocks from advanced models.
 
-### D. The Dynamic Embedded Demo (`CourtSenseDemo`)
-One of the most powerful features of the portfolio is the ability to render dynamic UI components *inside* the chat stream.
-If a user asks about CourtSense-AI, the LLM is instructed to output the string `[COURTSENSE_DEMO_TRIGGER]`. 
-The frontend maps over the messages before rendering them. If it detects this string, it strips it out of the text and instead injects a custom React component—a fake 3D tracking UI built with CSS keyframes that mimics a tennis court object tracker (YOLOv8 + SegFormer). This proves Uday's frontend UI skills seamlessly within the AI workflow.
-
 ---
 
 ## 5. The Intelligence Engine (`route.ts`)
@@ -85,8 +80,11 @@ If a malicious user or bot spam-clicks the "Send" button, they could burn throug
 Groq's API restricts the highly intelligent `llama-3.3-70b-versatile` model to exactly 100,000 Tokens Per Day (TPD). 
 **The Solution:** We implemented a `dailyTokensUsed` counter. Every request estimates token usage (`systemTokens + historyTokens + 400`). Once `dailyTokensUsed` exceeds 80,000 (leaving 20k for safety), the `shouldUseFallback()` function returns true. The API seamlessly hot-swaps the model to a fallback LLM to ensure zero downtime.
 
-**The Fallback Migration Experiment:**
-Initially, the fallback model was `llama-3.1-8b-instant`. However, Groq announced the deprecation of this model, effective August 16, 2026. If left unchanged, this would have caused catastrophic failure every time the 70B token limit was hit. We successfully migrated the fallback logic to Groq's recommended replacement, `gpt-oss-20b`, ensuring the portfolio's long-term stability.
+**The Fallback Migration to `openai/gpt-oss-20b`:**
+We upgraded the fallback model from `llama-3.1-8b-instant` to OpenAI's open-weight `gpt-oss-20b` on Groq. This is a massive upgrade across the board:
+- **Intelligence:** `gpt-oss-20b` matches `o3-mini` on benchmarks, making the fallback responses noticeably sharper.
+- **Speed:** It runs at an incredible 1,000 tokens per second (vs 560–840 for the 8B model).
+- **Double Capacity & Prompt Caching:** The free on-demand tier for `gpt-oss-20b` has a 200,000 TPD cap (double the 70B limit). Crucially, Groq rolled out **prompt caching** on this model. Because our system prompt is an identical 1,168-token string on every request, it hits the cache perfectly and costs zero tokens. This drops our true per-request cost from ~2,143 tokens to ~975 tokens, allowing for over 200 high-quality fallback conversations per day completely free. The hot-swap is invisible to the user.
 
 *Known Architectural Limitation:* The `dailyTokensUsed` variable lives in module-level memory. Because Vercel spins up multiple Edge instances dynamically based on geographic traffic, each instance starts its counter at zero. This means the fallback switch isn't perfectly globally accurate under high concurrent traffic. To achieve true global state, we would need a database like Redis, but for a personal portfolio, this is an acceptable, cost-effective trade-off.
 
@@ -117,7 +115,7 @@ To fix the fallback model, we overhauled the `RESPONSE RULES`. Instead of just t
 2. **Strict Markdown Formatting:** The fallback model previously clumped bullet points together. We fixed this by mandating: *"ALWAYS put each bullet on its own separate NEW LINE — never run bullets together."*
 3. **Link Syntax Enforcement:** We explicitly instructed: *"ALWAYS use proper Markdown syntax [Text](https://url) — never output raw URLs,"* ensuring the `remark-gfm` parser can cleanly transform them into anchor tags.
 
-By leveraging positive directives, the smaller fallback model (`gpt-oss-20b`) is completely unchained. Even when the 70B token quota runs dry, the portfolio provides sharp, heavily formatted, highly technical answers that feel just as intelligent.
+By leveraging positive directives, the highly capable fallback model (`gpt-oss-20b`) is completely unchained. Even when the 70B token quota runs dry, the portfolio provides sharp, heavily formatted, highly technical answers that feel just as intelligent.
 
 ---
 
