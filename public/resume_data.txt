@@ -1,6 +1,6 @@
 ========================================================
   UDAY RAJ - APEX AI KNOWLEDGE BASE
-  Last Updated: 2026-06-26 20:15
+  Last Updated: 2026-06-27 19:50
   Source: PDF Resume + GitHub Code Analysis + LinkedIn
 ========================================================
 
@@ -650,6 +650,32 @@ KEY CODE COMMENTS:
   # OrderedDict preserves insertion order AND allows O(1) lookup
   # Reset the task for a fresh retry cycle
 
+--- File: broker/http_api.py ---
+IMPORTS (Libraries used):
+import asyncio
+import json
+import logging
+import os
+from typing import Optional, Callable
+
+CLASSES:
+  class HTTPAPIServer:: Minimal async HTTP server for the DistroSync dashboard and metrics.  Usage: http_server = HTTPAPIServer( host="0.0.0.0", port=8000, metrics_handler=broker.get_metrics_snapshot, dlq_handler=broker.get_dlq_listing, ) await http_server.start()
+
+FUNCTIONS/METHODS:
+  def __init__(
+  async def handle_connection(
+  async def _send_response(
+  async def _send_html_response(
+
+KEY CONSTANTS/CONFIG:
+  DASHBOARD_DIR = os.path.join(
+
+KEY CODE COMMENTS:
+  # Path to the dashboard HTML file (relative to project root)
+  # Read the full HTTP request (up to 8KB — more than enough for GET)
+  # Parse the request line: "GET /path HTTP/1.1"
+  # Only support GET
+
 --- File: broker/load_shedder.py ---
 IMPORTS (Libraries used):
 import asyncio
@@ -666,6 +692,42 @@ FUNCTIONS/METHODS:
   def __post_init__(self)
   def refill(self, adjusted_rate: float) -- Add tokens based on time elapsed and the current adjusted rate.  Uses monotonic clock because wall clock (time.time) can jump backwards during NTP corrections, which would break the elapsed
   def consume(self) -> bool -- Try to consume one token from the bucket.  Returns: True if a token was available and consumed (request allowed).
+
+--- File: broker/metrics_collector.py ---
+IMPORTS (Libraries used):
+import time
+import threading
+import logging
+from collections import deque, defaultdict
+from typing import Dict, Optional
+
+CLASSES:
+  class MetricsCollector:: Collects and exposes real-time broker metrics.  Usage: collector = MetricsCollector() collector.record_produce("emails")           # Task produced collector.record_consume("emails", task_id)  # Task dequeued collector.record_ack("emails", task_id)       # Task completed collector.record_nack("emails", task_id)      # Task failed  metrics = collector.snapshot()  # Get current metrics
+
+FUNCTIONS/METHODS:
+  def __init__(self)
+  def _prune_window(self, timestamps: deque, now: float) -> None -- Remove timestamps older than the throughput window.
+  def record_produce(self, queue_name: str) -> None -- Record that a task was produced (enqueued) to a queue.
+  def record_consume(self, queue_name: str, task_id: str) -> None -- Record that a task was consumed (dequeued) from a queue.
+  def record_ack(self, queue_name: str, task_id: str) -> None -- Record that a task was acknowledged (completed successfully).  Computes the processing latency if we have the dequeue timestamp.
+  def record_nack(self, queue_name: str, task_id: str,
+  def throughput(self, queue_name: str) -> float -- Get the current throughput for a queue in tasks/second.  Uses the ACK rate (completed tasks) as th
+
+KEY CONSTANTS/CONFIG:
+  THROUGHPUT_WINDOW_SECONDS = 10
+  MAX_LATENCY_SAMPLES = 1000
+
+KEY CODE COMMENTS:
+  # How many seconds of history to keep for throughput calculation
+  # Maximum number of latency samples to keep per queue
+  # Per-queue event timestamps for throughput (deque of float timestamps)
+  # Per-queue latency tracking
+  # Maps task_id -> dequeue timestamp (for computing processing time)
+  # Maps task_id -> queue_name (for attributing latency to correct queue)
+  # Per-queue latency samples in milliseconds
+  # Lifetime counters
+  # ── Recording Events ──────────────────────────────────────────────
+  # Compute latency if we tracked the dequeue time
 
 --- File: broker/queue_manager.py ---
 IMPORTS (Libraries used):
@@ -705,6 +767,8 @@ import sys
 from broker.queue_manager import QueueManager, Task
 from broker.worker_registry import WorkerRegistry
 from broker.load_shedder import AdaptiveLoadShedder
+from broker.metrics_collector import MetricsCollector
+from broker.http_api import HTTPAPIServer
 from persistence.wal_store import WALStore
 
 CLASSES:
@@ -717,12 +781,11 @@ FUNCTIONS/METHODS:
 KEY CODE COMMENTS:
   # Configure logging to show timestamps, level, and module name
   # Optional WAL-mode persistence layer
+  # HTTP API server for the dashboard (initialized in start())
   # Step 1: Read the 4-byte length prefix
   # readexactly() blocks (yields) until exactly 4 bytes are available.
   # If the client disconnects mid-read, it raises IncompleteReadError.
   # Sanity check: reject absurdly large messages (> 10 MB)
-  # Step 2: Read exactly msg_len bytes of the JSON payload
-  # Step 3: Decode and parse the JSON
 
 --- File: broker/worker_registry.py ---
 IMPORTS (Libraries used):
@@ -774,56 +837,7 @@ FUNCTIONS/METHODS:
   def _init_db(self) -- Create the database schema if it doesn't exist.  This is idempotent — safe to call on every startup. The schema uses IF NOT EXISTS so it won't clobber existing data.
 
 KEY CONSTANTS/CONFIG:
-  DB_PATH = "distrosync.db"
-
---- File: producer/backoff.py ---
-IMPORTS (Libraries used):
-import random
-import logging
-
-CLASSES:
-  class ExponentialBackoff:: Calculates retry delays using exponential backoff with full jitter.  Usage: backoff = ExponentialBackoff()  # In a retry loop: delay = backoff.next_wait() await asyncio.sleep(delay)  # Or with a server-suggested retry_after hint: delay = backoff.next_wait(retry_after=response["retry_after_seconds"])  # Reset after a successful operation: backoff.reset()  Attributes: base_delay:   Starting delay in seconds (default: 1.0) max_delay:    Maximum delay cap in seconds (default: 60.0) multiplier:   Factor to multiply delay by on each attempt (default: 2.0) jitter:       Whether to add randomness (default: True) max_attempts: Maximum number of retries before giving up (default: 10)
-
-FUNCTIONS/METHODS:
-  def __init__(
-  def attempt(self) -> int -- Current attempt number (0 = first attempt hasn't happened yet).
-  def exhausted(self) -> bool -- True if we've exceeded the maximum number of retry attempts.
-  def next_wait(self, retry_after: float | None = None) -> float -- Calculate the next wait duration and advance the attempt counter.  If the server provides a `retry_after` hint (like an HTTP 429 Retry-After header), we use that as a floor — we'll wait at
-  def reset(self) -- Reset the attempt counter after a successful operation.  Call this after a successful produce so that the next failure starts the backoff sequence from the beginning.
-  def __repr__(self) -> str
-
-KEY CODE COMMENTS:
-  # In a retry loop:
-  # Or with a server-suggested retry_after hint:
-  # Reset after a successful operation:
-  # Calculate the exponential delay: base * multiplier^attempt
-  # For default values: 1, 2, 4, 8, 16, 32, 60, 60, 60...
-  # Cap at max_delay to prevent absurdly long waits
-  # Apply full jitter: pick a random value between 0 and capped_delay
-  # This spreads out retries across the entire window
-  # If the server said "retry after X seconds", respect that as a floor
-
---- File: producer/client.py ---
-IMPORTS (Libraries used):
-import asyncio
-import json
-import logging
-from typing import Optional
-from producer.backoff import ExponentialBackoff
-
-CLASSES:
-  class ProducerClient:: Async TCP client for submitting tasks to the DistroSync broker.  The client maintains a persistent TCP connection to the broker. This is more efficient than opening a new connection for each task, because TCP connection setup involves a 3-way handshake (SYN, SYN-ACK, ACK) which adds latency.  The client uses the same length-prefixed JSON protocol as the broker: [4 bytes: message length][JSON payload]
-
-FUNCTIONS/METHODS:
-  def __init__(self, host: str = "localhost", port: int = 5555) -- Initialize the producer client.  Does NOT connect immediately — call connect() or use as an async context manager.
-  async def connect(self) -- Establish a TCP connection to the broker.  This opens an asyncio stream connection. Under the hood, asyncio.open_connection() creates a socket, performs the TCP
-  async def _send(self, message: dict) -> dict -- Send a length-prefixed JSON message and wait for the response.  This is the core wire protocol method. It: 1. JSON-encodes the message
-  async def produce(
-
-KEY CODE COMMENTS:
-  # Or without context manager:
-  # Encode and send with length prefix
-  # Read the response (also length-prefixed)============================================================
+  DB_PATH = "distrosync.db"============================================================
 === REPO: Transformer_from_scratch_using_pytorch ===
 URL: https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch
 Description: Complete Attention Is All You Need transformer in pure PyTorch — MHSA, positional encoding, encoder-decoder, beam search.
