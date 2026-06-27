@@ -46,70 +46,6 @@ function StreamText({ text }: { text: string }) {
   )
 }
 
-// ─── CourtSense Interactive Demo ──────────────────────────────────────────────
-function CourtSenseDemo() {
-  return (
-    <div style={{ marginTop: 12, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,240,255,0.3)', background: '#000' }}>
-      <div style={{ padding: '8px 12px', background: 'rgba(0,240,255,0.1)', fontSize: '0.8rem', color: '#00f0ff', display: 'flex', justifyContent: 'space-between' }}>
-        <span>COURTSENSE AI // 3D INTERACTIVE DEMO</span>
-        <span>LIVE</span>
-      </div>
-      <div style={{ position: 'relative', height: '200px', background: '#001a1a', overflow: 'hidden' }}>
-        {/* Tennis Court Lines */}
-        <div style={{ position: 'absolute', top: '10%', bottom: '10%', left: '20%', right: '20%', border: '2px solid rgba(0, 240, 255, 0.2)' }} />
-        <div style={{ position: 'absolute', top: '50%', left: '20%', right: '20%', borderTop: '2px solid rgba(0, 240, 255, 0.2)' }} />
-        <div style={{ position: 'absolute', top: '10%', bottom: '10%', left: '50%', borderLeft: '2px solid rgba(0, 240, 255, 0.2)' }} />
-
-        {/* Animated Ball & Bounding Box */}
-        <style dangerouslySetInnerHTML={{__html: `
-          @keyframes trackBall {
-            0% { transform: translate(0px, 0px); }
-            25% { transform: translate(100px, -50px); }
-            50% { transform: translate(200px, 20px); }
-            75% { transform: translate(100px, 80px); }
-            100% { transform: translate(0px, 0px); }
-          }
-          .cv-target { animation: trackBall 3s infinite linear; }
-          @keyframes p2Move {
-            0% { transform: translate(0px, 0px); }
-            25% { transform: translate(-30px, -15px); }
-            50% { transform: translate(-60px, 10px); }
-            75% { transform: translate(-30px, 25px); }
-            100% { transform: translate(0px, 0px); }
-          }
-          .cv-p2 { animation: p2Move 4s infinite ease-in-out; }
-        `}} />
-        <div className="cv-target" style={{ position: 'absolute', top: '80px', left: '100px', width: '20px', height: '20px' }}>
-           <div style={{ width: '10px', height: '10px', background: '#e1ff00', borderRadius: '50%', margin: '5px', boxShadow: '0 0 10px #e1ff00' }} />
-           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, border: '1px solid #00f0ff', boxShadow: '0 0 8px rgba(0,240,255,0.5) inset' }}>
-             <span style={{ position: 'absolute', top: '-14px', left: '-1px', background: '#00f0ff', color: '#000', fontSize: '8px', padding: '1px 4px', fontWeight: 'bold' }}>ball 0.98</span>
-           </div>
-        </div>
-
-        {/* Player 1 Bounding Box (top-left area) */}
-        <div style={{ position: 'absolute', top: '25px', left: '28%', width: '28px', height: '50px', border: '1px solid #00ff88', boxShadow: '0 0 6px rgba(0,255,136,0.4) inset' }}>
-          <span style={{ position: 'absolute', top: '-14px', left: '-1px', background: '#00ff88', color: '#000', fontSize: '8px', padding: '1px 4px', fontWeight: 'bold' }}>P1 0.96</span>
-        </div>
-
-        {/* Player 2 Bounding Box (bottom-right area) */}
-        <div className="cv-p2" style={{ position: 'absolute', bottom: '22px', right: '25%', width: '28px', height: '50px', border: '1px solid #ff8800', boxShadow: '0 0 6px rgba(255,136,0,0.4) inset' }}>
-          <span style={{ position: 'absolute', top: '-14px', left: '-1px', background: '#ff8800', color: '#000', fontSize: '8px', padding: '1px 4px', fontWeight: 'bold' }}>P2 0.94</span>
-        </div>
-
-        {/* FPS Counter */}
-        <div style={{ position: 'absolute', top: 8, right: 10, fontSize: '0.7rem', color: '#00f0ff', fontFamily: "'Courier New', monospace", background: 'rgba(0,0,0,0.6)', padding: '2px 6px', borderRadius: 4 }}>
-          32 FPS · TensorRT · Jetson
-        </div>
-
-        {/* Scanning Overlay */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(180deg, rgba(0,240,255,0) 0%, rgba(0,240,255,0.1) 50%, rgba(0,240,255,0) 100%)', animation: 'scan 2s infinite linear' }} />
-      </div>
-      <div style={{ padding: 12, fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', borderTop: '1px solid rgba(0,240,255,0.2)' }}>
-        YOLOv8-Pose + SegFormer-B2 + Kalman Filter · FastAPI backend · Three.js frontend
-      </div>
-    </div>
-  )
-}
 
 // ─── Quick Prompt Chips ──────────────────────────────────────────────────────
 const QUICK_PROMPTS = [
@@ -117,7 +53,6 @@ const QUICK_PROMPTS = [
   { icon: '🧠', label: 'PaliGemma VLM', prompt: 'Walk me through the PaliGemma implementation — SigLIP encoder, cross-modal projector, Gemma-2B decoder.' },
   { icon: '🏆', label: 'Global Rankings', prompt: 'What are his competition rankings and global standings?' },
   { icon: '💼', label: 'Why Hire?', prompt: 'Make the strongest possible case for hiring Uday Raj for an ML research role.' },
-  { icon: '🤖', label: 'CourtSense Demo', prompt: 'Show me the CourtSense AI demo and explain the full CV pipeline.' },
   { icon: '📚', label: 'All Projects', prompt: 'List all 6 GitHub projects with full technical details.' },
 ]
 
@@ -786,8 +721,6 @@ export default function ChatTerminal() {
             <div className="apex-messages" ref={scrollRef} onScroll={handleScroll}>
               {messages.map((m, i) => {
                 const text = getText(m)
-                const hasDemoTrigger = text.includes('[COURTSENSE_DEMO_TRIGGER]')
-                const displayText = hasDemoTrigger ? text.replace('[COURTSENSE_DEMO_TRIGGER]', '') : text
                 return (
                   <div key={i} className={`msg-row ${m.role === 'user' ? 'user' : ''}`}>
                     <div className={`msg-icon ${m.role === 'user' ? 'user-ic' : 'ai'}`}>
@@ -798,10 +731,9 @@ export default function ChatTerminal() {
                     </div>
                     <div className={`msg-bubble ${m.role === 'user' ? 'user' : 'ai'}`}>
                       {m.role === 'user'
-                        ? displayText
-                        : <StreamText text={displayText} />
+                        ? text
+                        : <StreamText text={text} />
                       }
-                      {hasDemoTrigger && <CourtSenseDemo key={'demo-' + i} />}
                     </div>
                   </div>
                 )
