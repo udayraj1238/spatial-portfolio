@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { groq } from '@ai-sdk/groq';
-import { streamText } from 'ai';
+import { streamText, smoothStream } from 'ai';
 import { z } from 'zod';
 import { createClient } from '@supabase/supabase-js';
 
@@ -201,6 +201,7 @@ export async function POST(req: Request) {
       messages: recentMessages,
       temperature: 0.7,
       maxOutputTokens: 600,
+      experimental_transform: smoothStream({ chunking: 'word' }),
     });
 
     return result.toUIMessageStreamResponse();
