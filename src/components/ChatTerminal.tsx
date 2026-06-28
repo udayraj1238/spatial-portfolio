@@ -365,7 +365,6 @@ export default function ChatTerminal() {
           flex-direction: column;
           gap: 24px;
           z-index: 2;
-          scroll-behavior: smooth;
           position: relative;
         }
         .apex-messages::-webkit-scrollbar { width: 4px; }
