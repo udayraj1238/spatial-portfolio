@@ -200,6 +200,7 @@ export async function POST(req: Request) {
       system: buildPrompt(),
       messages: recentMessages,
       temperature: 0.7,
+      maxTokens: 600,
     });
 
     return result.toUIMessageStreamResponse();
