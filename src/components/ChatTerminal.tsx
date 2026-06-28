@@ -648,6 +648,40 @@ export default function ChatTerminal() {
           0% { background-position: 0 -200px; }
           100% { background-position: 0 200px; }
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+          .apex-shell {
+            width: 100vw;
+            height: 100dvh;
+            border-radius: 0;
+            border: none;
+            background: linear-gradient(160deg, rgba(4,8,20,0.85) 0%, rgba(2,4,14,0.92) 100%);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+          }
+          .apex-shell::before, .apex-shell::after, .corner-br, .corner-bl {
+            display: none;
+          }
+          .apex-topbar { padding: 8px 16px; min-height: 32px; }
+          .apex-topbar-left { font-size: 0.55rem; letter-spacing: 1px; }
+          .apex-identity { padding: 12px 16px; }
+          .apex-id-left { gap: 10px; }
+          .apex-avatar { width: 36px; height: 36px; font-size: 1.1rem; border-radius: 10px; }
+          .apex-id-name { font-size: 0.9rem; }
+          .apex-id-sub { font-size: 0.55rem; letter-spacing: 0.5px; }
+          .apex-social-btn span { display: none; }
+          .apex-social-btn { padding: 0 8px; }
+          .apex-messages { padding: 16px 16px 12px; gap: 16px; }
+          .msg-bubble { max-width: 92%; padding: 12px 14px; font-size: 0.88rem; }
+          .apex-input-area { padding: 12px 16px 16px; }
+          .apex-welcome { padding: 10px 16px 0; }
+          .apex-welcome-icon { width: 56px; height: 56px; font-size: 1.5rem; border-radius: 16px; margin-bottom: 16px; }
+          .apex-welcome h1 { font-size: 1.5rem; }
+          .apex-welcome p { font-size: 0.85rem; margin-bottom: 20px; }
+          .apex-chip { padding: 8px 12px; font-size: 0.75rem; }
+          .msg-icon { width: 30px; height: 30px; border-radius: 10px; }
+        }
       `}</style>
 
       <div className={`apex-shell${minimized ? ' minimized' : ''}`}>
