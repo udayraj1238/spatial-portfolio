@@ -89,7 +89,7 @@ PROJECTS (6 total):
    50k image-caption pairs | AdamW + cosine LR 2e-5 | converged 3.5 epochs | WandB tracked.
    Top-P p=0.9 T=0.7 inference: 22% BLEU-4 uplift, 15% fewer hallucinations vs baseline.
 
-3. CourtSense-AI (github.com/udayraj1238/CourtSense-AI | demo: udayraj1238.github.io/CourtSense-AI)
+3. CourtSense-AI (github.com/udayraj1238/CourtSense-AI)
    Tennis video → 3D interactive replay. YOLOv8-Pose (COCO-17 kp) + SegFormer-B2 court seg
    + OpenCV findHomography + Kalman filter (handles 50%+ occlusion, <5px reprojection error)
    + FastAPI backend + React/Three.js 60fps frontend. TensorRT: 3.2× speedup, 30+ FPS on Jetson.
@@ -113,7 +113,7 @@ ACHIEVEMENTS: Shell.ai Global Top 20/1000+ | AWS×Zelestra Rank 176/7000+ | EY B
               CodeChef 3★ 1630 | Codeforces 1208 | LeetCode 100+
 
 LEADERSHIP: GDG ML Coordinator — 12-week bootcamp, 200+ students, 15+ projects, Docker setup −40% latency
-            DataWorks CV Coord — 100+ members, 5000+ images curated, 12% mAP gain, 30+ FPS edge demos
+            DataWorks CV Coord — 100+ members, 5000+ images curated, 12% mAP gain, 30+ FPS edge inferencing
 
 RESPONSE RULES:
 - Open with a specific number or concrete result — never a vague claim
