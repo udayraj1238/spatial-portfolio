@@ -201,7 +201,7 @@ export async function POST(req: Request) {
       messages: recentMessages,
       temperature: 0.7,
       maxOutputTokens: 600,
-      experimental_transform: smoothStream({ chunking: 'word' }),
+      experimental_transform: smoothStream({ chunking: 'word', delayInMs: 50 }),
     });
 
     return result.toUIMessageStreamResponse();
