@@ -50,7 +50,7 @@ function StreamText({ text }: { text: string }) {
 // ─── Quick Prompt Chips ──────────────────────────────────────────────────────
 const QUICK_PROMPTS = [
   { icon: '⚔️', label: 'Nuclear Attack', prompt: 'Explain the Nuclear Attack on SegFormer Stage 4. What exactly happened to accuracy?' },
-  { icon: '🧠', label: 'PaliGemma VLM', prompt: 'Walk me through the PaliGemma implementation — SigLIP encoder, cross-modal projector, Gemma-2B decoder.' },
+  { icon: '🔬', label: 'PaliGemma VLM', prompt: 'Walk me through the PaliGemma implementation — SigLIP encoder, cross-modal projector, Gemma-2B decoder.' },
   { icon: '🏆', label: 'Global Rankings', prompt: 'What are his competition rankings and global standings?' },
   { icon: '💼', label: 'Why Hire?', prompt: 'Make the strongest possible case for hiring Uday Raj for an ML research role.' },
   { icon: '📚', label: 'All Projects', prompt: 'List all 6 GitHub projects with full technical details.' },
@@ -775,9 +775,9 @@ export default function ChatTerminal() {
         <div className="apex-topbar">
           <div className="apex-topbar-left">
             <div className="apex-status-dot" />
-            <span>APEX AI · ACTIVE</span>
+            <span>INTERACTIVE TERMINAL</span>
             <span style={{ opacity: 0.4 }}>|</span>
-            <span>EDGE RUNTIME</span>
+            <span>SYSTEM ACTIVE</span>
           </div>
           <button
             className="apex-minimize-btn"
@@ -791,10 +791,12 @@ export default function ChatTerminal() {
         {/* Identity Bar */}
         <div className="apex-identity">
           <div className="apex-id-left">
-            <div className="apex-avatar">🧠</div>
+            <div className="apex-avatar">
+               <span style={{ fontSize: '1.2rem', fontWeight: 600, color: '#00f0ff' }}>UR</span>
+            </div>
             <div>
-              <div className="apex-id-name">UDAY RAJ <span style={{ color: 'rgba(0,240,255,0.4)', fontWeight: 300 }}>/ AI PORTFOLIO</span></div>
-              <div className="apex-id-sub">TRAINED ON RESUME · GITHUB · RESEARCH</div>
+              <div className="apex-id-name">UDAY RAJ <span style={{ color: 'rgba(0,240,255,0.4)', fontWeight: 300 }}>/ PORTFOLIO EXPLORER</span></div>
+              <div className="apex-id-sub">INDEXED: RESUME · GITHUB · RESEARCH</div>
             </div>
           </div>
           <div className="apex-id-right">
@@ -817,11 +819,12 @@ export default function ChatTerminal() {
         {/* Content: Welcome or Messages */}
         {!hasMessages ? (
           <div className="apex-welcome">
-            <div className="apex-welcome-icon">🧠</div>
-            <h1>Hi, I&apos;m <span style={{ color: '#00f0ff' }}>APEX</span></h1>
+            <div className="apex-welcome-icon">
+              <span style={{ fontSize: '1.8rem', fontWeight: 600, color: '#00f0ff' }}>UR</span>
+            </div>
+            <h1>Welcome to the <span style={{ color: '#00f0ff' }}>Terminal</span></h1>
             <p>
-              Uday&apos;s AI — trained exhaustively on his <span>resume</span>, <span>GitHub repos</span>, and <span>research papers</span>.
-              Ask me literally anything about his projects, skills, or background.
+              This is an interactive explorer for my portfolio. Search seamlessly through my <span>resume</span>, <span>GitHub repos</span>, and <span>research papers</span> using natural language.
             </p>
             <div className="apex-chips">
               {QUICK_PROMPTS.map((q, i) => (
@@ -841,7 +844,7 @@ export default function ChatTerminal() {
                     <div className={`msg-icon ${m.role === 'user' ? 'user-ic' : 'ai'}`}>
                       {m.role === 'user'
                         ? <User size={18} color="rgba(255,255,255,0.6)" />
-                        : <span style={{ fontSize: '1rem' }}>🧠</span>
+                        : <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#00f0ff' }}>UR</span>
                       }
                     </div>
                     <div className={`msg-bubble ${m.role === 'user' ? 'user' : 'ai'}`}>
@@ -855,21 +858,21 @@ export default function ChatTerminal() {
               })}
               {status === 'submitted' && (
                 <div className="msg-row">
-                  <div className="msg-icon ai"><span style={{ fontSize: '1rem' }}>🧠</span></div>
+                  <div className="msg-icon ai"><span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#00f0ff' }}>UR</span></div>
                   <div className="apex-thinking">
                     <div className="think-dots">
                       <div className="think-dot" />
                       <div className="think-dot" />
                       <div className="think-dot" />
                     </div>
-                    THINKING
+                    SEARCHING
                   </div>
                 </div>
               )}
               {error && (
                 <div className="msg-row">
                   <div className="msg-icon ai" style={{ background: 'rgba(255,60,60,0.15)' }}>
-                    <span style={{ fontSize: '1rem' }}>🧠</span>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ff3c3c' }}>UR</span>
                   </div>
                   <div className="msg-bubble ai" style={{ borderColor: 'rgba(255,60,60,0.3)', color: '#ff8888' }}>
                     ⚠ {getErrorMessage(error)}
@@ -890,14 +893,14 @@ export default function ChatTerminal() {
           <div className="floating-answer-panel">
             <div className="floating-panel-header">
               <div className="apex-status-dot" style={{ width: 6, height: 6 }} />
-              APEX AI
+              PORTFOLIO TERMINAL
             </div>
             {status === 'submitted' ? (
               <div className="apex-thinking" style={{ padding: 0 }}>
                 <div className="think-dots">
                   <div className="think-dot" /><div className="think-dot" /><div className="think-dot" />
                 </div>
-                THINKING
+                SEARCHING
               </div>
             ) : (
               <div className="msg-bubble ai" style={{ maxWidth: '100%', background: 'transparent', border: 'none', padding: 0, boxShadow: 'none' }}>

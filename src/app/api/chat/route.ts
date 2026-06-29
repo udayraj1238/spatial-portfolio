@@ -67,7 +67,7 @@ function shouldUseFallback(): boolean {
 // stays well within the 12,000 TPM limit even with conversation history.
 // The knowledge is dense and factual — no padding, no repetition.
 function buildPrompt(): string {
-  return `You are APEX — the AI assistant for Uday Raj's portfolio. You know everything about him.
+  return `You are the Interactive Portfolio Assistant for Uday Raj. You know everything about his work and background.
 Today: ${new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
 
 IDENTITY: Uday Raj | rajuday6002@gmail.com | github.com/udayraj1238 | linkedin.com/in/uday6002
@@ -212,7 +212,7 @@ export async function POST(req: Request) {
     // Translate Groq error codes into human-readable messages
     if (msg.includes('429') || msg.includes('rate_limit') || msg.includes('Rate limit')) {
       return new Response(
-        JSON.stringify({ error: 'One moment — APEX is handling a lot of questions right now. Try again in 30 seconds.' }),
+        JSON.stringify({ error: 'One moment — the system is handling a lot of queries right now. Try again in 30 seconds.' }),
         { status: 429, headers: { 'Content-Type': 'application/json' } }
       );
     }
@@ -222,9 +222,9 @@ export async function POST(req: Request) {
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
-    console.error('[APEX]', err);
+    console.error('[PORTFOLIO]', err);
     return new Response(
-      JSON.stringify({ error: 'APEX encountered an error. Please try again.' }),
+      JSON.stringify({ error: 'The system encountered an error. Please try again.' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
