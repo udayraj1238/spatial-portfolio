@@ -61,7 +61,6 @@ const SOCIAL_LINKS = [
   { href: 'https://github.com/udayraj1238', icon: GitFork, label: 'GitHub' },
   { href: 'https://linkedin.com/in/uday6002', icon: Link2, label: 'LinkedIn' },
   { href: 'mailto:rajuday6002@gmail.com', icon: Mail, label: 'Email' },
-  { href: 'https://udayraj1238.vercel.app', icon: ExternalLink, label: 'Portfolio' },
 ]
 
 // ─── Main Component ──────────────────────────────────────────────────────────
