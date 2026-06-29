@@ -454,31 +454,41 @@ export default function ChatTerminal() {
         .apex-messages::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.2); border-radius: 2px; }
         .apex-messages::-webkit-scrollbar-thumb:hover { background: rgba(0,240,255,0.4); }
 
-        /* Message logs (Terminal Style) */
-        .msg-row { display: flex; gap: 16px; align-items: flex-start; animation: msgIn 0.3s ease; }
-        .msg-row.user { opacity: 0.8; }
+        /* Message bubbles */
+        .msg-row { display: flex; gap: 12px; align-items: flex-start; animation: msgIn 0.3s ease; }
+        .msg-row.user { flex-direction: row-reverse; }
         @keyframes msgIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
 
         .msg-icon {
-          width: 32px; height: 32px;
+          width: 36px; height: 36px;
+          border-radius: 12px;
           display: flex; align-items: center; justify-content: center;
           flex-shrink: 0;
-          margin-top: 2px;
-          border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.08);
         }
-        .msg-icon.ai { background: rgba(0,240,255,0.05); border: 1px solid rgba(0,240,255,0.15); }
-        .msg-icon.user-ic { background: transparent; }
+        .msg-icon.ai { background: rgba(0,240,255,0.12); }
+        .msg-icon.user-ic { background: rgba(255,255,255,0.06); }
 
         .msg-bubble {
-          flex: 1;
+          max-width: 78%;
+          padding: 14px 18px;
+          border-radius: 20px;
           font-size: 0.95rem;
           line-height: 1.65;
+        }
+        .msg-bubble.ai {
+          background: rgba(10, 20, 35, 0.95);
+          border: 1px solid rgba(0, 240, 255, 0.15);
           color: rgba(255, 255, 255, 0.95);
+          border-radius: 4px 20px 20px 20px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
         .msg-bubble.user {
-          font-family: 'Courier New', monospace;
-          color: rgba(0, 240, 255, 0.9);
-          padding-top: 6px;
+          background: linear-gradient(135deg, #00d4ff, #0066ff);
+          color: #000;
+          font-weight: 500;
+          border-radius: 20px 20px 4px 20px;
+          box-shadow: 0 8px 24px rgba(0,102,255,0.3);
         }
 
         /* Markdown in AI messages */
