@@ -97,6 +97,7 @@ export default function ChatTerminal() {
   const [isFocused, setIsFocused] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const recognitionRef = useRef<any>(null)
   const isLoading = status === 'submitted' || status === 'streaming'
   const hasMessages = messages.length > 0
 
@@ -118,11 +119,15 @@ export default function ChatTerminal() {
 
     if (isListening) {
       setIsListening(false)
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
       return
     }
 
     const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
     const recognition = new SpeechRecognition()
+    recognitionRef.current = recognition
     recognition.continuous = false
     recognition.interimResults = true
     recognition.lang = 'en-US'
