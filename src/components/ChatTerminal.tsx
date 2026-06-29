@@ -336,7 +336,7 @@ export default function ChatTerminal() {
 
         /* Topbar */
         .apex-topbar {
-          padding: 10px 24px;
+          padding: 10px 42px 10px 24px;
           background: rgba(0,240,255,0.04);
           border-bottom: 1px solid rgba(0,240,255,0.08);
           display: flex;
