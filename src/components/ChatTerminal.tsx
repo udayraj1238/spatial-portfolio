@@ -233,7 +233,81 @@ export default function ChatTerminal() {
           transition: height 0.35s cubic-bezier(0.4,0,0.2,1);
         }
         .apex-shell.minimized {
-          height: 58px !important;
+          width: min(700px, 92vw) !important;
+          height: auto !important;
+          border-radius: 20px;
+          position: absolute;
+          bottom: 24px;
+          background: rgba(4,8,20,0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(0,240,255,0.3);
+          box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 30px rgba(0,240,255,0.15);
+          transform: translateY(0);
+          overflow: visible;
+        }
+        .apex-shell.minimized::before, .apex-shell.minimized::after,
+        .apex-shell.minimized .corner-br, .apex-shell.minimized .corner-bl {
+          display: none;
+        }
+        .apex-shell.minimized .apex-scan,
+        .apex-shell.minimized .apex-topbar,
+        .apex-shell.minimized .apex-identity,
+        .apex-shell.minimized .apex-welcome,
+        .apex-shell.minimized .apex-messages-wrap {
+          display: none;
+        }
+        .apex-shell.minimized .apex-input-area {
+          border-top: none;
+          padding: 10px;
+          background: transparent;
+        }
+        .apex-shell.minimized .apex-input-wrap {
+          border-color: rgba(0,240,255,0.2);
+          background: rgba(0,0,0,0.4);
+        }
+        .apex-shell.minimized .apex-hint {
+          display: none;
+        }
+
+        /* Floating Answer Panel */
+        .floating-answer-panel {
+          position: absolute;
+          bottom: calc(100% + 16px);
+          left: 0;
+          right: 0;
+          background: linear-gradient(160deg, rgba(4,8,20,0.95) 0%, rgba(2,4,14,0.98) 100%);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(0, 240, 255, 0.3);
+          border-radius: 20px;
+          padding: 20px 24px;
+          box-shadow: 0 10px 50px rgba(0,0,0,0.8), 0 0 30px rgba(0,240,255,0.2);
+          max-height: 55vh;
+          overflow-y: auto;
+          animation: floatUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 50;
+        }
+        .floating-answer-panel::-webkit-scrollbar { width: 4px; }
+        .floating-answer-panel::-webkit-scrollbar-track { background: transparent; }
+        .floating-answer-panel::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.3); border-radius: 2px; }
+        
+        .floating-panel-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 14px;
+          padding-bottom: 10px;
+          border-bottom: 1px solid rgba(0,240,255,0.15);
+          font-size: 0.7rem;
+          color: rgba(0,240,255,0.6);
+          letter-spacing: 1px;
+          font-family: 'Courier New', monospace;
+        }
+
+        @keyframes floatUp { 
+          from { opacity: 0; transform: translateY(15px) scale(0.98); } 
+          to { opacity: 1; transform: translateY(0) scale(1); } 
         }
 
         /* Corner Brackets */
@@ -811,6 +885,33 @@ export default function ChatTerminal() {
           </div>
         )}
 
+        {/* Floating Answer Panel when minimized */}
+        {minimized && (hasMessages || status === 'submitted') && (
+          <div className="floating-answer-panel">
+            <div className="floating-panel-header">
+              <div className="apex-status-dot" style={{ width: 6, height: 6 }} />
+              APEX AI
+            </div>
+            {status === 'submitted' ? (
+              <div className="apex-thinking" style={{ padding: 0 }}>
+                <div className="think-dots">
+                  <div className="think-dot" /><div className="think-dot" /><div className="think-dot" />
+                </div>
+                THINKING
+              </div>
+            ) : (
+              <div className="msg-bubble ai" style={{ maxWidth: '100%', background: 'transparent', border: 'none', padding: 0, boxShadow: 'none' }}>
+                {(() => {
+                   const aiMsgs = messages.filter((m: any) => m.role !== 'user');
+                   if (aiMsgs.length === 0) return null;
+                   const lastMsg = aiMsgs[aiMsgs.length - 1];
+                   return <StreamText text={getText(lastMsg)} />;
+                })()}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Input */}
         <div className="apex-input-area">
           <form
@@ -828,6 +929,17 @@ export default function ChatTerminal() {
                 placeholder="Ask anything about Uday..."
                 disabled={isLoading}
               />
+              {minimized && (
+                <button
+                  type="button"
+                  onClick={() => setMinimized(false)}
+                  className="apex-send"
+                  style={{ background: 'rgba(0,240,255,0.1)' }}
+                  title="Expand Chat"
+                >
+                  <Maximize2 size={16} color="#00f0ff" />
+                </button>
+              )}
               <button
                 type="button"
                 onClick={toggleListening}
