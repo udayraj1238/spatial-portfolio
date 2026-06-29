@@ -162,7 +162,11 @@ export default function ChatTerminal() {
   // Auto-scroll on new messages
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
+      // Only auto-scroll if user is already near the bottom (within 150px)
+      if (scrollHeight - scrollTop - clientHeight < 150) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      }
     }
   }, [messages, status])
 
