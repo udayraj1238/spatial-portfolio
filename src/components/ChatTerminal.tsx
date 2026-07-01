@@ -97,6 +97,7 @@ export default function ChatTerminal() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const recognitionRef = useRef<any>(null)
+  const isAutoScrollEnabled = useRef(true)
   const isLoading = status === 'submitted' || status === 'streaming'
   const hasMessages = messages.length > 0
 
@@ -165,31 +166,37 @@ export default function ChatTerminal() {
 
   // Auto-scroll on new messages
   useEffect(() => {
-    if (scrollRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
-      // Only auto-scroll if user is already near the bottom (within 150px)
-      if (scrollHeight - scrollTop - clientHeight < 150) {
-        scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-      }
+    if (scrollRef.current && isAutoScrollEnabled.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
   }, [messages, status])
 
-  // Track scroll position for scroll-to-bottom button
+  // Track scroll position for scroll-to-bottom button and auto-scroll toggling
   const handleScroll = useCallback(() => {
     if (!scrollRef.current) return
     const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
     const distFromBottom = scrollHeight - scrollTop - clientHeight
-    setShowScrollBtn(distFromBottom > 120)
+    
+    // If the user scrolls up (more than 10px from bottom), disable auto-scroll
+    if (distFromBottom > 10) {
+      isAutoScrollEnabled.current = false
+      setShowScrollBtn(true)
+    } else {
+      isAutoScrollEnabled.current = true
+      setShowScrollBtn(false)
+    }
   }, [])
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
+      isAutoScrollEnabled.current = true
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
   }, [])
 
   const handleSend = useCallback((content: string) => {
     if (!content.trim() || isLoading) return
+    isAutoScrollEnabled.current = true // Force auto-scroll on new message
     sendMessage({ text: content })
     setInput('')
     if (isVoiceMode) setIsVoiceMode(false)
