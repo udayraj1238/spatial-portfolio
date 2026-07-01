@@ -53,3 +53,5 @@ jest.lcov
 .vercel/
 dummy_padding_for_size_requirement.dat
 *.pem
+
+*.zip
