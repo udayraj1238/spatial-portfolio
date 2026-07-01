@@ -77,11 +77,11 @@ RESEARCH: Intern at SVNIT Surat under Dr. Praveen Chandaliya | Nov 2025–presen
           Adversarial robustness of ViT + SegFormer on Market-1501 | Paper under review
 
 PROJECTS (6 total):
-1. Adversarial ReID Attack (github.com/udayraj1238/Person-ReID-Attack-Implementation)
-   SegFormer MiT-B0 + ViT-B/16 + ResNet-50 on Market-1501 (12,936 train / 19,732 gallery / 1,501 IDs)
-   Nuclear Attack on SegFormer Stage-4 attn: 97.0%→2% Rank-1 (94.9% drop), cosine sim 0.044
-   ViT multi-layer hijacking (layers 9-11): 91.8%→12% (79.5% drop)
-   ResNet-50 FGSM+PGD: 75%→0%. All perturbations ε≤8/255 (invisible). MI-FGSM for transferability.
+1. DistroSync (github.com/udayraj1238/DistroSync)
+   Distributed task queue with adaptive load shedding - built entirely from scratch in Python, zero external message brokers.
+   Custom 4-byte length-prefixed JSON wire protocol over raw TCP sockets (asyncio). Adaptive token bucket load shedding.
+   SQLite WAL persistence, ProcessPoolExecutor for true parallel CPU execution avoiding GIL. Fast API dashboard.
+   Throughput: ~2800 tasks/sec, <1% rejection rate. P50 Latency: ~2.5 ms.
 
 2. PaliGemma VLM from scratch (github.com/udayraj1238/Pytorch_PaliGemma)
    SigLIP 12-layer ViT (patch 14×14, 1152-dim) → linear projector 1152→2048 → Gemma-2B (2.1B params)
@@ -130,7 +130,7 @@ WRONG: "Uday Raj's portfolio showcases his plethora of skills. 1. Technical Exce
 RIGHT: "Uday built PaliGemma from scratch, dropping VRAM by 48% with 8-bit quantization. Let's look at the architecture."
 
 WRONG: "Hiring Uday: A Strategic Decision. It is a testament to his dedication..."
-RIGHT: "His Nuclear Attack on SegFormer crashed accuracy from 97.0% to 2%. That level of surgical adversarial testing is exactly why his paper is under review."`;
+RIGHT: "His DistroSync broker handles ~2800 tasks/sec with <1% rejection rate using raw TCP sockets. That level of deep systems engineering is exactly why you want him on your backend team."`;
 }
 
 // ─── Route handler ────────────────────────────────────────────────────────────

@@ -49,10 +49,10 @@ function StreamText({ text }: { text: string }) {
 
 // ─── Quick Prompt Chips ──────────────────────────────────────────────────────
 const QUICK_PROMPTS = [
-  { icon: '⚔️', label: 'Nuclear Attack', prompt: 'Explain the Nuclear Attack on SegFormer Stage 4. What exactly happened to accuracy?' },
+  { icon: '🚀', label: 'DistroSync TCP Broker', prompt: 'Tell me about the DistroSync distributed task queue. How did you implement adaptive load shedding and what was the P50 latency?' },
   { icon: '🔬', label: 'PaliGemma VLM', prompt: 'Walk me through the PaliGemma implementation — SigLIP encoder, cross-modal projector, Gemma-2B decoder.' },
   { icon: '🏆', label: 'Global Rankings', prompt: 'What are his competition rankings and global standings?' },
-  { icon: '💼', label: 'Why Hire?', prompt: 'Make the strongest possible case for hiring Uday Raj for an ML research role.' },
+  { icon: '💼', label: 'Why Hire?', prompt: 'Make the strongest possible case for hiring Uday Raj for an ML/Backend engineering role.' },
   { icon: '📚', label: 'All Projects', prompt: 'List all 6 GitHub projects with full technical details.' },
 ]
 
