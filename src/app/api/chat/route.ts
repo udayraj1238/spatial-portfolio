@@ -28,10 +28,10 @@ const perDay    = new Map<string, { count: number; reset: number }>();
 function checkRate(ip: string): { ok: boolean; reason: string } {
   const now = Date.now();
 
-  // Per-minute: 5 requests/min (safely under 12,000 TPM at ~1,800 tokens/req)
+  // Per-minute: 3 requests/min (safely under 12,000 TPM at ~3,000 tokens/req)
   let m = perMinute.get(ip);
   if (!m || now > m.reset) { m = { count: 0, reset: now + 60_000 }; perMinute.set(ip, m); }
-  if (m.count >= 5) return { ok: false, reason: 'minute' };
+  if (m.count >= 3) return { ok: false, reason: 'minute' };
   m.count++;
 
   // Per-day: 30 requests/day per IP (generous for a portfolio, protects daily quota)
@@ -201,7 +201,7 @@ export async function POST(req: Request) {
       system: buildPrompt(),
       messages: recentMessages,
       temperature: 0.7,
-      maxOutputTokens: 1500,
+      maxOutputTokens: 600,
       experimental_transform: smoothStream({ chunking: 'word', delayInMs: 50 }),
     });
 
