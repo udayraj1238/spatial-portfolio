@@ -6,11 +6,11 @@
 
 == SECTION 1: RESUME (Primary Source) ==
 Uday Raj
- +91 8527655484
+ƒ
 # rajuday6002@gmail.com
 ï LinkedIn
 § GitHub
- Portfolio
+€ Portfolio
 Education
 Indian Institute Of Information Technology, Design and Manufacturing
 Kurnool
@@ -81,7 +81,7 @@ Aug 2025 - Present
 TensorRT targets of 30+ FPS.
 
 Uday Raj
-(cid:131) +91 8527655484 # rajuday6002@gmail.com (cid:239) LinkedIn § GitHub (cid:128) Portfolio
+# rajuday6002@gmail.com (cid:239) LinkedIn § GitHub (cid:128) Portfolio
 Education
 Indian Institute Of Information Technology, Design and Manufacturing Kurnool
 Bachelor of Technology in Artificial Intelligence and Data Science - Grade : 8.38 2024 - 2028
