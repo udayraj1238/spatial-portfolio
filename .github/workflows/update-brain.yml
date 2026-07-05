@@ -44,7 +44,7 @@ jobs:
           git config --global user.name "APEX Automator"
           git config --global user.email "apex-bot@udayraj.portfolio"
           
-          # Only commit if there are changes
+          # Only commit if there are changes (correct path: public/resume_data.txt)
           if [[ -n "$(git status --porcelain public/resume_data.txt)" ]]; then
             git add public/resume_data.txt
             git commit -m "chore(ai): auto-update APEX knowledge base"
