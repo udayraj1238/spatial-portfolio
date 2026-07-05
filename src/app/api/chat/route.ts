@@ -12,7 +12,7 @@ const ChatRequestSchema = z.object({
     role: z.string().optional(),
     content: z.string().max(2000).optional(),
     parts: z.any().optional(),
-  }).passthrough()).optional(),
+  }).strip()).optional(),
   text: z.string().max(2000).optional(),
 });
 
@@ -137,7 +137,10 @@ RIGHT: "His DistroSync broker handles ~2800 tasks/sec with <1% rejection rate us
 export async function POST(req: Request) {
   try {
     // Rate limit
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anon';
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+               req.headers.get('x-real-ip') || 
+               req.headers.get('cf-connecting-ip') || 
+               crypto.randomUUID();
     const { ok, reason } = checkRate(ip);
     if (!ok) {
       const msg = reason === 'day'
