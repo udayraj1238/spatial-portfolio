@@ -9,12 +9,12 @@ import * as THREE from "three";
 
 // ─── Project Constellation ──────────────────────────────────────────────────
 const PROJECTS = [
-  { name: 'Adversarial ReID', pos: [3.2, 1.8, -2.1], color: '#ff4466' },
-  { name: 'PaliGemma VLM',    pos: [-2.8, 2.4, -1.5], color: '#00f0ff' },
-  { name: 'CourtSense-AI',    pos: [2.1, -2.6, -1.8], color: '#44ff88' },
-  { name: 'Grid07',           pos: [-3.5, -1.2, -2.8], color: '#ff8844' },
-  { name: 'Transformer',      pos: [0.8, 3.1, -3.2],  color: '#aa44ff' },
-  { name: 'This Portfolio',   pos: [-1.4, -3.0, -1.9], color: '#ffdd00' },
+  { name: 'Adversarial ReID', pos: [7.2, 2.8, -2.1], color: '#ff4466' },
+  { name: 'PaliGemma VLM',    pos: [-7.8, 4.4, -1.5], color: '#00f0ff' },
+  { name: 'CourtSense-AI',    pos: [5.1, -4.6, -1.8], color: '#44ff88' },
+  { name: 'Grid07',           pos: [-8.5, -2.2, -2.8], color: '#ff8844' },
+  { name: 'Transformer',      pos: [3.8, 5.1, -3.2],  color: '#aa44ff' },
+  { name: 'This Portfolio',   pos: [-4.4, -6.0, -1.9], color: '#ffdd00' },
 ];
 
 function ProjectNode({ project, pulseSignal }: { project: any, pulseSignal: number }) {
@@ -383,7 +383,7 @@ function CoreOrb() {
 
         {/* Inner core — custom GLSL iridescent shader */}
         <mesh ref={ref}>
-          <icosahedronGeometry args={[2.0, 4]} />
+          <icosahedronGeometry args={[4.5, 4]} />
           <shaderMaterial
             ref={materialRef}
             vertexShader={orbVertexShader}
@@ -430,6 +430,23 @@ function TechGrid() {
   );
 }
 
+// ─── Massive Orbital Rings ──────────────────────────────────────────────────
+function OrbitalRing({ radius, tilt, speed, color }: { radius: number, tilt: number, speed: number, color: string }) {
+  const ref = useRef<THREE.Mesh>(null);
+  useFrame(({ clock }) => {
+    if (ref.current) {
+      ref.current.rotation.y = clock.getElapsedTime() * speed;
+      ref.current.rotation.x = tilt;
+    }
+  });
+  return (
+    <mesh ref={ref}>
+      <torusGeometry args={[radius, 0.015, 8, 128]} />
+      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2} transparent opacity={0.3} />
+    </mesh>
+  );
+}
+
 // ─── Mouse-reactive Group ───────────────────────────────────────────────────
 function SceneContent() {
   const groupRef = useRef<THREE.Group>(null);
@@ -438,8 +455,18 @@ function SceneContent() {
   useFrame((state, delta) => {
     if (groupRef.current) {
       const t = 1 - Math.pow(0.001, delta)  // frame-rate independent lerp
-      groupRef.current.rotation.x += (state.mouse.y * 0.06 - groupRef.current.rotation.x) * t * 3.5
-      groupRef.current.rotation.y += (state.mouse.x * 0.06 - groupRef.current.rotation.y) * t * 3.5
+      
+      let targetX = state.mouse.y * 0.06;
+      let targetY = state.mouse.x * 0.06;
+      
+      // Mobile fallback: if mouse is at exactly (0,0), simulate idle breathing
+      if (state.mouse.x === 0 && state.mouse.y === 0) {
+        targetX = Math.sin(state.clock.elapsedTime * 0.4) * 0.05;
+        targetY = Math.cos(state.clock.elapsedTime * 0.25) * 0.06;
+      }
+
+      groupRef.current.rotation.x += (targetX - groupRef.current.rotation.x) * t * 3.5
+      groupRef.current.rotation.y += (targetY - groupRef.current.rotation.y) * t * 3.5
     }
   });
 
@@ -447,6 +474,11 @@ function SceneContent() {
     <group ref={groupRef}>
       <TechGrid />
       <ProjectConstellation />
+
+      {/* Massive orbital rings framing the terminal */}
+      <OrbitalRing radius={13.0} tilt={0.8}  speed={0.15}  color="#00f0ff" />
+      <OrbitalRing radius={17.0} tilt={-0.5} speed={-0.1}  color="#0066ff" />
+      <OrbitalRing radius={22.0} tilt={1.2}  speed={0.08}  color="#00f0ff" />
 
       {/* Core orb */}
       <CoreOrb />
@@ -470,7 +502,7 @@ export default function HeroScene() {
       background: 'transparent',
       zIndex: -1,
     }}>
-      <Canvas dpr={[1, 1.5]} gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}>
+      <Canvas eventSource={typeof document !== 'undefined' ? document.body : undefined as any} dpr={[1, 1.5]} gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}>
         <PerspectiveCamera makeDefault position={[0, 0, 12]} fov={52} />
         <Suspense fallback={null}>
           <SceneContent />
