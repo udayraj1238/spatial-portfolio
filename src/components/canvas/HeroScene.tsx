@@ -4,63 +4,104 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Stars, Float, PerspectiveCamera, Sparkles } from "@react-three/drei";
 import { EffectComposer, ChromaticAberration, Bloom } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
-import { Suspense, useRef, useMemo } from "react";
+import { Suspense, useRef, useMemo, useState, useEffect } from "react";
 import * as THREE from "three";
 
-// ─── Floating Data Streams (with opacity pulse) ────────────────────────────
-function DataStream() {
-  const count = 60;
-  const meshes = useRef<THREE.Mesh[]>([]);
+// ─── Project Constellation ──────────────────────────────────────────────────
+const PROJECTS = [
+  { name: 'Adversarial ReID', pos: [3.2, 1.8, -2.1], color: '#ff4466' },
+  { name: 'PaliGemma VLM',    pos: [-2.8, 2.4, -1.5], color: '#00f0ff' },
+  { name: 'CourtSense-AI',    pos: [2.1, -2.6, -1.8], color: '#44ff88' },
+  { name: 'Grid07',           pos: [-3.5, -1.2, -2.8], color: '#ff8844' },
+  { name: 'Transformer',      pos: [0.8, 3.1, -3.2],  color: '#aa44ff' },
+  { name: 'This Portfolio',   pos: [-1.4, -3.0, -1.9], color: '#ffdd00' },
+];
 
-  const data = useMemo(() =>
-    Array.from({ length: count }).map(() => ({
-      position: new THREE.Vector3(
-        THREE.MathUtils.randFloatSpread(30),
-        THREE.MathUtils.randFloatSpread(30),
-        THREE.MathUtils.randFloatSpread(80)
-      ),
-      speed: THREE.MathUtils.randFloat(0.04, 0.18),
-      length: THREE.MathUtils.randFloat(4, 18),
-      opacity: THREE.MathUtils.randFloat(0.15, 0.5),
-      phaseOffset: THREE.MathUtils.randFloat(0, Math.PI * 2),
-    })), []
-  );
+function ProjectNode({ project, pulseSignal }: { project: any, pulseSignal: number }) {
+  const materialRef = useRef<THREE.MeshStandardMaterial>(null);
+  const pulseTimer = useRef(0);
 
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    meshes.current.forEach((mesh, i) => {
-      if (!mesh) return;
-      mesh.position.z += data[i].speed;
-      if (mesh.position.z > 20) {
-        mesh.position.z = -60;
-        mesh.position.x = THREE.MathUtils.randFloatSpread(30);
-        mesh.position.y = THREE.MathUtils.randFloatSpread(30);
+  useEffect(() => {
+    if (pulseSignal > 0) {
+      pulseTimer.current = 0.8; // 800ms
+    }
+  }, [pulseSignal]);
+
+  useFrame((state, delta) => {
+    if (materialRef.current) {
+      if (pulseTimer.current > 0) {
+        pulseTimer.current -= delta;
+        materialRef.current.emissiveIntensity = THREE.MathUtils.lerp(materialRef.current.emissiveIntensity, 8, delta * 15);
+      } else {
+        materialRef.current.emissiveIntensity = THREE.MathUtils.lerp(materialRef.current.emissiveIntensity, 3, delta * 5);
       }
-      // Opacity pulse
-      const mat = mesh.material as THREE.MeshStandardMaterial;
-      if (mat) {
-        mat.opacity = data[i].opacity * (0.6 + 0.4 * Math.sin(t * 1.2 + data[i].phaseOffset));
-      }
-    });
+    }
   });
 
   return (
+    <mesh position={project.pos as [number, number, number]}>
+      <sphereGeometry args={[0.15, 16, 16]} />
+      <meshStandardMaterial
+        ref={materialRef}
+        color={project.color}
+        emissive={project.color}
+        emissiveIntensity={3}
+      />
+    </mesh>
+  );
+}
+
+function ProjectConstellation() {
+  const [pulseEvents, setPulseEvents] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    let lastSeenContent = "";
+    
+    const handleMessageWrapper = (e: any) => {
+      const text = e.detail || "";
+      if (text.length < lastSeenContent.length) {
+        lastSeenContent = "";
+      }
+      const newText = text.slice(lastSeenContent.length);
+      lastSeenContent = text;
+      
+      let updated = false;
+      const newEvents = { ...pulseEvents };
+      
+      PROJECTS.forEach(p => {
+        if (newText.includes(p.name)) {
+          newEvents[p.name] = Date.now();
+          updated = true;
+        }
+      });
+      
+      if (updated) {
+        setPulseEvents(newEvents);
+      }
+    };
+
+    window.addEventListener('apex-message', handleMessageWrapper);
+    return () => window.removeEventListener('apex-message', handleMessageWrapper);
+  }, [pulseEvents]);
+
+  const lineGeometry = useMemo(() => {
+    const points = [];
+    for (let i = 0; i < PROJECTS.length; i++) {
+      for (let j = i + 1; j < PROJECTS.length; j++) {
+        points.push(new THREE.Vector3(...PROJECTS[i].pos));
+        points.push(new THREE.Vector3(...PROJECTS[j].pos));
+      }
+    }
+    return new THREE.BufferGeometry().setFromPoints(points);
+  }, []);
+
+  return (
     <group>
-      {data.map((d, i) => (
-        <mesh
-          key={i}
-          ref={(el) => { if (el) meshes.current[i] = el }}
-          position={d.position}
-        >
-          <boxGeometry args={[0.008, 0.008, d.length]} />
-          <meshStandardMaterial
-            color="#00f0ff"
-            emissive="#00f0ff"
-            emissiveIntensity={6}
-            transparent
-            opacity={d.opacity}
-          />
-        </mesh>
+      <lineSegments geometry={lineGeometry}>
+        <lineBasicMaterial color="#00f0ff" transparent opacity={0.15} />
+      </lineSegments>
+      {PROJECTS.map((proj, i) => (
+        <ProjectNode key={i} project={proj} pulseSignal={pulseEvents[proj.name] || 0} />
       ))}
     </group>
   );
@@ -415,7 +456,7 @@ function SceneContent() {
       </mesh>
 
       <TechGrid />
-      <DataStream />
+      <ProjectConstellation />
 
       {/* Orbital rings */}
       <OrbitalRing radius={5.5} tilt={0.8}  speed={0.15}  color="#00f0ff" />

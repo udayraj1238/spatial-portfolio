@@ -21,7 +21,6 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { AnimatePresence, motion } from 'framer-motion'
-
 // ─── Strip DeepSeek R1 <think> reasoning blocks ──────────────────────────────
 function stripThinkTags(text: string): string {
   let result = text.replace(/<think>[\s\S]*?<\/think>/gi, '')
@@ -101,6 +100,17 @@ export default function ChatTerminal() {
   const isAutoScrollEnabled = useRef(true)
   const isLoading = status === 'submitted' || status === 'streaming'
   const hasMessages = messages.length > 0
+
+  // Dispatch message for 3D scene reactivity
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1]
+      if (lastMessage.role === 'assistant') {
+        const text = getText(lastMessage)
+        window.dispatchEvent(new CustomEvent('apex-message', { detail: text }))
+      }
+    }
+  }, [messages])
 
   // Keep ref in sync for useChat callback
   useEffect(() => {
@@ -778,7 +788,20 @@ export default function ChatTerminal() {
           .msg-bubble { max-width: 92%; padding: 12px 14px; font-size: 0.88rem; }
           .apex-input-area { padding: 12px 16px 16px; }
           .apex-welcome { padding: 10px 16px 0; }
-          .apex-welcome-icon { width: 56px;         <AnimatePresence>
+          .apex-welcome-icon { width: 56px; height: 56px; font-size: 1.5rem; border-radius: 16px; margin-bottom: 16px; }
+          .apex-welcome h1 { font-size: 1.5rem; }
+          .apex-welcome p { font-size: 0.85rem; margin-bottom: 20px; }
+          .apex-chip { padding: 8px 12px; font-size: 0.75rem; }
+          .msg-icon { width: 30px; height: 30px; border-radius: 10px; }
+        }
+      `}</style>
+
+      <div className={`apex-shell${minimized ? ' minimized' : ''}`}>
+        <div className="corner-br" />
+        <div className="corner-bl" />
+        <div className="apex-scan" />
+
+        <AnimatePresence>
           {!minimized && (
             <motion.div
               key="terminal-body"
@@ -790,123 +813,106 @@ export default function ChatTerminal() {
             >
               {/* Topbar */}
               <div className="apex-topbar">
-                <div className="apex-topbar-left">
-                  <div className="apex-status-dot" />
-                  <span>INTERACTIVE TERMINAL</span>
-                  <span style={{ opacity: 0.4 }}>|</span>
-                  <span>SYSTEM ACTIVE</span>
-                </div>
-                <button
-                  className="apex-minimize-btn"
-                  onClick={() => setMinimized(prev => !prev)}
-                  title={minimized ? 'Maximize' : 'Minimize'}
-                >
-                  {minimized ? <Maximize2 size={14} /> : <Minimize2 size={14} />}
+          <div className="apex-topbar-left">
+            <div className="apex-status-dot" />
+            <span>INTERACTIVE TERMINAL</span>
+            <span style={{ opacity: 0.4 }}>|</span>
+            <span>SYSTEM ACTIVE</span>
+          </div>
+          <button
+            className="apex-minimize-btn"
+            onClick={() => setMinimized(prev => !prev)}
+            title={minimized ? 'Maximize' : 'Minimize'}
+          >
+            {minimized ? <Maximize2 size={14} /> : <Minimize2 size={14} />}
+          </button>
+        </div>
+
+        {/* Identity Bar */}
+        <div className="apex-identity">
+          <div className="apex-id-left">
+            <div className="apex-avatar">
+               <span style={{ fontSize: '1.2rem', fontWeight: 600, color: '#00f0ff' }}>UR</span>
+            </div>
+            <div>
+              <div className="apex-id-name">UDAY RAJ <span style={{ color: 'rgba(0,240,255,0.4)', fontWeight: 300 }}>/ PORTFOLIO EXPLORER</span></div>
+              <div className="apex-id-sub">INDEXED: RESUME · GITHUB · RESEARCH</div>
+            </div>
+          </div>
+          <div className="apex-id-right">
+            {SOCIAL_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="apex-social-btn"
+                title={link.label}
+              >
+                <link.icon size={13} />
+                <span>{link.label}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Content: Welcome or Messages */}
+        {!hasMessages ? (
+          <div className="apex-welcome">
+            <div className="apex-welcome-icon">
+              <span style={{ fontSize: '1.8rem', fontWeight: 600, color: '#00f0ff' }}>UR</span>
+            </div>
+            <h1>Welcome to the <span style={{ color: '#00f0ff' }}>Terminal</span></h1>
+            <p>
+              This is an interactive explorer for my portfolio. Search seamlessly through my <span>resume</span>, <span>GitHub repos</span>, and <span>research papers</span> using natural language.
+            </p>
+            <div className="apex-chips">
+              {QUICK_PROMPTS.map((q, i) => (
+                <button key={i} className="apex-chip" onClick={() => handleSend(q.prompt)}>
+                  <span>{q.icon}</span> {q.label}
                 </button>
-              </div>
-
-              {/* Identity Bar */}
-              <div className="apex-identity">
-                <div className="apex-id-left">
-                  <div className="apex-avatar">
-                     <span style={{ fontSize: '1.2rem', fontWeight: 600, color: '#00f0ff' }}>UR</span>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="apex-messages-wrap">
+            <div className="apex-messages" ref={scrollRef} onScroll={handleScroll}>
+              {messages.map((m, i) => {
+                const text = getText(m)
+                return (
+                  <div key={i} className={`msg-row ${m.role === 'user' ? 'user' : ''}`}>
+                    <div className={`msg-icon ${m.role === 'user' ? 'user-ic' : 'ai'}`}>
+                      {m.role === 'user'
+                        ? <User size={18} color="rgba(255,255,255,0.6)" />
+                        : <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#00f0ff' }}>UR</span>
+                      }
+                    </div>
+                    <div className={`msg-bubble ${m.role === 'user' ? 'user' : 'ai'}`}>
+                      {m.role === 'user'
+                        ? text
+                        : <StreamText text={text} />
+                      }
+                    </div>
                   </div>
-                  <div>
-                    <div className="apex-id-name">UDAY RAJ <span style={{ color: 'rgba(0,240,255,0.4)', fontWeight: 300 }}>/ PORTFOLIO EXPLORER</span></div>
-                    <div className="apex-id-sub">INDEXED: RESUME · GITHUB · RESEARCH</div>
-                  </div>
-                </div>
-                <div className="apex-id-right">
-                  {SOCIAL_LINKS.map((link) => (
-                    <a
-                      key={link.label}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="apex-social-btn"
-                      title={link.label}
-                    >
-                      <link.icon size={13} />
-                      <span>{link.label}</span>
-                    </a>
-                  ))}
-                </div>
-              </div>
-
-              {/* Content: Welcome or Messages */}
-              {!hasMessages ? (
-                <div className="apex-welcome">
-                  <div className="apex-welcome-icon">
-                    <span style={{ fontSize: '1.8rem', fontWeight: 600, color: '#00f0ff' }}>UR</span>
-                  </div>
-                  <h1>Welcome to the <span style={{ color: '#00f0ff' }}>Terminal</span></h1>
-                  <p>
-                    This is an interactive explorer for my portfolio. Search seamlessly through my <span>resume</span>, <span>GitHub repos</span>, and <span>research papers</span> using natural language.
-                  </p>
-                  <div className="apex-chips">
-                    {QUICK_PROMPTS.map((q, i) => (
-                      <button key={i} className="apex-chip" onClick={() => handleSend(q.prompt)}>
-                        <span>{q.icon}</span> {q.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="apex-messages-wrap">
-                  <div className="apex-messages" ref={scrollRef} onScroll={handleScroll}>
-                    {messages.map((m, i) => {
-                      const text = getText(m)
-                      return (
-                        <div key={i} className={`msg-row ${m.role === 'user' ? 'user' : ''}`}>
-                          <div className={`msg-icon ${m.role === 'user' ? 'user-ic' : 'ai'}`}>
-                            {m.role === 'user'
-                              ? <User size={18} color="rgba(255,255,255,0.6)" />
-                              : <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#00f0ff' }}>UR</span>
-                            }
-                          </div>
-                          <div className={`msg-bubble ${m.role === 'user' ? 'user' : 'ai'}`}>
-                            {m.role === 'user'
-                              ? text
-                              : <StreamText text={text} />
-                            }
-                          </div>
-                        </div>
-                      )
-                    })}
-                    {status === 'submitted' && (
-                      <div className="msg-row">
-                        <div className="msg-icon ai"><span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#00f0ff' }}>UR</span></div>
-                        <div className="apex-thinking">
-                          <div className="think-dots">
-                            <div className="think-dot" />
-                            <div className="think-dot" />
-                            <div className="think-dot" />
-                          </div>
-                          SEARCHING
-                        </div>
-                      </div>
-                    )}
-                    {error && (
-                      <div className="msg-row">
-                        <div className="msg-icon ai" style={{ background: 'rgba(255,60,60,0.15)' }}>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ff3c3c' }}>UR</span>
-                        </div>
-                        <div className="msg-bubble ai" style={{ borderColor: 'rgba(255,60,60,0.3)', color: '#ff8888' }}>
-                          ⚠ {getErrorMessage(error)}
-                        </div>
-                      </div>
-                    )}
-                    {showScrollBtn && (
-                      <button className="apex-scroll-btn" onClick={scrollToBottom}>
-                        <ChevronDown size={14} /> SCROLL DOWN
-                      </button>
-                    )}
+                )
+              })}
+              {status === 'submitted' && (
+                <div className="msg-row">
+                  <div className="msg-icon ai"><span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#00f0ff' }}>UR</span></div>
+                  <div className="apex-thinking">
+                    <div className="think-dots">
+                      <div className="think-dot" />
+                      <div className="think-dot" />
+                      <div className="think-dot" />
+                    </div>
+                    SEARCHING
                   </div>
                 </div>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>t: 700, color: '#ff3c3c' }}>UR</span>
+              {error && (
+                <div className="msg-row">
+                  <div className="msg-icon ai" style={{ background: 'rgba(255,60,60,0.15)' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ff3c3c' }}>UR</span>
                   </div>
                   <div className="msg-bubble ai" style={{ borderColor: 'rgba(255,60,60,0.3)', color: '#ff8888' }}>
                     ⚠ {getErrorMessage(error)}
@@ -921,6 +927,9 @@ export default function ChatTerminal() {
             </div>
           </div>
         )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Floating Answer Panel when minimized */}
         {minimized && (hasMessages || status === 'submitted') && (

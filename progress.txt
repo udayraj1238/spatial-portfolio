@@ -65,3 +65,14 @@ Build: ✓ Compiled successfully
 3. Added prefers-reduced-motion media query (Already completed in Task 2)
    
 Build: ✓ Compiled successfully
+
+## Task 4: Project node constellation (Week 2)
+- Status: COMPLETE
+- Date: 2026-07-06
+
+### Changes made:
+1. Replaced DataStream with ProjectConstellation in HeroScene.tsx
+2. Added connecting lines between nodes using THREE.LineSegments
+3. Wired APEX message parsing to pulse project nodes via custom 'apex-message' event in ChatTerminal.tsx
+
+Build: ✓ Compiled successfully
