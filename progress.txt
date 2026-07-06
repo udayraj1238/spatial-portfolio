@@ -17,3 +17,35 @@
    - @react-three/postprocessing was already installed (no npm install needed)
 
 Build: ✓ Compiled successfully
+
+## Task 2: Custom cursor + button micro-interactions (Week 1, Day 2)
+- Status: COMPLETE
+- Date: 2026-07-06
+
+### Changes made:
+1. Created src/components/CustomCursor.tsx
+   - Glowing cyan dot (8px) follows mouse instantly via mousemove
+   - Lagging ring (40px, 1px border) follows with 0.12 lerp factor (Emil's inertia)
+   - Ring expands to 64px on hover over interactive elements (button, a, input, .apex-chip)
+   - Uses MutationObserver to dynamically re-attach listeners when DOM changes
+   - Hidden on touch devices via @media (hover: none)
+   - box-shadow glow: 0 0 10px #00f0ff, 0 0 20px rgba(0,240,255,0.4)
+
+2. Added CustomCursor to src/app/layout.tsx
+   - Imported and rendered inside <body> above #dom-root
+   - Works globally on every page via 'use client' boundary
+
+3. Added button press feedback to src/app/globals.css
+   - button:active { transform: scale(0.97) } with 150ms cubic-bezier(0.22,1,0.36,1)
+   - .apex-send:active { transform: scale(0.94) } with 120ms (more pronounced)
+
+4. Upgraded message entry animation in ChatTerminal.tsx (blur-bridge)
+   - Old: opacity:0 + translateY(10px) with 0.3s ease
+   - New: opacity:0 + translateY(10px) + scale(0.98) + blur(4px) → clean
+   - Duration: 0.28s with cubic-bezier(0.22, 1, 0.36, 1) (under 300ms rule)
+
+5. Added prefers-reduced-motion media query to globals.css
+   - All animation-duration/transition-duration forced to 0.01ms
+   - .cursor-dot, .cursor-ring hidden
+
+Build: ✓ Compiled successfully
