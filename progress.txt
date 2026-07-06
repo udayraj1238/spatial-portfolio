@@ -76,3 +76,18 @@ Build: ✓ Compiled successfully
 3. Wired APEX message parsing to pulse project nodes via custom 'apex-message' event in ChatTerminal.tsx
 
 Build: ✓ Compiled successfully
+
+## Task 5: Install Lenis and Aceternity components (Week 2)
+- Status: COMPLETE
+- Date: 2026-07-06
+
+### Changes made:
+1. Installed lenis package
+2. Created SmoothScroll.tsx and wrapped children in layout.tsx
+3. Added TextGenerateEffect component for welcome screen heading in ChatTerminal.tsx
+4. Wired hover.wav audio for message sending and streaming ticks
+
+Build: ✓ Compiled successfully
+
+----------
+ralph-done-5n508

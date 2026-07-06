@@ -21,6 +21,11 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { AnimatePresence, motion } from 'framer-motion'
+import { TextGenerateEffect } from './TextGenerateEffect'
+
+const sendSound = typeof window !== 'undefined' ? new Audio('/hover.wav') : null
+const tickSound = typeof window !== 'undefined' ? new Audio('/hover.wav') : null
+
 // ─── Strip DeepSeek R1 <think> reasoning blocks ──────────────────────────────
 function stripThinkTags(text: string): string {
   let result = text.replace(/<think>[\s\S]*?<\/think>/gi, '')
@@ -100,6 +105,13 @@ export default function ChatTerminal() {
   const isAutoScrollEnabled = useRef(true)
   const isLoading = status === 'submitted' || status === 'streaming'
   const hasMessages = messages.length > 0
+
+  // Play tick sound when streaming starts
+  useEffect(() => {
+    if (status === 'streaming') {
+      tickSound?.play().catch(() => {})
+    }
+  }, [status])
 
   // Dispatch message for 3D scene reactivity
   useEffect(() => {
@@ -207,6 +219,7 @@ export default function ChatTerminal() {
 
   const handleSend = useCallback((content: string) => {
     if (!content.trim() || isLoading) return
+    sendSound?.play().catch(() => {})
     isAutoScrollEnabled.current = true // Force auto-scroll on new message
     sendMessage({ text: content })
     setInput('')
@@ -862,7 +875,14 @@ export default function ChatTerminal() {
             <div className="apex-welcome-icon">
               <span style={{ fontSize: '1.8rem', fontWeight: 600, color: '#00f0ff' }}>UR</span>
             </div>
-            <h1>Welcome to the <span style={{ color: '#00f0ff' }}>Terminal</span></h1>
+            <h1>
+              <TextGenerateEffect>
+                <motion.span style={{ opacity: 0, filter: 'blur(4px)' }}>Welcome </motion.span>
+                <motion.span style={{ opacity: 0, filter: 'blur(4px)' }}>to </motion.span>
+                <motion.span style={{ opacity: 0, filter: 'blur(4px)' }}>the </motion.span>
+                <motion.span style={{ opacity: 0, filter: 'blur(4px)', color: '#00f0ff' }}>Terminal</motion.span>
+              </TextGenerateEffect>
+            </h1>
             <p>
               This is an interactive explorer for my portfolio. Search seamlessly through my <span>resume</span>, <span>GitHub repos</span>, and <span>research papers</span> using natural language.
             </p>
