@@ -1,7 +1,7 @@
 'use client'
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Stars, Float, PerspectiveCamera, Sparkles } from "@react-three/drei";
+import { Float, PerspectiveCamera, Preload } from "@react-three/drei";
 import { EffectComposer, ChromaticAberration, Bloom } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import { Suspense, useRef, useMemo, useState, useEffect } from "react";
@@ -486,6 +486,7 @@ export default function HeroScene() {
             />
           </EffectComposer>
         </Suspense>
+        <Preload all />
       </Canvas>
     </div>
   );
