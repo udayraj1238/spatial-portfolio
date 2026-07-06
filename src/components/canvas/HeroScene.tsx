@@ -31,9 +31,9 @@ function ProjectNode({ project, pulseSignal }: { project: any, pulseSignal: numb
     if (materialRef.current) {
       if (pulseTimer.current > 0) {
         pulseTimer.current -= delta;
-        materialRef.current.emissiveIntensity = THREE.MathUtils.lerp(materialRef.current.emissiveIntensity, 8, delta * 15);
+        materialRef.current.emissiveIntensity = THREE.MathUtils.lerp(materialRef.current.emissiveIntensity, 4, delta * 15);
       } else {
-        materialRef.current.emissiveIntensity = THREE.MathUtils.lerp(materialRef.current.emissiveIntensity, 3, delta * 5);
+        materialRef.current.emissiveIntensity = THREE.MathUtils.lerp(materialRef.current.emissiveIntensity, 1.5, delta * 5);
       }
     }
   });
@@ -45,7 +45,7 @@ function ProjectNode({ project, pulseSignal }: { project: any, pulseSignal: numb
         ref={materialRef}
         color={project.color}
         emissive={project.color}
-        emissiveIntensity={3}
+        emissiveIntensity={1.5}
       />
     </mesh>
   );
@@ -458,24 +458,8 @@ function SceneContent() {
       <TechGrid />
       <ProjectConstellation />
 
-      {/* Orbital rings */}
-      <OrbitalRing radius={5.5} tilt={0.8}  speed={0.15}  color="#00f0ff" />
-      <OrbitalRing radius={7.0} tilt={-0.5} speed={-0.1}  color="#0066ff" />
-      <OrbitalRing radius={9.0} tilt={1.2}  speed={0.08}  color="#00f0ff" />
-      <OrbitalRing radius={12}  tilt={0.4}  speed={0.04}  color="#00f0ff" />
-
-      {/* Hexagonal tube ring */}
-      <HexagonalTubeRing />
-
-      {/* Orbiting dots along rings */}
-      <OrbitingDots />
-
       {/* Core orb */}
       <CoreOrb />
-
-      {/* Particles */}
-      <Sparkles count={120} scale={18} size={2.5} speed={0.3} color="#00f0ff" opacity={0.7} />
-      <Stars radius={200} depth={60} count={10000} factor={4} saturation={0} fade speed={1} />
 
       {/* Lighting */}
       <ambientLight intensity={0.05} />
@@ -496,19 +480,19 @@ export default function HeroScene() {
       background: 'radial-gradient(ellipse at 50% 50%, #000510 0%, #000208 100%)',
       zIndex: -1,
     }}>
-      <Canvas dpr={[1, 2]} gl={{ antialias: true, alpha: false }}>
+      <Canvas dpr={[1, 1.5]} gl={{ antialias: false, alpha: false, powerPreference: "high-performance" }}>
         <PerspectiveCamera makeDefault position={[0, 0, 12]} fov={52} />
         <Suspense fallback={null}>
           <SceneContent />
           <fog attach="fog" args={['#000208', 18, 70]} />
           {/* Post-processing: Chromatic Aberration + Bloom (igloo.inc signature) */}
-          <EffectComposer>
+          <EffectComposer multisampling={0}>
             <ChromaticAberration
-              offset={new THREE.Vector2(0.0005, 0.0005)}
+              offset={new THREE.Vector2(0.0003, 0.0003)}
               blendFunction={BlendFunction.NORMAL}
             />
             <Bloom
-              intensity={0.4}
+              intensity={0.15}
               luminanceThreshold={0.9}
               luminanceSmoothing={0.025}
             />
