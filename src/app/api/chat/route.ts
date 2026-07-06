@@ -204,7 +204,7 @@ export async function POST(req: Request) {
       system: buildPrompt(),
       messages: recentMessages,
       temperature: 0.7,
-      maxOutputTokens: 600,
+      maxOutputTokens: 2500,
       experimental_transform: smoothStream({ chunking: 'word', delayInMs: 50 }),
     });
 
