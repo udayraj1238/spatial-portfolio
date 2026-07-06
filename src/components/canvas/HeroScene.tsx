@@ -444,17 +444,6 @@ function SceneContent() {
 
   return (
     <group ref={groupRef}>
-      {/* Deep space sphere */}
-      <mesh position={[0, 0, -30]}>
-        <sphereGeometry args={[60, 64, 64]} />
-        <meshStandardMaterial
-          color="#000208"
-          side={THREE.BackSide}
-          emissive="#00050f"
-          emissiveIntensity={1.5}
-        />
-      </mesh>
-
       <TechGrid />
       <ProjectConstellation />
 
@@ -477,14 +466,13 @@ export default function HeroScene() {
     <div style={{
       position: 'fixed', top: 0, left: 0,
       width: '100%', height: '100%',
-      background: 'radial-gradient(ellipse at 50% 50%, #000510 0%, #000208 100%)',
+      background: 'transparent',
       zIndex: -1,
     }}>
-      <Canvas dpr={[1, 1.5]} gl={{ antialias: false, alpha: false, powerPreference: "high-performance" }}>
+      <Canvas dpr={[1, 1.5]} gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}>
         <PerspectiveCamera makeDefault position={[0, 0, 12]} fov={52} />
         <Suspense fallback={null}>
           <SceneContent />
-          <fog attach="fog" args={['#000208', 18, 70]} />
           {/* Post-processing: Chromatic Aberration + Bloom (igloo.inc signature) */}
           <EffectComposer multisampling={0}>
             <ChromaticAberration

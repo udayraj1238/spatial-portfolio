@@ -39,6 +39,8 @@ export const metadata: Metadata = {
 };
 
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { BackgroundBeams } from "@/components/BackgroundBeams";
+import { SparklesCore } from "@/components/SparklesCore";
 
 export default function RootLayout({
   children,
@@ -48,6 +50,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
+        <BackgroundBeams />
+        <SparklesCore />
         <CustomCursor />
         <SmoothScroll>
           <div id="dom-root">
