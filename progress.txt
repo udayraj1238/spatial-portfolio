@@ -1,0 +1,19 @@
+## Task 1: Post-processing and custom GLSL shader (Week 1, Day 1)
+- Status: COMPLETE
+- Date: 2026-07-06
+
+### Changes made to HeroScene.tsx:
+1. Replaced MeshDistortMaterial on core orb with custom GLSL vertex/fragment shaders
+   - Vertex shader: Simplex noise-based organic breathing displacement, mouse-reactive
+   - Fragment shader: Iridescent color shift (cyan→blue→violet) with Fresnel rim glow
+2. Added EffectComposer with ChromaticAberration + Bloom post-processing
+   - ChromaticAberration: offset [0.0005, 0.0005] (subtle, igloo.inc-inspired)
+   - Bloom: intensity 0.4, luminanceThreshold 0.9 (only blooms brightest points)
+3. Fixed camera lerp to be frame-rate independent
+   - Old: THREE.MathUtils.lerp with hardcoded 0.04 factor (stiff, felt like dragging)
+   - New: Spring-like easing using `1 - Math.pow(0.001, delta)` (feels like floating)
+4. Replaced MeshDistortMaterial on deep space sphere with plain meshStandardMaterial
+   - MeshDistortMaterial import fully removed from file
+   - @react-three/postprocessing was already installed (no npm install needed)
+
+Build: ✓ Compiled successfully
