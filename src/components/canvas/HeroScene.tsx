@@ -434,12 +434,11 @@ function TechGrid() {
 function SceneContent() {
   const groupRef = useRef<THREE.Group>(null);
 
-  // Frame-rate independent lerp for spring-like camera easing
+  // Frame-rate independent spring damping for butter-smooth camera easing
   useFrame((state, delta) => {
     if (groupRef.current) {
-      const t = 1 - Math.pow(0.001, delta)  // frame-rate independent lerp
-      let targetX = state.mouse.y * 0.25;
-      let targetY = state.mouse.x * 0.25;
+      let targetX = state.mouse.y * 0.15;
+      let targetY = state.mouse.x * 0.15;
       
       // Mobile fallback: if mouse is at exactly (0,0), simulate idle breathing
       if (state.mouse.x === 0 && state.mouse.y === 0) {
@@ -447,8 +446,9 @@ function SceneContent() {
         targetY = Math.cos(state.clock.elapsedTime * 0.25) * 0.06;
       }
 
-      groupRef.current.rotation.x += (targetX - groupRef.current.rotation.x) * t * 3.5
-      groupRef.current.rotation.y += (targetY - groupRef.current.rotation.y) * t * 3.5
+      // THREE.MathUtils.damp guarantees mathematical stability without overshooting, fixing the jitter
+      groupRef.current.rotation.x = THREE.MathUtils.damp(groupRef.current.rotation.x, targetX, 5, delta);
+      groupRef.current.rotation.y = THREE.MathUtils.damp(groupRef.current.rotation.y, targetY, 5, delta);
     }
   });
 
