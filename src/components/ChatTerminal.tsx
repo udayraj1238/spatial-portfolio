@@ -151,9 +151,12 @@ export default function ChatTerminal() {
     const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
     const recognition = new SpeechRecognition()
     recognitionRef.current = recognition
-    recognition.continuous = false
+    recognition.continuous = true
     recognition.interimResults = true
     recognition.lang = 'en-US'
+
+    let timeoutId: any = null
+    let finalTranscript = ''
 
     recognition.onstart = () => {
       setIsListening(true)
@@ -161,17 +164,27 @@ export default function ChatTerminal() {
     }
 
     recognition.onresult = (event: any) => {
+      if (timeoutId) clearTimeout(timeoutId)
+
       let interimTranscript = ''
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         if (event.results[i].isFinal) {
-          const finalStr = event.results[i][0].transcript
-          setInput(finalStr)
-          sendMessage({ text: finalStr })
-          setInput('')
+          finalTranscript += event.results[i][0].transcript + ' '
         } else {
           interimTranscript += event.results[i][0].transcript
-          setInput(interimTranscript)
         }
+      }
+
+      const currentText = (finalTranscript + interimTranscript).trim()
+      setInput(currentText)
+
+      if (currentText) {
+        timeoutId = setTimeout(() => {
+          sendMessage({ text: currentText })
+          setInput('')
+          finalTranscript = ''
+          recognition.stop()
+        }, 2000)
       }
     }
 
@@ -181,6 +194,7 @@ export default function ChatTerminal() {
     }
 
     recognition.onend = () => {
+      if (timeoutId) clearTimeout(timeoutId)
       setIsListening(false)
     }
 
