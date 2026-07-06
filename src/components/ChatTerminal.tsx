@@ -24,7 +24,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { TextGenerateEffect } from './TextGenerateEffect'
 
 const sendSound = typeof window !== 'undefined' ? new Audio('/hover.wav') : null
-const tickSound = typeof window !== 'undefined' ? new Audio('/hover.wav') : null
+const tickSound = typeof window !== 'undefined' ? new Audio('/tick.wav') : null
 
 // ─── Strip DeepSeek R1 <think> reasoning blocks ──────────────────────────────
 function stripThinkTags(text: string): string {
