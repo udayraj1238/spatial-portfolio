@@ -437,8 +437,9 @@ function SceneContent() {
   // Frame-rate independent spring damping for butter-smooth camera easing
   useFrame((state, delta) => {
     if (groupRef.current) {
-      let targetX = state.mouse.y * 0.15;
-      let targetY = state.mouse.x * 0.15;
+      // 0.35 gives a very wide, highly sensitive rotation range
+      let targetX = state.mouse.y * 0.35;
+      let targetY = state.mouse.x * 0.35;
       
       // Mobile fallback: if mouse is at exactly (0,0), simulate idle breathing
       if (state.mouse.x === 0 && state.mouse.y === 0) {
@@ -446,9 +447,10 @@ function SceneContent() {
         targetY = Math.cos(state.clock.elapsedTime * 0.25) * 0.06;
       }
 
-      // THREE.MathUtils.damp guarantees mathematical stability without overshooting, fixing the jitter
-      groupRef.current.rotation.x = THREE.MathUtils.damp(groupRef.current.rotation.x, targetX, 5, delta);
-      groupRef.current.rotation.y = THREE.MathUtils.damp(groupRef.current.rotation.y, targetY, 5, delta);
+      // THREE.MathUtils.damp guarantees mathematical stability. 
+      // Lambda = 7 makes it highly responsive to rapid mouse twitches without jittering.
+      groupRef.current.rotation.x = THREE.MathUtils.damp(groupRef.current.rotation.x, targetX, 7, delta);
+      groupRef.current.rotation.y = THREE.MathUtils.damp(groupRef.current.rotation.y, targetY, 7, delta);
     }
   });
 
