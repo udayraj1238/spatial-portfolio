@@ -430,23 +430,6 @@ function TechGrid() {
   );
 }
 
-// ─── Massive Orbital Rings ──────────────────────────────────────────────────
-function OrbitalRing({ radius, tilt, speed, color }: { radius: number, tilt: number, speed: number, color: string }) {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame(({ clock }) => {
-    if (ref.current) {
-      ref.current.rotation.y = clock.getElapsedTime() * speed;
-      ref.current.rotation.x = tilt;
-    }
-  });
-  return (
-    <mesh ref={ref}>
-      <torusGeometry args={[radius, 0.015, 8, 128]} />
-      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2} transparent opacity={0.3} />
-    </mesh>
-  );
-}
-
 // ─── Mouse-reactive Group ───────────────────────────────────────────────────
 function SceneContent() {
   const groupRef = useRef<THREE.Group>(null);
