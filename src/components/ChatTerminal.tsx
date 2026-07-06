@@ -462,9 +462,20 @@ export default function ChatTerminal() {
         .apex-messages::-webkit-scrollbar-thumb:hover { background: rgba(0,240,255,0.4); }
 
         /* Message bubbles */
-        .msg-row { display: flex; gap: 12px; align-items: flex-start; animation: msgIn 0.3s ease; }
+        .msg-row { display: flex; gap: 12px; align-items: flex-start; animation: msgIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
         .msg-row.user { flex-direction: row-reverse; }
-        @keyframes msgIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes msgIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.98);
+            filter: blur(4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+          }
+        }
 
         .msg-icon {
           width: 36px; height: 36px;

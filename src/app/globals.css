@@ -101,3 +101,25 @@ a:hover {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+
+/* ─── Button Press Feedback (Emil Kowalski's scale-down trick) ─── */
+button:active {
+  transform: scale(0.97);
+  transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Send button — more pronounced press */
+.apex-send:active {
+  transform: scale(0.94);
+  transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ─── Accessibility: prefers-reduced-motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .cursor-dot, .cursor-ring { display: none; }
+}
