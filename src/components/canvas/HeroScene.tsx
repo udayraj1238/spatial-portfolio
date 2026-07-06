@@ -486,7 +486,7 @@ export default function HeroScene() {
       background: 'transparent',
       zIndex: -1,
     }}>
-      <Canvas eventSource={typeof document !== 'undefined' ? document.body : undefined as any} dpr={[1, 1.5]} gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}>
+      <Canvas eventSource={typeof document !== 'undefined' ? document.body : undefined as any} eventPrefix="client" dpr={[1, 1.5]} gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}>
         <PerspectiveCamera makeDefault position={[0, 0, 12]} fov={52} />
         <Suspense fallback={null}>
           <SceneContent />
