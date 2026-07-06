@@ -881,7 +881,7 @@ export default function ChatTerminal() {
               </TextGenerateEffect>
             </h1>
             <p>
-              This is an interactive explorer for my portfolio. Search seamlessly through my <span>resume</span>, <span>GitHub repos</span>, and <span>research papers</span> using natural language.
+              This is an interactive explorer for my portfolio. Search seamlessly through my <span>resume</span>, <span>GitHub repos</span>, and <span>research</span> using natural language.
             </p>
             <div className="apex-chips">
               {QUICK_PROMPTS.map((q, i) => (

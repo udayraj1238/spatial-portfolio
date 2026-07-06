@@ -438,9 +438,8 @@ function SceneContent() {
   useFrame((state, delta) => {
     if (groupRef.current) {
       const t = 1 - Math.pow(0.001, delta)  // frame-rate independent lerp
-      
-      let targetX = state.mouse.y * 0.06;
-      let targetY = state.mouse.x * 0.06;
+      let targetX = state.mouse.y * 0.25;
+      let targetY = state.mouse.x * 0.25;
       
       // Mobile fallback: if mouse is at exactly (0,0), simulate idle breathing
       if (state.mouse.x === 0 && state.mouse.y === 0) {
