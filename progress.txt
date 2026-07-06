@@ -49,3 +49,19 @@ Build: ✓ Compiled successfully
    - .cursor-dot, .cursor-ring hidden
 
 Build: ✓ Compiled successfully
+
+## Task 3: Typography and Framer Motion (Week 1, Day 3)
+- Status: COMPLETE
+- Date: 2026-07-06
+
+### Changes made:
+1. Updated CSS typography for topbar and identity bar in ChatTerminal.tsx
+   - Thinner font weights (300 for topbar and sub-label, 800 for name)
+   - Increased letter spacing (0.22em for topbar, 0.2em for sub-label)
+   - Tight tracking for name (-0.02em)
+2. Added AnimatePresence to terminal minimize/maximize in ChatTerminal.tsx
+   - Wrapped topbar, identity bar, and messages/welcome area in a motion.div
+   - Set smooth height transition (0.22s, cubic-bezier)
+3. Added prefers-reduced-motion media query (Already completed in Task 2)
+   
+Build: ✓ Compiled successfully
