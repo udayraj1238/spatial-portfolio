@@ -54,11 +54,11 @@ function StreamText({ text }: { text: string }) {
 
 // ─── Quick Prompt Chips ──────────────────────────────────────────────────────
 const QUICK_PROMPTS = [
-  { icon: '🚀', label: 'DistroSync TCP Broker', prompt: 'Tell me about the DistroSync distributed task queue. How did you implement adaptive load shedding and what was the P50 latency?' },
-  { icon: '🔬', label: 'PaliGemma VLM', prompt: 'Walk me through the PaliGemma implementation — SigLIP encoder, cross-modal projector, Gemma-2B decoder.' },
-  { icon: '🏆', label: 'Global Rankings', prompt: 'What are his competition rankings and global standings?' },
-  { icon: '💼', label: 'Why Hire?', prompt: 'Make the strongest possible case for hiring Uday Raj for an ML/Backend engineering role.' },
-  { icon: '📚', label: 'All Projects', prompt: 'List all 6 GitHub projects with full technical details.' },
+  { icon: '', label: 'DistroSync TCP Broker', prompt: 'Tell me about the DistroSync distributed task queue. How did you implement adaptive load shedding and what was the P50 latency?' },
+  { icon: '', label: 'PaliGemma VLM', prompt: 'Walk me through the PaliGemma implementation — SigLIP encoder, cross-modal projector, Gemma-2B decoder.' },
+  { icon: '', label: 'Global Rankings', prompt: 'What are his competition rankings and global standings?' },
+  { icon: '', label: 'Why Hire?', prompt: 'Make the strongest possible case for hiring Uday Raj for an ML/Backend engineering role.' },
+  { icon: '', label: 'All Projects', prompt: 'List all 6 GitHub projects with full technical details.' },
 ]
 
 // ─── Social Links ────────────────────────────────────────────────────────────
@@ -828,9 +828,6 @@ export default function ChatTerminal() {
               <div className="apex-topbar">
           <div className="apex-topbar-left">
             <div className="apex-status-dot" />
-            <span>INTERACTIVE TERMINAL</span>
-            <span style={{ opacity: 0.4 }}>|</span>
-            <span>SYSTEM ACTIVE</span>
           </div>
           <button
             className="apex-minimize-btn"
@@ -848,8 +845,8 @@ export default function ChatTerminal() {
                <span style={{ fontSize: '1.2rem', fontWeight: 600, color: '#00f0ff' }}>UR</span>
             </div>
             <div>
-              <div className="apex-id-name">UDAY RAJ <span style={{ color: 'rgba(0,240,255,0.4)', fontWeight: 300 }}>/ PORTFOLIO EXPLORER</span></div>
-              <div className="apex-id-sub">INDEXED: RESUME · GITHUB · RESEARCH</div>
+              <div className="apex-id-name">UDAY RAJ <span style={{ color: 'rgba(0,240,255,0.4)', fontWeight: 300 }}>/ PORTFOLIO</span></div>
+              <div className="apex-id-sub">RESUME · GITHUB · RESEARCH</div>
             </div>
           </div>
           <div className="apex-id-right">
@@ -889,7 +886,7 @@ export default function ChatTerminal() {
             <div className="apex-chips">
               {QUICK_PROMPTS.map((q, i) => (
                 <button key={i} className="apex-chip" onClick={() => handleSend(q.prompt)}>
-                  <span>{q.icon}</span> {q.label}
+                  {q.label}
                 </button>
               ))}
             </div>
@@ -992,7 +989,7 @@ export default function ChatTerminal() {
                 onChange={(e) => setInput(e.target.value)}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                placeholder="Search portfolio index..."
+                placeholder="Search portfolio..."
                 disabled={isLoading}
               />
               {minimized && (
@@ -1028,7 +1025,7 @@ export default function ChatTerminal() {
             </div>
           </form>
           <p className="apex-hint">
-            {isVoiceMode ? <span style={{color: '#00f0ff'}}>Voice Mode Active</span> : "Searching Uday's complete portfolio index"}
+            {isVoiceMode ? <span style={{color: '#00f0ff'}}>Voice Mode Active</span> : "Searching Uday's complete portfolio"}
           </p>
         </div>
       </div>

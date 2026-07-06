@@ -390,6 +390,7 @@ function CoreOrb() {
             fragmentShader={orbFragmentShader}
             uniforms={uniforms}
             transparent
+            wireframe
           />
         </mesh>
 
