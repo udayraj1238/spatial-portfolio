@@ -907,7 +907,7 @@ export default function ChatTerminal() {
           </div>
         ) : (
           <div className="apex-messages-wrap">
-            <div className="apex-messages" ref={scrollRef} onScroll={handleScroll}>
+            <div className="apex-messages" ref={scrollRef} onScroll={handleScroll} data-lenis-prevent>
               {messages.map((m, i) => {
                 const text = getText(m)
                 return (
