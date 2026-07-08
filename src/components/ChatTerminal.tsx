@@ -823,7 +823,11 @@ export default function ChatTerminal() {
         }
       `}</style>
 
-      <div className={`apex-shell${minimized ? ' minimized' : ''}`}>
+      <div 
+        className={`apex-shell${minimized ? ' minimized' : ''}`}
+        data-lenis-prevent="true"
+        onWheel={(e) => e.stopPropagation()}
+      >
         <div className="corner-br" />
         <div className="corner-bl" />
         <div className="apex-scan" />
