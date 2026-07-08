@@ -1,4 +1,4 @@
-Last auto-synced: 2026-07-08 05:21 UTC
+Last auto-synced: 2026-07-08 06:07 UTC
 (This file is a human-readable snapshot only. APEX's actual knowledge
  lives in src/app/api/chat/route.ts and is NOT read from this file
  at request-time, to keep token costs low and predictable.)
@@ -25,3 +25,59 @@ Pytorch_PaliGemma (Python, 0★)
 udayraj1238 (, 0★)
   My GitHub profile
   https://github.com/udayraj1238/udayraj1238
+
+=== RESUME TEXT (extracted) ===
+Uday Raj
+(cid:131) +91 8527655484 # rajuday6002@gmail.com (cid:239) LinkedIn § GitHub (cid:128) Portfolio
+Education
+Indian Institute Of Information Technology, Design and Manufacturing Kurnool
+Bachelor of Technology in Artificial Intelligence and Data Science - Grade : 8.38 2024 - 2028
+Delhi Public School Sushant Lok Gurugram
+High School - (Physics, Chemistry, Mathematics) - Grade : 95% 2022 - 2024
+Relevant Coursework
+• Data Structures • Computer Vision • Machine Learning • Statistical Analysis
+• Algorithms Analysis • Artificial Intelligence • Deep Learning • Discrete Mathematics
+Experience
+SVNIT Surat Nov 2025 - Apr 2026
+Research Summer Intern - Department of Artificial Intelligence Surat, India
+• Designed TransEvade under Dr. Praveen Kumar Chandaliya, a printability-constrained attention-hijacking attack for
+transformer-based Person Re-ID systems.
+• Engineered a SegFormer/MiT Re-ID pipeline across Market-1501, DukeMTMC-reID, and MSMT17 using MiT-B0/B1
+backbones, 256/512-D descriptors, and cosine retrieval.
+• Optimized 500-1000 step adversarial pattern generation with Adam, ImageNet normalization, chest/waist/legs masks,
+and distract-suppress attention losses.
+• Quantified 90-identity spatial ablations where torso patches reduced adversarial Rank-1 to 1.67%-7.04% on Duke/MSMT,
+exposing attention priors.
+Projects
+CourtSense AI - 3D Tennis Analytics Engine [GitHub]
+• Created an end-to-end sports CV pipeline converting tennis videos into 150-frame 3D replay clips with FastAPI, React,
+Three.js, and JSON coordinate streams.
+• Combined YOLOv8-Pose, SegFormer-B2, OpenCV homography, and HSV/YOLO ball tracking to map 17 COCO
+keypoints onto court coordinates.
+• Applied Kalman filtering, EMA smoothing (alpha = 0.3), 5-frame rolling stats, Magnus-effect correction, km/h speed,
+and rpm spin estimation.
+PaliGemma Vision-Language Model From Scratch [GitHub]
+• Recreated a PaliGemma-style VLM in PyTorch by pairing a 12-layer SigLIP vision transformer, 16x16 patch embeddings,
+196 visual tokens, and Gemma decoder.
+• Programmed a 768-to-2048 multimodal projector, image-token merging at index 256000, RMSNorm, RoPE, grouped KV
+attention, and 8192-token context support.
+• Enabled KV-cache and causal masking for autoregressive multimodal generation across modular SigLIP, Gemma, and
+PaliGemma components.
+Technical Skills
+Languages: Python, C, C++, SQL, HTML
+Machine Learning Stack: PyTorch, TensorFlow, Keras, torchvision, OpenCV, scikit-learn
+Computer Vision & Deep Learning: YOLOv8, SegFormer, ViT, SigLIP, Person Re-ID, Transformers, NumPy, Pandas
+MLOps & Deployment: FastAPI, REST API, Docker, CUDA, Linux, Git, GitHub, Jupyter
+Achievements
+• Placed global top 20 in the [Shell.ai] Hackathon among 1000+ submissions, optimizing ML model parameters.
+• Ranked 176th out of 7000+ registrants in [AWS x Zelestra ML Ascend Hackathon].
+• Earned a 3-star rating of 1630 on [CodeChef] and solved 100+ DSA problems on [LeetCode] and [Code360].
+Positions of Responsibility
+Google Developer Groups
+Machine Learning Coordinator Aug 2025 - Present
+• Conducted a 12-week ML bootcamp for 200+ students, covering SGD, CNNs, and Kaggle workflows, resulting in 15+
+student projects.
+DataWorks Club
+Computer Vision Coordinator Aug 2025 - Present
+• Mentored 100+ members through OpenCV and PyTorch workshops, building real-time CV pipelines with YOLOv8 and
+TensorRT targets of 30+ FPS.
