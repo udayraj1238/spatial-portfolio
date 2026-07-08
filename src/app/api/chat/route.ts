@@ -66,6 +66,14 @@ function shouldUseFallback(): boolean {
 // CRITICAL: This is kept under 1,800 tokens (~7,200 chars) so every request
 // stays well within the 12,000 TPM limit even with conversation history.
 // The knowledge is dense and factual — no padding, no repetition.
+// AUTO-GENERATED:PROJECTS-START
+// Populated nightly by update_apex_brain.py via GitHub Actions.
+// Only lists repos NOT already covered in the hand-written PROJECTS section
+// above — the 6 curated projects with detailed metrics are never touched.
+// Empty string here costs 0 tokens; only non-empty when there's something new.
+const AUTO_SYNCED_REPOS = '\nOTHER RECENT REPOS (auto-synced, not yet in the curated list above):\n- udayraj1238: My GitHub profile (https://github.com/udayraj1238/udayraj1238)';
+// AUTO-GENERATED:PROJECTS-END
+
 function buildPrompt(): string {
   return `You are the Interactive Portfolio Assistant for Uday Raj. You know everything about his work and background.
 Today: ${new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
@@ -104,7 +112,7 @@ PROJECTS (6 total):
 
 6. This portfolio (github.com/udayraj1238/spatial-portfolio | udayraj1238.vercel.app)
    Next.js 16 + React Three Fiber + Groq + Vercel AI SDK edge streaming.
-
+${AUTO_SYNCED_REPOS}
 SKILLS: Python, C/C++, TypeScript | PyTorch, TF, OpenCV, YOLOv8, TensorRT, SegFormer, SigLIP
         LangGraph, RAG, FAISS/Chroma, Groq API | NumPy, Pandas, WandB, Scikit-learn
         Docker, FastAPI, Next.js, Vercel, LaTeX | ONNX, bitsandbytes, Jetson deployment
@@ -120,7 +128,7 @@ RESPONSE RULES:
 - Voice: senior ML engineer over coffee, direct and confident, not HR-speak
 - BANNED: "based on available information", "it appears", "testament to", "demonstrates his ability", "valuable asset", "strong candidate", "plethora", "In summary", "I hope this helps", section headers like "1. Exceptional Technical Skills"
 - If asked why someone should hire him: pick his single most impressive concrete result and build the argument outward from that number. Do not list generic skills.
-- LENGTH: 150–400 words. Technical deep-dives max 500 words.
+- LENGTH (CRITICAL STRICT LIMIT): You MUST keep all answers under 350 words absolute maximum, no exceptions. Keep it highly concise, punchy, and dense. If asked for a list, summarize it briefly. Do not write essays.
 - FORMAT: Bold **key metrics**. Tables for comparisons. Code blocks for equations/code. ALWAYS put each bullet on its own separate NEW LINE — never run bullets together.
 - DOMAIN BOUNDARY (CRITICAL): You are STRICTLY limited to answering questions about Uday Raj's portfolio, background, AI/ML concepts related to his projects, or professional inquiries. If a user asks you to solve homework, write unrelated code, answer general trivia, or do arbitrary tasks, you MUST refuse gracefully (e.g., "I'm laser-focused on Uday's portfolio right now. Feel free to ask me about his ML research instead!").
 - LINKS: ALWAYS use proper Markdown syntax [Text](https://url) — never output raw URLs.
@@ -164,7 +172,7 @@ export async function POST(req: Request) {
 
     // Sanitize + convert to core messages
     const coreMessages = rawMessages.map((m: any) => {
-      const text = m.parts?.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('\\n')
+      const text = m.parts?.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('\n')
         || m.content || '';
       return { role: m.role as 'user' | 'assistant', content: sanitize(text) };
     });
@@ -204,7 +212,7 @@ export async function POST(req: Request) {
       system: buildPrompt(),
       messages: recentMessages,
       temperature: 0.7,
-      maxOutputTokens: 2500,
+      maxOutputTokens: 600,
       experimental_transform: smoothStream({ chunking: 'word', delayInMs: 50 }),
     });
 
