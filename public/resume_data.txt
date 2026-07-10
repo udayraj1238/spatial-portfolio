@@ -1,4 +1,8 @@
-Last auto-synced: 2026-07-09 20:14 UTC
+<<<<<<< HEAD
+Last auto-synced: 2026-07-10 19:57 UTC
+=======
+Last auto-synced: 2026-07-11 05:34 UTC
+>>>>>>> ee5b75c (fix(security,ui): implement PII auto-redaction for resume extraction and fully clean duplicate CSS root selector)
 (This file is a human-readable snapshot only. APEX's actual knowledge
  lives in src/app/api/chat/route.ts and is NOT read from this file
  at request-time, to keep token costs low and predictable.)
@@ -28,7 +32,7 @@ udayraj1238 (, 0★)
 
 === RESUME TEXT (extracted) ===
 Uday Raj
-(cid:131) +91 8527655484 # rajuday6002@gmail.com (cid:239) LinkedIn § GitHub (cid:128) Portfolio
+(cid:131) [phone redacted] # rajuday6002@gmail.com (cid:239) LinkedIn § GitHub (cid:128) Portfolio
 Education
 Indian Institute Of Information Technology, Design and Manufacturing Kurnool
 Bachelor of Technology in Artificial Intelligence and Data Science - Grade : 8.38 2024 - 2028

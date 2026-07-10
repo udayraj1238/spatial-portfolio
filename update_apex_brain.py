@@ -104,6 +104,27 @@ def fetch_github_repos():
 
 
 # ── Step 2: Extract resume PDF text (free, local, pdfplumber) ───────────────
+def redact_pii(text):
+    """
+    Strips phone numbers from extracted resume text before it ever reaches
+    the public output file. This runs unconditionally, every single time,
+    so a manual fix can never be silently undone by the next nightly run.
+
+    Covers the common formats: +91 8527655484, +91-852-765-5484,
+    (852) 765-5484, 852.765.5484, and bare 10-digit sequences.
+    Email is intentionally NOT redacted — that's meant to be public,
+    it's how recruiters are supposed to reach you.
+    """
+    patterns = [
+        r'\+?\d{1,3}[-.\s]?\(?\d{3,4}\)?[-.\s]?\d{3}[-.\s]?\d{3,4}',  # +91 8527655484, (852) 765-5484
+        r'\b\d{10}\b',  # bare 10-digit numbers
+    ]
+    redacted = text
+    for pattern in patterns:
+        redacted = re.sub(pattern, '[phone redacted]', redacted)
+    return redacted
+
+
 def extract_resume_text():
     if not os.path.exists(RESUME_PDF):
         print(f"[INFO] {RESUME_PDF} not found — skipping PDF extraction.")
@@ -123,7 +144,8 @@ def extract_resume_text():
         print(f"[WARN] Failed to parse {RESUME_PDF}: {e}")
         return ""
 
-    return "\n".join(text_parts).strip()
+    raw_text = "\n".join(text_parts).strip()
+    return redact_pii(raw_text)
 
 
 # ── Step 3: Build the "new repos only" supplement ────────────────────────────

@@ -39,7 +39,7 @@ a:hover {
   text-shadow: var(--glow);
 }
 
-#dom-root, #page-root {
+#page-root {
   position: absolute;
   top: 0;
   left: 0;
@@ -52,7 +52,7 @@ a:hover {
   align-items: center;
 }
 
-#dom-root > *, #page-root > *, .interactive {
+#page-root > *, .interactive {
   pointer-events: auto;
 }
 

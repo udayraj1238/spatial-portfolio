@@ -1,0 +1,5 @@
+This is the command to run whenever you update the resume :- 
+
+git add resume_updated.pdf
+git commit -m "docs: upload latest resume"
+git push origin main
