@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-Last auto-synced: 2026-07-10 19:57 UTC
-=======
-Last auto-synced: 2026-07-11 05:34 UTC
->>>>>>> ee5b75c (fix(security,ui): implement PII auto-redaction for resume extraction and fully clean duplicate CSS root selector)
+Last auto-synced: 2026-07-11 05:36 UTC
 (This file is a human-readable snapshot only. APEX's actual knowledge
  lives in src/app/api/chat/route.ts and is NOT read from this file
  at request-time, to keep token costs low and predictable.)
