@@ -1,15 +1,15 @@
-Last auto-synced: 2026-07-13 19:56 UTC
+Last auto-synced: 2026-07-14 19:50 UTC
 (This file is a human-readable snapshot only. APEX's actual knowledge
  lives in src/app/api/chat/route.ts and is NOT read from this file
  at request-time, to keep token costs low and predictable.)
 
 === ALL GITHUB REPOSITORIES ===
-spatial-portfolio (TypeScript, 0★)
-  AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
-  https://github.com/udayraj1238/spatial-portfolio
 DistroSync (Python, 0★)
   Distributed task queue built from scratch — raw TCP, asyncio, SQLite WAL, adaptive token-bucket load shedding. No Kafka. No Celery.
   https://github.com/udayraj1238/DistroSync
+spatial-portfolio (TypeScript, 0★)
+  AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
+  https://github.com/udayraj1238/spatial-portfolio
 CourtSense-AI (TypeScript, 0★)
   Tennis match video → interactive 3D replay. YOLOv8-Pose + SegFormer-B2 + Kalman filter + FastAPI + Three.js. 30+ FPS on edge devices.
   https://github.com/udayraj1238/CourtSense-AI
