@@ -71,7 +71,7 @@ function shouldUseFallback(): boolean {
 // Only lists repos NOT already covered in the hand-written PROJECTS section
 // above — the 6 curated projects with detailed metrics are never touched.
 // Empty string here costs 0 tokens; only non-empty when there's something new.
-const AUTO_SYNCED_REPOS = '\nOTHER RECENT REPOS (auto-synced, not yet in the curated list above):\n- udayraj1238: My GitHub profile (https://github.com/udayraj1238/udayraj1238)';
+const AUTO_SYNCED_REPOS = '\nOTHER RECENT REPOS (auto-synced, not yet in the curated list above):\n- PulseRAG [Python]: A production-grade, self-correcting RAG pipeline built with LangGraph. Features LLM-based relevance grading, sentence-level hallucination risk scoring, semantic caching, and a human-in-the-loop feedback system. (https://github.com/udayraj1238/PulseRAG)\n- udayraj1238: My GitHub profile (https://github.com/udayraj1238/udayraj1238)';
 // AUTO-GENERATED:PROJECTS-END
 
 function buildPrompt(): string {
