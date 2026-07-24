@@ -1,15 +1,15 @@
-Last auto-synced: 2026-07-23 19:53 UTC
+Last auto-synced: 2026-07-24 08:59 UTC
 (This file is a human-readable snapshot only. APEX's actual knowledge
  lives in src/app/api/chat/route.ts and is NOT read from this file
  at request-time, to keep token costs low and predictable.)
 
 === ALL GITHUB REPOSITORIES ===
-PulseRAG (Python, 0★)
-  A production-grade, self-correcting RAG pipeline built with LangGraph. Features LLM-based relevance grading, sentence-level hallucination risk scoring, semantic caching, and a human-in-the-loop feedback system.
-  https://github.com/udayraj1238/PulseRAG
 spatial-portfolio (TypeScript, 0★)
   AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
   https://github.com/udayraj1238/spatial-portfolio
+PulseRAG (Python, 0★)
+  A production-grade, self-correcting RAG pipeline built with LangGraph. Features LLM-based relevance grading, sentence-level hallucination risk scoring, semantic caching, and a human-in-the-loop feedback system.
+  https://github.com/udayraj1238/PulseRAG
 DistroSync (Python, 0★)
   Distributed task queue built from scratch — raw TCP, asyncio, SQLite WAL, adaptive token-bucket load shedding. No Kafka. No Celery.
   https://github.com/udayraj1238/DistroSync
@@ -47,34 +47,37 @@ Research Summer Intern - Department of Artificial Intelligence Surat, India
 transformer-based Person Re-ID systems.
 • Engineered a SegFormer/MiT Re-ID pipeline across Market-1501, DukeMTMC-reID, and MSMT17 using MiT-B0/B1
 backbones, 256/512-D descriptors, and cosine retrieval.
-• Optimized 500-1000 step adversarial pattern generation with Adam, ImageNet normalization, chest/waist/legs masks,
-and distract-suppress attention losses.
+• Optimized 500-1000 step adversarial pattern generation with Adam, ImageNet normalization, chest/waist/legs masks, and
+distract-suppress attention losses.
 • Quantified 90-identity spatial ablations where torso patches reduced adversarial Rank-1 to 1.67%-7.04% on Duke/MSMT,
 exposing attention priors.
 Projects
 CourtSense AI - 3D Tennis Analytics Engine [GitHub]
-• Created an end-to-end sports CV pipeline converting tennis videos into 150-frame 3D replay clips with FastAPI, React,
-Three.js, and JSON coordinate streams.
-• Combined YOLOv8-Pose, SegFormer-B2, OpenCV homography, and HSV/YOLO ball tracking to map 17 COCO
-keypoints onto court coordinates.
-• Applied Kalman filtering, EMA smoothing (alpha = 0.3), 5-frame rolling stats, Magnus-effect correction, km/h speed,
-and rpm spin estimation.
+• Engineered a sports-CV pipeline turning tennis match footage into 150-frame 3D replay clips, streaming live JSON
+coordinates via FastAPI to a React + Three.js frontend.
+• Fused 4 CV models – YOLOv8-Pose, SegFormer-B2 segmentation, OpenCV homography, and HSV/YOLO tracking –
+mapping 17 COCO keypoints onto court coordinates.
+• Built a 6-stage physics pipeline (Kalman filtering, EMA smoothing at alpha = 0.3, 5-frame rolling stats, Magnus-effect
+correction) for km/h speed and rpm spin estimates.
 PaliGemma Vision-Language Model From Scratch [GitHub]
-• Recreated a PaliGemma-style VLM in PyTorch by pairing a 12-layer SigLIP vision transformer, 16x16 patch embeddings,
-196 visual tokens, and Gemma decoder.
-• Programmed a 768-to-2048 multimodal projector, image-token merging at index 256000, RMSNorm, RoPE, grouped KV
-attention, and 8192-token context support.
-• Enabled KV-cache and causal masking for autoregressive multimodal generation across modular SigLIP, Gemma, and
-PaliGemma components.
+• Rebuilt a PaliGemma-style VLM from scratch in PyTorch: a 12-layer SigLIP vision transformer encoding 224x224 images
+into 196 tokens (16x16 patches) feeding a Gemma decoder.
+• Designed a 1.6M-parameter projector (768-to-2048-dim) merging image tokens at index 256000, with RMSNorm, RoPE,
+and grouped-query KV attention across an 8192-token context.
+• Enabled KV-caching and causal masking for efficient autoregressive generation across 3 modular components – SigLIP
+encoder, projector, and Gemma decoder.
 Technical Skills
-Languages: Python, C, C++, SQL, HTML
-Machine Learning Stack: PyTorch, TensorFlow, Keras, torchvision, OpenCV, scikit-learn
-Computer Vision & Deep Learning: YOLOv8, SegFormer, ViT, SigLIP, Person Re-ID, Transformers, NumPy, Pandas
-MLOps & Deployment: FastAPI, REST API, Docker, CUDA, Linux, Git, GitHub, Jupyter
+Languages: Python, C, C++, SQL, TypeScript, HTML
+Machine Learning Stack: PyTorch, TensorFlow, Keras, torchvision, scikit-learn, NumPy, Pandas
+Computer Vision & Deep Learning: YOLOv8, SegFormer, ViT, SigLIP, OpenCV, Person Re-ID, Pose Estimation
+Generative AI & LLMs: RoPE, RMSNorm, Grouped-Query Attention, KV-Cache, Beam Search, Multimodal AI
+MLOps & Deployment: FastAPI, REST API, Docker, CUDA, Linux, Git, Jupyter, Quantization, Groq API
 Achievements
 • Placed global top 20 in the [Shell.ai] Hackathon among 1000+ submissions, optimizing ML model parameters.
-• Ranked 176th out of 7000+ registrants in [AWS x Zelestra ML Ascend Hackathon].
-• Earned a 3-star rating of 1630 on [CodeChef] and solved 100+ DSA problems on [LeetCode] and [Code360].
+• Qualified for Amazon ML Summer School – top 3,000 of 1,30,000+ applicants nationwide, clearing a 3-stage resume,
+SOP, and ML/DSA test process.
+• Earned a 3-star rating of 1630 on [CodeChef] and Pupil (1308) on [Codeforces], and solved 100+ DSA problems on
+[LeetCode] and [Code360].
 Positions of Responsibility
 Google Developer Groups
 Machine Learning Coordinator Aug 2025 - Present
