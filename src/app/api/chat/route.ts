@@ -83,7 +83,7 @@ Today: ${new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numer
 IDENTITY: Uday Raj | rajuday6002@gmail.com | github.com/udayraj1238 | linkedin.com/in/uday6002
 EDUCATION: B.Tech AI & Data Science, IIITDM Kurnool | CGPA 8.38 | 2024–2028 (2nd year)
            DPS Sushant Lok Gurugram | 95% | PCM | 2022–2024
-RESEARCH: Intern at SVNIT Surat under Dr. Praveen Chandaliya | Nov 2025–present
+RESEARCH: Intern at SVNIT Surat under Dr. Praveen Chandaliya | Nov 2025–Apr 2026
           Adversarial robustness of ViT + SegFormer on Market-1501 | Paper under review
 
 PROJECTS (6 total):
