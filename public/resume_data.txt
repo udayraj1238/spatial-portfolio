@@ -1,4 +1,4 @@
-Last auto-synced: 2026-07-29 19:50 UTC
+Last auto-synced: 2026-07-30 19:59 UTC
 (This file is a human-readable snapshot only. APEX's actual knowledge
  lives in src/app/api/chat/route.ts and is NOT read from this file
  at request-time, to keep token costs low and predictable.)
@@ -10,6 +10,9 @@ PulseRAG (Python, 0★)
 spatial-portfolio (TypeScript, 0★)
   AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
   https://github.com/udayraj1238/spatial-portfolio
+vibe-check (Python, 0★)
+  (no description)
+  https://github.com/udayraj1238/vibe-check
 DistroSync (Python, 0★)
   Distributed task queue built from scratch — raw TCP, asyncio, SQLite WAL, adaptive token-bucket load shedding. No Kafka. No Celery.
   https://github.com/udayraj1238/DistroSync
