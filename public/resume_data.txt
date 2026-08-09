@@ -1,15 +1,15 @@
-Last auto-synced: 2026-08-08 19:05 UTC
+Last auto-synced: 2026-08-09 19:09 UTC
 (This file is a human-readable snapshot only. APEX's actual knowledge
  lives in src/app/api/chat/route.ts and is NOT read from this file
  at request-time, to keep token costs low and predictable.)
 
 === ALL GITHUB REPOSITORIES ===
-spatial-portfolio (TypeScript, 0★)
-  AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
-  https://github.com/udayraj1238/spatial-portfolio
 ColdSite-DTI (Python, 0★)
   (no description)
   https://github.com/udayraj1238/ColdSite-DTI
+spatial-portfolio (TypeScript, 0★)
+  AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
+  https://github.com/udayraj1238/spatial-portfolio
 PulseRAG (Python, 0★)
   A production-grade, self-correcting RAG pipeline built with LangGraph. Features LLM-based relevance grading, sentence-level hallucination risk scoring, semantic caching, and a human-in-the-loop feedback system.
   https://github.com/udayraj1238/PulseRAG
