@@ -1,4 +1,4 @@
-Last auto-synced: 2026-10-02 22:23 UTC
+Last auto-synced: 2026-10-03 21:35 UTC
 (This file is a human-readable snapshot only. APEX's actual knowledge
  lives in src/app/api/chat/route.ts and is NOT read from this file
  at request-time, to keep token costs low and predictable.)
@@ -25,7 +25,7 @@ vibe-check (Python, 0★)
 DistroSync (Python, 0★)
   Distributed task queue built from scratch — raw TCP, asyncio, SQLite WAL, adaptive token-bucket load shedding. No Kafka. No Celery.
   https://github.com/udayraj1238/DistroSync
-CourtSense-AI (TypeScript, 0★)
+CourtSense-AI (TypeScript, 1★)
   Tennis match video → interactive 3D replay. YOLOv8-Pose + SegFormer-B2 + Kalman filter + FastAPI + Three.js. 30+ FPS on edge devices.
   https://github.com/udayraj1238/CourtSense-AI
 Transformer_from_scratch_using_pytorch (Jupyter Notebook, 0★)
