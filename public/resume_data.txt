@@ -1,4 +1,4 @@
-Last auto-synced: 2026-10-06 22:42 UTC
+Last auto-synced: 2026-10-07 23:13 UTC
 (This file is a human-readable snapshot only. APEX's actual knowledge
  lives in src/app/api/chat/route.ts and is NOT read from this file
  at request-time, to keep token costs low and predictable.)
