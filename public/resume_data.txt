@@ -1,7 +1,54 @@
-Last auto-synced: 2026-10-29 19:26 UTC
+Last auto-synced: 2026-10-29 19:27 UTC
 (This file is a human-readable snapshot only. APEX's actual knowledge
  lives in src/app/api/chat/route.ts and is NOT read from this file
  at request-time, to keep token costs low and predictable.)
+
+=== ALL GITHUB REPOSITORIES ===
+spatial-portfolio (TypeScript, 0★)
+  AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
+  https://github.com/udayraj1238/spatial-portfolio
+ache-bbb-candidates-molinf (Python, 0★)
+  Code, data, trained models, results and manuscript: 106 computationally designed brain-penetrant AChE inhibitor candidates with computed synthetic routes (Molecular Informatics). All results are predictions; nothing synthesized.
+  https://github.com/udayraj1238/ache-bbb-candidates-molinf
+reid-attack-anatomy (Python, 0★)
+  (no description)
+  https://github.com/udayraj1238/reid-attack-anatomy
+Explanation-Guided-Synthetic-Oversampling-for-Imbalanced-Classification (Python, 0★)
+  (no description)
+  https://github.com/udayraj1238/Explanation-Guided-Synthetic-Oversampling-for-Imbalanced-Classification
+ColdSite-DTI (Jupyter Notebook, 0★)
+  (no description)
+  https://github.com/udayraj1238/ColdSite-DTI
+PulseRAG (Python, 0★)
+  A production-grade, self-correcting RAG pipeline built with LangGraph. Features LLM-based relevance grading, sentence-level hallucination risk scoring, semantic caching, and a human-in-the-loop feedback system.
+  https://github.com/udayraj1238/PulseRAG
+hh-goa-id (HTML, 0★)
+  (no description)
+  https://github.com/udayraj1238/hh-goa-id
+neetcode-submissions (C++, 0★)
+  My NeetCode.io problem submissions
+  https://github.com/udayraj1238/neetcode-submissions
+vibe-check (Python, 0★)
+  (no description)
+  https://github.com/udayraj1238/vibe-check
+DistroSync (Python, 0★)
+  Distributed task queue built from scratch — raw TCP, asyncio, SQLite WAL, adaptive token-bucket load shedding. No Kafka. No Celery.
+  https://github.com/udayraj1238/DistroSync
+CourtSense-AI (TypeScript, 1★)
+  Tennis match video → interactive 3D replay. YOLOv8-Pose + SegFormer-B2 + Kalman filter + FastAPI + Three.js. 30+ FPS on edge devices.
+  https://github.com/udayraj1238/CourtSense-AI
+Transformer_from_scratch_using_pytorch (Jupyter Notebook, 0★)
+  Complete Attention Is All You Need transformer in pure PyTorch — MHSA, positional encoding, encoder-decoder, beam search.
+  https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch
+grid07-cognitive-engine (Python, 0★)
+  AI Cognitive Engine: Vector Routing, LangGraph Orchestration, RAG Combat Engine with Prompt Injection Defense
+  https://github.com/udayraj1238/grid07-cognitive-engine
+Pytorch_PaliGemma (Python, 0★)
+  PaliGemma VLM from scratch in PyTorch — SigLIP vision encoder + Gemma-2B decoder + 8-bit quantization. 22% BLEU-4 improvement.
+  https://github.com/udayraj1238/Pytorch_PaliGemma
+udayraj1238 (, 0★)
+  My GitHub profile
+  https://github.com/udayraj1238/udayraj1238
 
 === RESUME TEXT (extracted) ===
 Uday Raj
