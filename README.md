@@ -4,13 +4,13 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
-[![AI](https://img.shields.io/badge/AI-Groq%20%7C%20LLaMA-FF6B35?style=flat-square)](https://groq.com)
+[![AI](https://img.shields.io/badge/AI-Groq%20%7C%20gpt--oss-FF6B35?style=flat-square)](https://groq.com)
 
 ## ✨ Features
 
 - **Interactive 3D Scene** — React Three Fiber with orbital rings, particle systems, and mouse-reactive camera
 - **APEX AI Assistant** — Chat with an AI trained on my complete resume, GitHub, and research papers
-- **Real-Time Streaming** — Edge runtime for instant, low-latency responses (Groq LLaMA 3.3 70B)
+- **Real-Time Streaming** — Edge runtime for instant, low-latency responses (Groq gpt-oss-120b, gpt-oss-20b fallback)
 - **Voice Support** — Speech-to-text and text-to-speech for hands-free interaction
 - **Production-Grade Security** — Rate limiting, input validation, error boundaries, environment variable management
 - **Lightning Fast** — Optimized bundle, cached AI responses, edge deployment
@@ -104,7 +104,7 @@ Ask APEX anything:
 
 ### Backend & AI
 - **Groq API** — Ultra-fast LLM inference (30k TPM)
-- **LLaMA 3.3 70B** — Powerful, fast open-source LLM
+- **gpt-oss-120b / gpt-oss-20b** — Open-weight LLMs served by Groq
 - **Vercel AI SDK** — Streaming and tool integration
 - **Supabase** — Analytics database
 - **Edge Runtime** — Serverless functions with 30s timeout
@@ -116,7 +116,7 @@ Ask APEX anything:
 
 ## 🔒 Security & Best Practices
 
-✅ **Rate Limiting** — 10 requests per minute per IP  
+✅ **Rate Limiting** — 3 requests per minute and 30 per day per IP  
 ✅ **Input Validation** — Zod schema validation  
 ✅ **Error Boundaries** — Graceful crash recovery  
 ✅ **No Secrets in Git** — Environment variables only  
@@ -128,7 +128,7 @@ Ask APEX anything:
 - **First Contentful Paint** — < 1.5s
 - **Time to Interactive** — < 2.5s
 - **Bundle Size** — ~180KB gzipped
-- **API Latency** — 300-800ms (Groq edge)
+- **API** — streamed token-by-token from Groq via the edge runtime
 
 ## 🚀 Deployment
 
@@ -146,10 +146,10 @@ SUPABASE_SERVICE_ROLE_KEY=sb_secret_xxxxx
 ## 📈 What's Built Here
 
 ### 6 Major Projects
-1. **Adversarial Pattern Generation** — SegFormer nuclear attack (94.9% accuracy drop)
+1. **Re-ID Attack Anatomy** — universal torso patch drops ResNet-50 Rank-1 from 86.97% to 2.67%
 2. **PaliGemma VLM** — Multimodal vision-language model from scratch
-3. **Grid07 Cognitive Engine** — Multi-agent LLM orchestration system
-4. **CourtSense-AI** — Real-time sports analytics (30+ FPS edge)
+3. **DistroSync** — Distributed task queue from scratch (~6,000 tasks/sec, 4.9 ms P99)
+4. **CourtSense-AI** — Tennis video to 30 FPS 3D replays
 5. **Transformer from Scratch** — Complete Attention Is All You Need in PyTorch
 6. **This Portfolio** — Full-stack AI web app with 3D graphics
 
@@ -157,7 +157,7 @@ SUPABASE_SERVICE_ROLE_KEY=sb_secret_xxxxx
 - 🏆 **Shell.ai Top 20** — Global ML competition
 - 🏆 **AWS x Zelestra Rank 176** — 7,000+ registrants
 - 🎓 **GDG ML Coordinator** — 200+ students, 12-week bootcamp
-- 🎓 **DataWorks CV Lead** — 100+ members, 5,000+ curated images
+- 🎓 **DataWorks CV Coordinator** — 100+ members
 
 ## 📄 License
 

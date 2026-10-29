@@ -1,110 +1,56 @@
-Last auto-synced: 2026-10-28 22:44 UTC
+Last auto-synced: 2026-10-29 19:26 UTC
 (This file is a human-readable snapshot only. APEX's actual knowledge
  lives in src/app/api/chat/route.ts and is NOT read from this file
  at request-time, to keep token costs low and predictable.)
 
-=== ALL GITHUB REPOSITORIES ===
-spatial-portfolio (TypeScript, 0★)
-  AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
-  https://github.com/udayraj1238/spatial-portfolio
-ache-bbb-candidates-molinf (Python, 0★)
-  Code, data, trained models, results and manuscript: 106 computationally designed brain-penetrant AChE inhibitor candidates with computed synthetic routes (Molecular Informatics). All results are predictions; nothing synthesized.
-  https://github.com/udayraj1238/ache-bbb-candidates-molinf
-reid-attack-anatomy (Python, 0★)
-  (no description)
-  https://github.com/udayraj1238/reid-attack-anatomy
-Explanation-Guided-Synthetic-Oversampling-for-Imbalanced-Classification (Python, 0★)
-  (no description)
-  https://github.com/udayraj1238/Explanation-Guided-Synthetic-Oversampling-for-Imbalanced-Classification
-ColdSite-DTI (Jupyter Notebook, 0★)
-  (no description)
-  https://github.com/udayraj1238/ColdSite-DTI
-PulseRAG (Python, 0★)
-  A production-grade, self-correcting RAG pipeline built with LangGraph. Features LLM-based relevance grading, sentence-level hallucination risk scoring, semantic caching, and a human-in-the-loop feedback system.
-  https://github.com/udayraj1238/PulseRAG
-hh-goa-id (HTML, 0★)
-  (no description)
-  https://github.com/udayraj1238/hh-goa-id
-neetcode-submissions (C++, 0★)
-  My NeetCode.io problem submissions
-  https://github.com/udayraj1238/neetcode-submissions
-vibe-check (Python, 0★)
-  (no description)
-  https://github.com/udayraj1238/vibe-check
-DistroSync (Python, 0★)
-  Distributed task queue built from scratch — raw TCP, asyncio, SQLite WAL, adaptive token-bucket load shedding. No Kafka. No Celery.
-  https://github.com/udayraj1238/DistroSync
-CourtSense-AI (TypeScript, 1★)
-  Tennis match video → interactive 3D replay. YOLOv8-Pose + SegFormer-B2 + Kalman filter + FastAPI + Three.js. 30+ FPS on edge devices.
-  https://github.com/udayraj1238/CourtSense-AI
-Transformer_from_scratch_using_pytorch (Jupyter Notebook, 0★)
-  Complete Attention Is All You Need transformer in pure PyTorch — MHSA, positional encoding, encoder-decoder, beam search.
-  https://github.com/udayraj1238/Transformer_from_scratch_using_pytorch
-grid07-cognitive-engine (Python, 0★)
-  AI Cognitive Engine: Vector Routing, LangGraph Orchestration, RAG Combat Engine with Prompt Injection Defense
-  https://github.com/udayraj1238/grid07-cognitive-engine
-Pytorch_PaliGemma (Python, 0★)
-  PaliGemma VLM from scratch in PyTorch — SigLIP vision encoder + Gemma-2B decoder + 8-bit quantization. 22% BLEU-4 improvement.
-  https://github.com/udayraj1238/Pytorch_PaliGemma
-udayraj1238 (, 0★)
-  My GitHub profile
-  https://github.com/udayraj1238/udayraj1238
-
 === RESUME TEXT (extracted) ===
 Uday Raj
-(cid:131) [phone redacted] # rajuday6002@gmail.com (cid:239) LinkedIn § GitHub (cid:128) Portfolio
+[phone redacted] rajuday6002@gmail.com LinkedIn GitHub Portfolio
 Education
 Indian Institute Of Information Technology, Design and Manufacturing Kurnool
 Bachelor of Technology in Artificial Intelligence and Data Science - Grade : 8.38 2024 - 2028
 Delhi Public School Sushant Lok Gurugram
 High School - (Physics, Chemistry, Mathematics) - Grade : 95% 2022 - 2024
-Relevant Coursework
-• Data Structures • Computer Vision • Machine Learning • Statistical Analysis
-• Algorithms Analysis • Artificial Intelligence • Deep Learning • Discrete Mathematics
 Experience
 SVNIT Surat Nov 2025 - Apr 2026
-Research Summer Intern - Department of Artificial Intelligence Surat, India
-• Designed TransEvade under Dr. Praveen Kumar Chandaliya, a printability-constrained attention-hijacking attack for
-transformer-based Person Re-ID systems.
-• Engineered a SegFormer/MiT Re-ID pipeline across Market-1501, DukeMTMC-reID, and MSMT17 using MiT-B0/B1
-backbones, 256/512-D descriptors, and cosine retrieval.
-• Optimized 500-1000 step adversarial pattern generation with Adam, ImageNet normalization, chest/waist/legs masks, and
-distract-suppress attention losses.
-• Quantified 90-identity spatial ablations where torso patches reduced adversarial Rank-1 to 1.67%-7.04% on Duke/MSMT,
+Research Intern - Department of Artificial Intelligence Surat, India
+• Designed TransEvade under Dr. Praveen Kumar Chandaliya, a printability-constrained attention-hijacking attack on
+transformer-based Person Re-ID systems; authored the paper, now under review at an A-ranked conference.
+• Analyzed a SegFormer/MiT Re-ID pipeline on Market-1501, DukeMTMC-reID and MSMT17 (MiT-B0/B1, 256/512-D
+descriptors), optimizing 500-1000 step adversarial patterns with masked distract-suppress attention losses.
+• Quantified 90-identity spatial ablations where torso patches cut adversarial Rank-1 to 1.67%-7.04% on Duke/MSMT,
 exposing attention priors.
 Projects
-CourtSense AI - 3D Tennis Analytics Engine [GitHub]
-• Engineered a sports-CV pipeline turning tennis match footage into 150-frame 3D replay clips, streaming live JSON
-coordinates via FastAPI to a React + Three.js frontend.
-• Fused 4 CV models – YOLOv8-Pose, SegFormer-B2 segmentation, OpenCV homography, and HSV/YOLO tracking –
-mapping 17 COCO keypoints onto court coordinates.
-• Built a 6-stage physics pipeline (Kalman filtering, EMA smoothing at alpha = 0.3, 5-frame rolling stats, Magnus-effect
-correction) for km/h speed and rpm spin estimates.
-PaliGemma Vision-Language Model From Scratch [GitHub]
-• Rebuilt a PaliGemma-style VLM from scratch in PyTorch: a 12-layer SigLIP vision transformer encoding 224x224 images
-into 196 tokens (16x16 patches) feeding a Gemma decoder.
-• Designed a 1.6M-parameter projector (768-to-2048-dim) merging image tokens at index 256000, with RMSNorm, RoPE,
-and grouped-query KV attention across an 8192-token context.
-• Enabled KV-caching and causal masking for efficient autoregressive generation across 3 modular components – SigLIP
-encoder, projector, and Gemma decoder.
+CourtSense AI - Tennis Video to 3D Replay Engine | YOLOv8, OpenCV, Kalman Filter, FastAPI, Three.js [GitHub]
+• Built a 6-stage async CV pipeline (ingest, court calibration, player and ball tracking, analytics) that turns match video
+into 30 FPS 3D replays, using YOLOv8-Pose (17 keypoints) and HSV + Hough court-line homography.
+• Stabilized tracks with a 3D Kalman filter, One-Euro smoothing and spline gap-filling; when ball detections cover under
+10% of frames, a physics-based rally synthesizer (gravity, 0.75 bounce restitution) fills the trajectory.
+Anatomy of Adversarial Attacks on Person Re-ID | PyTorch, ResNet-50, DenseNet-121, ViT-S [GitHub]
+• Implemented FGSM, PGD and MI-FGSM from scratch on Market-1501; one 64x48 universal torso patch cut ResNet-50
+Rank-1 from 86.97% to 2.67% (random-noise control: 73.19%), transferring to DenseNet-121 at 13.63%.
+• Adversarial training raised white-box PGD Rank-1 from 0% to 29.19% at a 12.45-point clean-accuracy cost, with every
+reported number traced to logged runs and checkpoint hashes.
+PaliGemma Vision-Language Model From Scratch | PyTorch, SigLIP, Gemma [GitHub]
+• Rebuilt PaliGemma in pure PyTorch: a 12-layer SigLIP ViT (224x224 into 196 tokens), a 1.6M-parameter 768→2048
+projector, and a Gemma decoder with RMSNorm, RoPE, grouped-query attention and KV-cached decoding.
+DistroSync - Distributed Task Queue & Message Broker | Python, asyncio, TCP, SQLite [GitHub]
+• Built a broker-free task queue over raw asyncio TCP with SQLite WAL crash recovery and token-bucket load shedding;
+moved 10,000 tasks from 50 producers to 4 workers at ∼6,000 tasks/sec, 4.9 ms P99.
 Technical Skills
-Languages: Python, C, C++, SQL, TypeScript, HTML
-Machine Learning Stack: PyTorch, TensorFlow, Keras, torchvision, scikit-learn, NumPy, Pandas
-Computer Vision & Deep Learning: YOLOv8, SegFormer, ViT, SigLIP, OpenCV, Person Re-ID, Pose Estimation
-Generative AI & LLMs: RoPE, RMSNorm, Grouped-Query Attention, KV-Cache, Beam Search, Multimodal AI
-MLOps & Deployment: FastAPI, REST API, Docker, CUDA, Linux, Git, Jupyter, Quantization, Groq API
+Languages: Python, C, C++, SQL, TypeScript, JavaScript
+Computer Vision: YOLOv8, Pose Estimation, OpenCV, Object Tracking, Kalman Filtering, Homography, ViT, SegFormer
+Adversarial ML & GenAI: PGD, MI-FGSM, EOT Patches, Adversarial Training, VLMs, RoPE, GQA, KV-Cache
+ML Stack: PyTorch, TensorFlow, scikit-learn, NumPy, Pandas, CUDA, TensorRT, Jupyter, Kaggle
+Backend & Tools: FastAPI, asyncio, REST APIs, Docker, Linux, Git, GitHub Actions, Next.js, Vercel
 Achievements
-• Placed global top 20 in the [Shell.ai] Hackathon among 1000+ submissions, optimizing ML model parameters.
-• Qualified for Amazon ML Summer School – top 3,000 of 1,30,000+ applicants nationwide, clearing a 3-stage resume,
-SOP, and ML/DSA test process.
-• Earned a 3-star rating of 1630 on [CodeChef] and Pupil (1308) on [Codeforces], and solved 100+ DSA problems on
-[LeetCode] and [Code360].
+• Global top 20 in the [Shell.ai] Hackathon (1000+ submissions); 176th of 7000+ in AWS x Zelestra ML Ascend.
+• Qualified for Amazon ML Summer School – top 3,000 of 1,30,000+ registrants nationwide.
+• Solved200+competitiveprogrammingproblemsacrossplatforms; [CodeChef]3-star(1631), [Codeforces]Pupil(1314).
 Positions of Responsibility
 Google Developer Groups
 Machine Learning Coordinator Aug 2025 - Present
-• Conducted a 12-week ML bootcamp for 200+ students, covering SGD, CNNs, and Kaggle workflows, resulting in 15+
-student projects.
+• Ran a 12-week ML bootcamp for 200+ students (SGD, CNNs, Kaggle workflows), resulting in 15+ student projects.
 DataWorks Club
 Computer Vision Coordinator Aug 2025 - Present
-• Mentored 100+ members through OpenCV and PyTorch workshops, building real-time CV pipelines with YOLOv8 and
-TensorRT targets of 30+ FPS.
+• Mentored 100+ members via OpenCV/PyTorch workshops on real-time YOLOv8 + TensorRT pipelines (30+ FPS).

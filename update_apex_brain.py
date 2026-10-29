@@ -50,13 +50,14 @@ ROUTE_FILE      = "src/app/api/chat/route.ts"
 RESUME_PDF      = "resume_updated.pdf"
 OUTPUT_SUMMARY  = "public/resume_data.txt"
 
-# Repos already covered in the hand-written PROJECTS section of route.ts.
-# Keep this list in sync if you rename or retire a repo.
+# Repos already covered in the hand-written PROJECTS section of route.ts,
+# or deliberately left out of APEX. Keep in sync if you rename or retire a repo.
 ALREADY_COVERED = {
     "distrosync",
     "pytorch_paligemma",
     "courtsense-ai",
     "grid07-cognitive-engine",
+    "reid-attack-anatomy",
     "transformer_from_scratch_using_pytorch",
     "spatial-portfolio",
 }
