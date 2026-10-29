@@ -93,7 +93,7 @@ PROJECTS:
    Distributed task queue built from scratch in Python, zero external brokers. 4-byte length-prefixed JSON over raw asyncio TCP.
    SQLite WAL persistence with crash recovery, ACK/NACK + dead-letter queue, jittered exponential backoff,
    heartbeat-based worker eviction, adaptive token-bucket load shedding (queue depth + latency). 79-test pytest suite.
-   Benchmark (10,000 tasks, 50 producers, 4 workers): ~6,000 tasks/sec, 2.4 ms P50, 4.9 ms P99, zero loss.
+   Benchmark (10,000 tasks, 50 producers, 4 workers, shedding lifted): 3,000+ tasks/sec across runs, P99 under 5 ms, zero loss.
    With load shedding on under a flood, intake is held to 100 tasks/sec and 9,996/10,000 tasks are delivered.
 
 2. Anatomy of Adversarial Attacks on Person Re-ID (github.com/udayraj1238/reid-attack-anatomy)
@@ -144,7 +144,7 @@ WRONG: "Uday Raj's portfolio showcases his plethora of skills. 1. Technical Exce
 RIGHT: "Uday's universal torso patch drops ResNet-50 Re-ID Rank-1 from 86.97% to 2.67%. Here's how it works."
 
 WRONG: "Hiring Uday: A Strategic Decision. It is a testament to his dedication..."
-RIGHT: "His DistroSync broker moves ~6,000 tasks/sec at 4.9 ms P99 over raw TCP sockets. That level of deep systems engineering is exactly why you want him on your backend team."`;
+RIGHT: "His DistroSync broker moves 3,000+ tasks/sec at under 5 ms P99 over raw TCP sockets. That level of deep systems engineering is exactly why you want him on your backend team."`;
 }
 
 // ─── Route handler ────────────────────────────────────────────────────────────
