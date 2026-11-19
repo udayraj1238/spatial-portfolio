@@ -1,4 +1,4 @@
-Last auto-synced: 2026-11-18 01:03 UTC
+Last auto-synced: 2026-11-19 00:36 UTC
 (This file is a human-readable snapshot only. APEX's actual knowledge
  lives in src/app/api/chat/route.ts and is NOT read from this file
  at request-time, to keep token costs low and predictable.)
@@ -7,15 +7,15 @@ Last auto-synced: 2026-11-18 01:03 UTC
 cv-benchkit (Python, 0★)
   Unified computer vision annotation converter and model benchmarking toolkit for PyTorch and NumPy
   https://github.com/udayraj1238/cv-benchkit
+spatial-portfolio (TypeScript, 0★)
+  AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
+  https://github.com/udayraj1238/spatial-portfolio
 reid-attack-anatomy (Python, 0★)
   (no description)
   https://github.com/udayraj1238/reid-attack-anatomy
 Pytorch_PaliGemma (Python, 0★)
   PaliGemma VLM from scratch in PyTorch — SigLIP vision encoder + Gemma-2B decoder + 8-bit quantization. 22% BLEU-4 improvement.
   https://github.com/udayraj1238/Pytorch_PaliGemma
-spatial-portfolio (TypeScript, 0★)
-  AI-powered portfolio with APEX chatbot trained on resume, GitHub and research. Next.js, TypeScript, Groq LLaMA 3.3 70B
-  https://github.com/udayraj1238/spatial-portfolio
 CourtSense-AI (TypeScript, 1★)
   Tennis match video → interactive 3D replay. YOLOv8-Pose + SegFormer-B2 + Kalman filter + FastAPI + Three.js. 30+ FPS on edge devices.
   https://github.com/udayraj1238/CourtSense-AI
